@@ -11,13 +11,15 @@ const BattleState = {
   InBattle: "in_battle",
   Defeat: "defeat",
   Victory: "victory",
-  Verify: "verify"
+  NeedVerify: "need_verify",
+  Verifying: "verifying"
 }
 
 const ProfState = {
   Doing: "doing",
   Finish: "finish",
-  Verify: "verify"
+  NeedVerify: "need_verify",
+  Verifying: "verifying"
 }
 
 let globalBattelState = BattleState.Victory;
@@ -27,6 +29,7 @@ let lastProfMsg = null;
 let battleCounter = 0;
 let profCounter = 0;
 let channel = null;
+let verifyImg = null;
 
 function successCallback(result) { }
 
@@ -44,10 +47,22 @@ function professionFailureCallback(error) {
   }
 }
 
-setInterval(() => {
+setInterval(async () => {
   if (channel === null) return;
   console.log('Current battle state: ' + globalBattelState);
   console.log('Current profession state: ' + globalProfState);
+  if (globalBattelState === BattleState.NeedVerify || globalProfState === ProfState.NeedVerify) {
+    // console.log('Try to solve verify');
+    // channel.send('$verify');
+    return;
+  };
+  
+  // if (globalBattelState === BattleState.Verifying || globalProfState === ProfState.Verifying) {
+  //   result = await captchaAI.predict(verifyImg.url);
+  //   console.log('Verify Result: ' + result);
+  //   channel.send(result);
+  //   return;
+  // }
 
   if (lastBattleMsg != null) {
     if (globalBattelState === BattleState.Victory && battleCounter > retryCount) {
@@ -151,12 +166,17 @@ function verifyHandler(description, message) {
   if (description.includes('Please complete the captcha')) {
     console.log('You need to solve captcha...');
     console.log('>>>BOT stop due to verify<<<');
-    globalBattelState = BattleState.Verify;
-    globalProfState = ProfState.Verify;
+    globalBattelState = BattleState.NeedVerify;
+    globalProfState = ProfState.NeedVerify;
     lastBattleMsg = null;
     lastProfMsg = null;
-    channel = null;
     return;
+  }
+
+  if (description.includes('Please enter the captcha code from the image to verify.')) {
+    globalBattelState = BattleState.Verifying;
+    globalProfState = ProfState.Verifying;
+    verifyImg = message.embeds[0].image;
   }
 
   if (description.includes('Successfully Verified.')) {
