@@ -1,6 +1,11 @@
 const { Client } = require('discord.js-selfbot-v13');
-const { token, channelId, profession, delayMs, retryCount } = require('./config.json');
+const { token, channelId, profession, delayMs, retryCount, captchaModel } = require('./config.json');
+const { CaptchaAI } = require('./captcha')
+
 const client = new Client();
+const captchaAI = new CaptchaAI(captchaModel)
+
+// const result = await captchaAI.predict(image.url);
 
 const BattleState = {
   InBattle: "in_battle",

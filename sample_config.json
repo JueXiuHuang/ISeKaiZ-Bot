@@ -3,5 +3,6 @@
   "channelId": "",
   "profession": "none",
   "delayMs":7000,
-  "retryCount": 2
+  "retryCount": 2,
+  "captchaModel": "./model/captcha.onnx"
 }
