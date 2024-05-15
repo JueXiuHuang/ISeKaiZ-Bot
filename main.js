@@ -157,6 +157,16 @@ client.on('messageCreate', async (message) => {
     console.log('>>>BOT stop<<<')
     return;
   }
+
+  if (description === 'You don\'t have enough energy to battle!') {
+    console.log('>>>BOT stop due to no energy<<<');
+    channel = null;
+    lastBattleMsg = null;
+    lastProfMsg = null;
+    globalBattelState = BattleState.Victory;
+    globalProfState = ProfState.Finish;
+    return;
+  }
   
   verifyHandler(description, message)
   mapHandler(embedTitle, content, message);
