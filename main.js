@@ -54,17 +54,17 @@ setInterval(async () => {
   console.log('Current battle state: ' + globalBattelState);
   console.log('Current profession state: ' + globalProfState);
   if (globalBattelState === BattleState.NeedVerify || globalProfState === ProfState.NeedVerify) {
-    // console.log('Try to solve verify');
-    // channel.send('$verify');
+    console.log('Try to solve verify');
+    channel.send('$verify');
     return;
   };
   
-  // if (globalBattelState === BattleState.Verifying || globalProfState === ProfState.Verifying) {
-  //   result = await captchaAI.predict(verifyImg.url);
-  //   console.log('Verify Result: ' + result);
-  //   channel.send(result);
-  //   return;
-  // }
+  if (globalBattelState === BattleState.Verifying || globalProfState === ProfState.Verifying) {
+    result = await captchaAI.predict(verifyImg.url);
+    console.log('Verify Result: ' + result);
+    channel.send(result);
+    return;
+  }
 
   if (lastBattleMsg != null) {
     if (globalBattelState === BattleState.Victory && battleCounter > retryCount) {
