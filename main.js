@@ -157,7 +157,6 @@ client.on('messageCreate', async (message) => {
     console.log('>>>BOT stop<<<')
     return;
   }
-
   
   verifyHandler(description, message)
   mapHandler(embedTitle, content, message);
@@ -168,6 +167,15 @@ function verifyHandler(description, message) {
   if (description.includes('Please complete the captcha')) {
     console.log('You need to solve captcha...');
     console.log('>>>BOT stop due to verify<<<');
+    globalBattelState = BattleState.NeedVerify;
+    globalProfState = ProfState.NeedVerify;
+    lastBattleMsg = null;
+    lastProfMsg = null;
+    return;
+  }
+
+  if (description.includes('Please Try doing $verify again.')) {
+    console.log('You need to solve captcha again...');
     globalBattelState = BattleState.NeedVerify;
     globalProfState = ProfState.NeedVerify;
     lastBattleMsg = null;
