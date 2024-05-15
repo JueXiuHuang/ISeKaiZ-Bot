@@ -82,7 +82,8 @@ setInterval(async () => {
     } else if (globalBattelState === BattleState.InBattle) {
       battleCounter += 1;
       if (battleCounter > retryCount) {
-        console.log('Battle might stuck...');
+        console.log('Battle might stuck, force finish...');
+        globalBattelState = BattleState.Victory;
       }
     }
   } else {
@@ -105,7 +106,8 @@ setInterval(async () => {
     } else if (globalProfState === ProfState.Doing) {
       profCounter += 1;
       if (profCounter > retryCount) {
-        console.log('Profession might stuck...');
+        console.log('Profession might stuck, force finish...');
+        globalProfState = ProfState.Finish;
       }
     }
   } else if (profession != 'none') {
