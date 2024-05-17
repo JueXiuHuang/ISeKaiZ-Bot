@@ -73,9 +73,9 @@ setInterval(async () => {
     } else if (globalBattelState === BattleState.Victory) {
       try {
         lastBattleMsg.clickButton({ X: 0, Y: 0 }).then(successCallback, battleFailureCallback);
-      } catch (e) {
-        console.log('Error message: ' + e.message);
-        console.log(e);
+      } catch (err) {
+        console.log('Error message: ' + err.message);
+        console.log(err);
         console.log('Add battleCounter');
         battleCounter++;
       }
@@ -97,9 +97,9 @@ setInterval(async () => {
     } else if (globalProfState === ProfState.Finish) {
       try {
         lastProfMsg.clickButton({ X: 0, Y: 0 }).then(successCallback, professionFailureCallback);
-      } catch (e) {
-        console.log('Error message: ' + e.message);
-        console.log(e);
+      } catch (err) {
+        console.log('Error message: ' + err.message);
+        console.log(err);
         console.log('Add profCounter');
         profCounter++;
       }
@@ -255,7 +255,7 @@ function mapHandler(title, content, message) {
       try {
         message.clickButton({ X: 0, Y: 0 }).then(successCallback, battleFailureCallback);
       } catch (err) {
-        console.log('Error message: ' + e.message);
+        console.log('Error message: ' + err.message);
         console.log(err);
 
       }
@@ -274,7 +274,7 @@ function mapHandler(title, content, message) {
       try {
         message.clickButton({ X: 0, Y: 0 }).then(successCallback, professionFailureCallback);
       } catch (err) {
-        console.log('Error message: ' + e.message);
+        console.log('Error message: ' + err.message);
         console.log(err);
       }
     }
