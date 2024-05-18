@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "pkg -t node18-win-x64 -o dist/isekaiz main.js"
   },
   "author": "JoshuaHuang",
   "license": "ISC",
@@ -12,5 +12,8 @@
     "discord.js-selfbot-v13": "3.1.4",
     "jimp": "^0.22.12",
     "onnxruntime-node": "^1.17.3-rev.1"
+  },
+  "devDependencies": {
+    "pkg": "^5.8.1"
   }
 }
