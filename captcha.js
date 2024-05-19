@@ -4,6 +4,7 @@ const jimp = require('jimp')
 class CaptchaAI {
     #model;
     #img_sz = 160;
+    #maximum_label_sz = 4;
 
     constructor(model_path) {
         const load_model_promise = ort.InferenceSession.create(model_path);
@@ -32,7 +33,7 @@ class CaptchaAI {
 
         // return string
         let result = '';
-        for (let i = 0; i < index.length; ++i) {
+        for (let i = 0; i < Math.min(index.length, this.#maximum_label_sz); ++i) {
             result += String(label[index[i]]);
         }
         return result;
