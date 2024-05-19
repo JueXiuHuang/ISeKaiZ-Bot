@@ -1,118 +1,38 @@
 const { Client } = require('discord.js-selfbot-v13');
 const { token, channelId, profession, delayMs, retryCount, captchaModel } = require('./config.json');
 const CaptchaAI = require('./captcha').CaptchaAI
+const { Player, BattleState, ProfState } = require('./player')
+const { professionRoutine } = require('./profession')
+const { mappingRoutine } = require('./mapping')
+
+function successCallback() {}
 
 const client = new Client();
 
 let captchaAI;
-const initCaptchaAI = async function(){
+const initCaptchaAI = async function () {
   captchaAI = await new CaptchaAI(captchaModel);
 };
 
-const BattleState = {
-  InBattle: "in_battle",
-  Defeat: "defeat",
-  Victory: "victory",
-  NeedVerify: "need_verify",
-  Verifying: "verifying"
-}
-
-const ProfState = {
-  Doing: "doing",
-  Finish: "finish",
-  NeedVerify: "need_verify",
-  Verifying: "verifying"
-}
-
-let globalBattelState = BattleState.Victory;
-let globalProfState = ProfState.Finish;
-let lastBattleMsg = null;
-let lastProfMsg = null;
-let battleCounter = 0;
-let profCounter = 0;
-let channel = null;
-let verifyImg = null;
-
-function successCallback(result) { }
-
-function battleFailureCallback(error) {
-  battleCounter += 1;
-  if (battleCounter > retryCount) {
-    console.log('(Battle) click button time out...');
-  }
-}
-
-function professionFailureCallback(error) {
-  profCounter += 1;
-  if (profCounter > retryCount) {
-    console.log('(Profession) click button time out...')
-  }
-}
+const player = new Player();
 
 setInterval(async () => {
-  if (channel === null) return;
-  console.log('Current battle state: ' + globalBattelState);
-  console.log('Current profession state: ' + globalProfState);
-  if (globalBattelState === BattleState.NeedVerify || globalProfState === ProfState.NeedVerify) {
+  console.log(`B: ${player.bs} | P: ${player.ps}`);
+  if (player.bs === BattleState.NeedVerify || player.ps === ProfState.NeedVerify) {
     console.log('Try to solve verify');
-    channel.send('$verify');
+    player.channel.send('$verify');
     return;
-  };
+  }
   
-  if (globalBattelState === BattleState.Verifying || globalProfState === ProfState.Verifying) {
-    result = await captchaAI.predict(verifyImg.url);
+  if (player.bs === BattleState.Verifying || player.ps === ProfState.Verifying) {
+    result = await captchaAI.predict(player.verifyImg.url);
     console.log('Verify Result: ' + result);
-    channel.send(result);
+    player.channel.send(result);
     return;
   }
 
-  if (lastBattleMsg != null) {
-    if (globalBattelState === BattleState.Victory && battleCounter > retryCount) {
-      lastBattleMsg = null;
-      channel.send('$map');
-    } else if (globalBattelState === BattleState.Victory) {
-      try {
-        lastBattleMsg.clickButton({ X: 0, Y: 0 }).then(successCallback, battleFailureCallback);
-      } catch (err) {
-        console.log('Error message: ' + err.message);
-        console.log(err);
-        console.log('Add battleCounter');
-        battleCounter++;
-      }
-    } else if (globalBattelState === BattleState.InBattle) {
-      battleCounter += 1;
-      if (battleCounter > retryCount) {
-        console.log('Battle might stuck, force finish...');
-        globalBattelState = BattleState.Victory;
-      }
-    }
-  } else {
-    channel.send('$map');
-  }
-
-  if (lastProfMsg != null && profession != 'none') {
-    if (globalProfState === ProfState.Finish && profCounter > retryCount) {
-      lastProfMsg = null;
-      channel.send('$' + profession);
-    } else if (globalProfState === ProfState.Finish) {
-      try {
-        lastProfMsg.clickButton({ X: 0, Y: 0 }).then(successCallback, professionFailureCallback);
-      } catch (err) {
-        console.log('Error message: ' + err.message);
-        console.log(err);
-        console.log('Add profCounter');
-        profCounter++;
-      }
-    } else if (globalProfState === ProfState.Doing) {
-      profCounter += 1;
-      if (profCounter > retryCount) {
-        console.log('Profession might stuck, force finish...');
-        globalProfState = ProfState.Finish;
-      }
-    }
-  } else if (profession != 'none') {
-    channel.send('$' + profession);
-  }
+  mappingRoutine(player);
+  professionRoutine(player);
 }, delayMs);
 
 client.on('ready', async () => {
@@ -143,33 +63,33 @@ client.on('messageCreate', async (message) => {
   }
 
   if (content === '!start') {
-    channel = message.channel;
-    globalBattelState = BattleState.Victory;
-    globalProfState = ProfState.Finish;
+    player.channel = message.channel;
+    player.bs = BattleState.Idle;
+    player.ps = ProfState.Idle;
     console.log('>>>BOT start<<<')
     return;
   }
 
   if (content === '!stop') {
-    channel = null;
-    lastBattleMsg = null;
-    lastProfMsg = null;
-    globalBattelState = BattleState.Victory;
-    globalProfState = ProfState.Finish;
+    player.channel = null;
+    player.battleMsg = null;
+    player.profMsg = null;
+    player.bs = BattleState.Idle;
+    player.ps = ProfState.Idle;
     console.log('>>>BOT stop<<<')
     return;
   }
 
   if (description === 'You don\'t have enough energy to battle!') {
     console.log('>>>BOT stop due to no energy<<<');
-    channel = null;
-    lastBattleMsg = null;
-    lastProfMsg = null;
-    globalBattelState = BattleState.Victory;
-    globalProfState = ProfState.Finish;
+    player.channel = null;
+    player.battleMsg = null;
+    player.profMsg = null;
+    player.bs = BattleState.Idle;
+    player.ps = ProfState.Idle;
     return;
   }
-  
+
   verifyHandler(description, message)
   mapHandler(embedTitle, content, message);
   professionHandler(embedTitle, message);
@@ -179,34 +99,34 @@ function verifyHandler(description, message) {
   if (description.includes('Please complete the captcha')) {
     console.log('You need to solve captcha...');
     console.log('>>>BOT stop due to verify<<<');
-    globalBattelState = BattleState.NeedVerify;
-    globalProfState = ProfState.NeedVerify;
-    lastBattleMsg = null;
-    lastProfMsg = null;
+    player.bs = BattleState.NeedVerify;
+    player.ps = ProfState.NeedVerify;
+    player.battleMsg = null;
+    player.profMsg = null;
     return;
   }
 
   if (description.includes('Please Try doing $verify again.')) {
     console.log('You need to solve captcha again...');
-    globalBattelState = BattleState.NeedVerify;
-    globalProfState = ProfState.NeedVerify;
-    lastBattleMsg = null;
-    lastProfMsg = null;
+    player.bs = BattleState.NeedVerify;
+    player.ps = ProfState.NeedVerify;
+    player.battleMsg = null;
+    player.profMsg = null;
     return;
   }
 
   if (description.includes('Please enter the captcha code from the image to verify.')) {
-    globalBattelState = BattleState.Verifying;
-    globalProfState = ProfState.Verifying;
-    verifyImg = message.embeds[0].image;
+    player.bs = BattleState.Verifying;
+    player.ps = ProfState.Verifying;
+    player.verifyImg = message.embeds[0].image;
   }
 
   if (description.includes('Successfully Verified.')) {
     console.log('You finish the captcha, back to work...');
     console.log('>>>BOT start due to verify finished<<<')
-    globalBattelState = BattleState.Victory;
-    globalProfState = ProfState.Finish;
-    channel = message.channel;
+    player.bs = BattleState.Idle;
+    player.ps = ProfState.Idle;
+    player.channel = message.channel;
     return;
   }
 }
@@ -214,50 +134,53 @@ function verifyHandler(description, message) {
 function mapHandler(title, content, message) {
   if (title.includes('Current Location:')) {
     console.log('Open new battle window');
-    // console.log('reset globalBattleCounter since create new battle msg');
-    globalBattelState = BattleState.Victory;
-    battleCounter = 0;
-    if (lastBattleMsg === null) {
-      lastBattleMsg = message;
+    player.bs = BattleState.Idle;
+    player.bc = 0;
+    if (player.battleMsg === null) {
+      player.battleMsg = message;
     }
 
     return;
   }
 
   if (title.includes('You Defeated A')) {
-    // console.log('reset globalBattleCounter since battle end normally');
-    globalBattelState = BattleState.Victory;
-    battleCounter = 0;
+    console.log('Battle finish');
+    player.bs = BattleState.Idle;
+    player.bc = 0;
     return;
   }
 
   if (title.includes('BATTLE STARTED')) {
-    // console.log('reset globalBattleCounter since battle start normally');
-    globalBattelState = BattleState.InBattle;
-    battleCounter = 0;
+    console.log('Battle start');
+    player.bs = BattleState.InBattle;
+    player.bc = 0;
     return;
   }
 
   if (title.includes('Better Luck Next Time!')) {
-    // console.log('reset globalBattleCounter since defeat');
-    globalBattelState = BattleState.Defeat;
-    battleCounter = 0;
+    player.bs = BattleState.Defeat;
+    player.bc = 0;
     return;
   }
 
   if (content.includes('You are already in a battle')) {
     console.log('------------IN BATTL------------');
-    console.log('Battle Counter: ' + battleCounter);
-    console.log('Battle State: ' + globalBattelState);
+    console.log('Battle Counter: ' + player.bc);
+    console.log('Battle State: ' + player.bs);
     console.log('------------IN BATTL------------')
-    if (battleCounter > retryCount || globalBattelState == BattleState.Victory) {
+    if (player.bc > retryCount || player.bs == BattleState.Idle) {
       console.log('try to leave battle...');
       try {
-        message.clickButton({ X: 0, Y: 0 }).then(successCallback, battleFailureCallback);
+        message.clickButton({ X: 0, Y: 0 })
+          .then(successCallback)
+          .catch(err => {
+            console.log('--------------------------------');
+            console.log('Leave battle got error');
+            console.log(err);
+          })
       } catch (err) {
-        console.log('Error message: ' + err.message);
+        console.log('AAA: Error message: ' + err.message);
         console.log(err);
-
       }
     }
 
@@ -266,15 +189,21 @@ function mapHandler(title, content, message) {
 
   if (content.includes('You are already')) {
     console.log('------------IN PROFESSION------------');
-    console.log('Profession Counter: ' + profCounter);
-    console.log('Profession State: ' + globalProfState);
+    console.log('Profession Counter: ' + player.pc);
+    console.log('Profession State: ' + player.ps);
     console.log('------------IN PROFESSION------------');
-    if (profCounter > retryCount || globalProfState == ProfState.Finish) {
+    if (player.pc > retryCount || player.ps == ProfState.Idle) {
       console.log('try to leave profession...');
       try {
-        message.clickButton({ X: 0, Y: 0 }).then(successCallback, professionFailureCallback);
+        message.clickButton({ X: 0, Y: 0 })
+          .then(successCallback)
+          .catch(err => {
+            console.log('--------------------------------');
+            console.log('Leave profession got error');
+            console.log(err);
+          })
       } catch (err) {
-        console.log('Error message: ' + err.message);
+        console.log('BBB: Error message: ' + err.message);
         console.log(err);
       }
     }
@@ -286,32 +215,28 @@ function mapHandler(title, content, message) {
 function professionHandler(title, message) {
   if (title === 'Mining' || title == 'Fishing' || title === 'Foraging') {
     console.log('Open new profession window');
-    console.log('Reset profCounter since new window');
-    globalProfState = ProfState.Finish;
-    profCounter = 0;
-    if (lastProfMsg === null) lastProfMsg = message;
+    player.ps = ProfState.Idle;
+    player.pc = 0;
+    if (player.profMsg === null) player.profMsg = message;
     return;
   }
 
   if (title === 'You started mining!') {
     console.log('Profession start (Mine)');
-    console.log('Reset profCounter since action start');
-    globalProfState = ProfState.Doing;
-    profCounter = 0;
+    player.ps = ProfState.Doing;
+    player.pc = 0;
     return;
   }
   if (title === 'You cast your rod!') {
     console.log('Profession start (Fish)');
-    console.log('Reset profCounter since action start');
-    globalProfState = ProfState.Doing;
-    profCounter = 0;
+    player.ps = ProfState.Doing;
+    player.pc = 0;
     return;
   }
   if (title === 'You start foraging!') {
     console.log('Profession start (Forage)');
-    console.log('Reset profCounter since action start');
-    globalProfState = ProfState.Doing;
-    profCounter = 0;
+    player.ps = ProfState.Doing;
+    player.pc = 0;
     return;
   }
 }
@@ -328,25 +253,22 @@ client.on('messageUpdate', async (oldMsg, newMsg) => {
 
   if (embedTitle.includes('You caught a')) {
     console.log('Profession finish (Fish)');
-    console.log('Reset profCounter since prof finish');
-    globalProfState = ProfState.Finish;
-    profCounter = 0;
+    player.ps = ProfState.Idle;
+    player.pc = 0;
     return;
   }
 
   if (embedTitle.includes('Mining Complete!')) {
     console.log('Profession finish (Mine)');
-    console.log('Reset profCounter since prof finish');
-    globalProfState = ProfState.Finish;
-    profCounter = 0;
+    player.ps = ProfState.Idle;
+    player.pc = 0;
     return;
   }
 
   if (embedTitle.includes('You found a')) {
     console.log('Profession finish (Forage)');
-    console.log('Reset profCounter since prof finish');
-    globalProfState = ProfState.Finish;
-    profCounter = 0;
+    player.ps = ProfState.Idle;
+    player.pc = 0;
     return;
   }
 })
