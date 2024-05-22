@@ -1,9 +1,11 @@
 const { Client } = require('discord.js-selfbot-v13');
-const { token, channelId, profession, delayMs, retryCount, captchaModel } = require('./config.json');
+const { token, channelId, delayMs, retryCount, captchaModel} = require('./config.json')
 const CaptchaAI = require('./captcha').CaptchaAI
 const { Player, BattleState, ProfState } = require('./player')
 const { professionRoutine } = require('./profession')
 const { mappingRoutine } = require('./mapping')
+const { checkTreasure } = require('./treasure')
+const { retainerRoutine, retainerHandler } = require('./retainer')
 
 function successCallback() {}
 
@@ -16,7 +18,7 @@ const initCaptchaAI = async function () {
 
 const player = new Player();
 
-setInterval(async () => {
+async function shortRoutineScript() {
   console.log(`B: ${player.bs} | P: ${player.ps}`);
   if (player.bs === BattleState.NeedVerify || player.ps === ProfState.NeedVerify) {
     console.log('Try to solve verify');
@@ -33,7 +35,15 @@ setInterval(async () => {
 
   mappingRoutine(player);
   professionRoutine(player);
-}, delayMs);
+}
+
+async function longRoutineScript() {
+  console.log('Do scheduling task');
+  retainerRoutine(player);
+}
+
+setInterval(shortRoutineScript, delayMs);
+setInterval(longRoutineScript, 2*60*60*1000);
 
 client.on('ready', async () => {
   let welcomeMsg = `
@@ -50,6 +60,7 @@ client.on('ready', async () => {
 })
 
 client.on('messageCreate', async (message) => {
+  checkTreasure(message);
   if (message.channelId != channelId) return;
   if (message.author.username != 'Isekaid' && message.author.username != client.user.username) return;
 
@@ -76,7 +87,7 @@ client.on('messageCreate', async (message) => {
     player.profMsg = null;
     player.bs = BattleState.Idle;
     player.ps = ProfState.Idle;
-    console.log('>>>BOT stop<<<')
+    console.log('>>>BOT stop<<<');
     return;
   }
 
@@ -90,12 +101,13 @@ client.on('messageCreate', async (message) => {
     return;
   }
 
-  verifyHandler(description, message)
+  verifyHandler(message, description);
+  retainerHandler(message, description);
   mapHandler(embedTitle, content, message);
   professionHandler(embedTitle, message);
 })
 
-function verifyHandler(description, message) {
+function verifyHandler(message, description) {
   if (description.includes('Please complete the captcha')) {
     console.log('You need to solve captcha...');
     console.log('>>>BOT stop due to verify<<<');
@@ -123,7 +135,7 @@ function verifyHandler(description, message) {
 
   if (description.includes('Successfully Verified.')) {
     console.log('You finish the captcha, back to work...');
-    console.log('>>>BOT start due to verify finished<<<')
+    console.log('>>>BOT start due to verify finished<<<');
     player.bs = BattleState.Idle;
     player.ps = ProfState.Idle;
     player.channel = message.channel;
@@ -136,9 +148,7 @@ function mapHandler(title, content, message) {
     console.log('Open new battle window');
     player.bs = BattleState.Idle;
     player.bc = 0;
-    if (player.battleMsg === null) {
-      player.battleMsg = message;
-    }
+    player.battleMsg = message;
 
     return;
   }
@@ -167,7 +177,7 @@ function mapHandler(title, content, message) {
     console.log('------------IN BATTL------------');
     console.log('Battle Counter: ' + player.bc);
     console.log('Battle State: ' + player.bs);
-    console.log('------------IN BATTL------------')
+    console.log('------------IN BATTL------------');
     if (player.bc > retryCount || player.bs == BattleState.Idle) {
       console.log('try to leave battle...');
       try {
@@ -217,7 +227,7 @@ function professionHandler(title, message) {
     console.log('Open new profession window');
     player.ps = ProfState.Idle;
     player.pc = 0;
-    if (player.profMsg === null) player.profMsg = message;
+    player.profMsg = message;
     return;
   }
 
