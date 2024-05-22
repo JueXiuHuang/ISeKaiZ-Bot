@@ -4,5 +4,7 @@
   "profession": "none",
   "delayMs":7000,
   "retryCount": 2,
+  "treasureHunter": false,
+  "treasureGuild": "",
   "captchaModel": "./model/captcha.onnx"
 }
