@@ -38,8 +38,8 @@ function professionRoutine(player) {
   }
 
   if (player.ps === ProfState.Doing) {
-    player.ps += 1;
-    if (player.ps > retryCount) {
+    player.pc += 1;
+    if (player.pc > retryCount) {
       console.log('Profession might stuck, force finish...');
       player.ps = ProfState.Idle;
     }

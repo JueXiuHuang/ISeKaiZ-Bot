@@ -37,9 +37,9 @@ function mappingRoutine(player) {
 
   if (player.bs === BattleState.InBattle) {
     player.bc += 1;
-    if (player.bs > retryCount) {
+    if (player.bc > retryCount) {
       console.log('Battle might stuck, force finish...');
-      player.bs = BattleState.Victory;
+      player.bs = BattleState.Idle;
     }
     return;
   }
