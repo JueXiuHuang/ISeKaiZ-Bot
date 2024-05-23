@@ -1,11 +1,13 @@
 const { Client } = require('discord.js-selfbot-v13');
-const { token, channelId, delayMs, retryCount, captchaModel} = require('./config.json')
+const { token, channelId, delayMs, retryCount, captchaModel } = require('./config.json')
 const CaptchaAI = require('./captcha').CaptchaAI
 const { Player, BattleState, ProfState } = require('./player')
 const { professionRoutine } = require('./profession')
 const { mappingRoutine } = require('./mapping')
 const { checkTreasure } = require('./treasure')
 const { retainerRoutine, retainerHandler } = require('./retainer')
+const args = process.argv.slice(2);
+
 
 function successCallback() {}
 
@@ -57,6 +59,12 @@ client.on('ready', async () => {
  `
   console.log(welcomeMsg);
   console.log(`Login as ${client.user.username}`);
+  if (args.includes('--auto-start')) {
+    console.log('bot auto-start activate')
+    let cacheChannel = client.channels.cache.get(channelId);
+    cacheChannel.send('!!BOT auto-start activate!!');
+    cacheChannel.send('!start');
+  }
 })
 
 client.on('messageCreate', async (message) => {
