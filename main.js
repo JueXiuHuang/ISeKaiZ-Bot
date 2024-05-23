@@ -9,7 +9,7 @@ const { retainerRoutine, retainerHandler } = require('./retainer')
 const args = process.argv.slice(2);
 
 
-function successCallback() {}
+function successCallback() { }
 
 const client = new Client();
 
@@ -27,7 +27,7 @@ async function shortRoutineScript() {
     player.channel.send('$verify');
     return;
   }
-  
+
   if (player.bs === BattleState.Verifying || player.ps === ProfState.Verifying) {
     result = await captchaAI.predict(player.verifyImg.url);
     console.log('Verify Result: ' + result);
@@ -45,7 +45,7 @@ async function longRoutineScript() {
 }
 
 setInterval(shortRoutineScript, delayMs);
-setInterval(longRoutineScript, 2*60*60*1000);
+setInterval(longRoutineScript, 2 * 60 * 60 * 1000);
 
 client.on('ready', async () => {
   let welcomeMsg = `
@@ -292,4 +292,4 @@ client.on('messageUpdate', async (oldMsg, newMsg) => {
 })
 
 initCaptchaAI();
-client.login(token);
+client.login(token).catch(reason => { console.log(reason); process.exit(0); });
