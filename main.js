@@ -45,7 +45,7 @@ async function longRoutineScript() {
 }
 
 setInterval(shortRoutineScript, delayMs);
-setInterval(longRoutineScript, 2 * 60 * 60 * 1000);
+setInterval(longRoutineScript, 2 * 60 * 60 * 1000 + 30 * 1000);
 
 client.on('ready', async () => {
   let welcomeMsg = `
