@@ -1,7 +1,7 @@
 const { retryCount } = require('./config.json');
 const { BattleState } = require('./player')
 
-function successCallback() {}
+function successCallback() { }
 
 // @param {Player} player
 function mappingRoutine(player) {

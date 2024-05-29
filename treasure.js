@@ -1,6 +1,6 @@
-const { treasureHunter=false, treasureGuild=''} = require('./config.json');
+const { treasureHunter = false, treasureGuild = '' } = require('./config.json');
 
-function successCallback() {}
+function successCallback() { }
 
 function checkTreasure(message) {
   if (treasureGuild === '' || !treasureHunter) return;

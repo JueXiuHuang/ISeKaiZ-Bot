@@ -6,5 +6,6 @@
   "retryCount": 2,
   "treasureHunter": false,
   "treasureGuild": "",
+  "expFood": "sushi-roll",
   "captchaModel": "./model/captcha.onnx"
 }

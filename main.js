@@ -1,11 +1,12 @@
 const { Client } = require('discord.js-selfbot-v13');
-const { token, channelId, delayMs, retryCount, captchaModel } = require('./config.json')
-const CaptchaAI = require('./captcha').CaptchaAI
-const { Player, BattleState, ProfState } = require('./player')
-const { professionRoutine } = require('./profession')
-const { mappingRoutine } = require('./mapping')
-const { checkTreasure } = require('./treasure')
-const { retainerRoutine, retainerHandler } = require('./retainer')
+const { token, channelId, delayMs, retryCount, captchaModel } = require('./config.json');
+const CaptchaAI = require('./captcha').CaptchaAI;
+const { Player, BattleState, ProfState } = require('./player');
+const { professionRoutine } = require('./profession');
+const { mappingRoutine } = require('./mapping');
+const { checkTreasure } = require('./treasure');
+const { retainerRoutine, retainerHandler } = require('./retainer');
+const { foodRoutine } = require('./food');
 const args = process.argv.slice(2);
 
 
@@ -39,13 +40,19 @@ async function shortRoutineScript() {
   professionRoutine(player);
 }
 
-async function longRoutineScript() {
+async function twoHrRoutineScript() {
   console.log('Do scheduling task');
-  retainerRoutine(player);
+  retainerRoutine(player.channel);
+}
+
+async function threeHrRoutineScript() {
+  console.log('Try to eat exp food');
+  foodRoutine(player.channel);
 }
 
 setInterval(shortRoutineScript, delayMs);
-setInterval(longRoutineScript, 2 * 60 * 60 * 1000 + 30 * 1000);
+setInterval(twoHrRoutineScript, 2 * 60 * 60 * 1000 + 30 * 1000);
+setInterval(threeHrRoutineScript, 3 * 60 * 60 * 1000);
 
 client.on('ready', async () => {
   let welcomeMsg = `
@@ -64,6 +71,8 @@ client.on('ready', async () => {
     let cacheChannel = client.channels.cache.get(channelId);
     cacheChannel.send('!!BOT auto-start activate!!');
     cacheChannel.send('!start');
+    retainerRoutine(cacheChannel);
+    foodRoutine(cacheChannel);
   }
 })
 

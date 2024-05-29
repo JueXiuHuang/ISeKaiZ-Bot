@@ -28,4 +28,4 @@ class Player {
   verifyImg = null;
 }
 
-module.exports = {Player, BattleState, ProfState};
+module.exports = { Player, BattleState, ProfState };

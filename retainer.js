@@ -1,9 +1,9 @@
-function successCallback() {}
+function successCallback() { }
 
-function retainerRoutine(player) {
-  if (player.channel === null) return;
+function retainerRoutine(channel) {
+  if (channel === null) return;
 
-  player.channel.send('$hired');
+  channel.send('$hired');
 }
 
 function retainerHandler(message, desc) {
