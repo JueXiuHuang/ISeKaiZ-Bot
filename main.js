@@ -83,11 +83,13 @@ client.on('messageCreate', async (message) => {
 
   let embedTitle = 'empty_embed_title';
   let description = 'empty_description';
+  let mention = 'empty_mention';
   let content = message.content;
 
   if (message.embeds.length > 0) {
     if (message.embeds[0].title != null) embedTitle = message.embeds[0].title;
     if (message.embeds[0].description != null) description = message.embeds[0].description;
+    if (message.embeds[0].author != null) mention = message.embeds[0].author.name;
   }
 
   if (content === '!start') {
@@ -118,14 +120,15 @@ client.on('messageCreate', async (message) => {
     return;
   }
 
-  verifyHandler(message, description);
+  verifyHandler(message, description, mention, client.user.username);
   retainerHandler(message, description);
   mapHandler(embedTitle, content, message);
   professionHandler(embedTitle, message);
 })
 
-function verifyHandler(message, description) {
+function verifyHandler(message, description, mention, user) {
   if (description.includes('Please complete the captcha')) {
+    if (mention != user) return;
     console.log('You need to solve captcha...');
     console.log('>>>BOT stop due to verify<<<');
     player.bs = BattleState.NeedVerify;
