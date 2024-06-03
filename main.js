@@ -12,6 +12,15 @@ const args = process.argv.slice(2);
 
 function successCallback() { }
 
+function msgLogger(msg) {
+  let date = new Date();
+  console.log('--------------------------')
+  console.log(date.toLocaleString('en-US', { timeZone: 'Asia/Taipei' }))
+  console.log('Context: ' + msg.content)
+  console.log('Embeds: ' + JSON.stringify(msg.embeds))
+  console.log('--------------------------')
+}
+
 const client = new Client();
 
 let captchaAI;
@@ -81,6 +90,10 @@ client.on('messageCreate', async (message) => {
   if (message.channelId != channelId) return;
   if (message.author.username != 'Isekaid' && message.author.username != client.user.username) return;
 
+  if (message.author.username == 'Isekaid') {
+    msgLogger(message);
+  }
+
   let embedTitle = 'empty_embed_title';
   let description = 'empty_description';
   let mention = 'empty_mention';
@@ -120,6 +133,16 @@ client.on('messageCreate', async (message) => {
     return;
   }
 
+  if (title === 'Suspended') {
+    console.log('>>>YOU GOT BANNED<<<')
+    player.channel = null;
+    player.battleMsg = null;
+    player.profMsg = null;
+    player.bs = BattleState.Idle;
+    player.ps = ProfState.Idle;
+    return;
+  }
+
   verifyHandler(message, description, mention, client.user.username);
   retainerHandler(message, description);
   mapHandler(embedTitle, content, message);
@@ -129,7 +152,6 @@ client.on('messageCreate', async (message) => {
 function verifyHandler(message, description, mention, user) {
   if (description.includes('Please complete the captcha')) {
     if (mention != user) return;
-    console.log('You need to solve captcha...');
     console.log('>>>BOT stop due to verify<<<');
     player.bs = BattleState.NeedVerify;
     player.ps = ProfState.NeedVerify;
@@ -154,7 +176,6 @@ function verifyHandler(message, description, mention, user) {
   }
 
   if (description.includes('Successfully Verified.')) {
-    console.log('You finish the captcha, back to work...');
     console.log('>>>BOT start due to verify finished<<<');
     player.bs = BattleState.Idle;
     player.ps = ProfState.Idle;
