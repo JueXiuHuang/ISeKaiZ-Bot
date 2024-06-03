@@ -133,7 +133,7 @@ client.on('messageCreate', async (message) => {
     return;
   }
 
-  if (title === 'Suspended') {
+  if (embedTitle === 'Suspended') {
     console.log('>>>YOU GOT BANNED<<<')
     player.channel = null;
     player.battleMsg = null;
