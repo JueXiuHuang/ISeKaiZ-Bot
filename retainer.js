@@ -11,7 +11,7 @@ function retainerHandler(message, desc) {
   if (desc.match(regex)) {
     console.log('Try to collect material')
     try {
-      message.clickButton({ X: 0, Y: 0 })
+      message.clickButton({ X: 2, Y: 0 })
         .then(successCallback)
         .catch(err => {
           console.log('--------------------------------');
