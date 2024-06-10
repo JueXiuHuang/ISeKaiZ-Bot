@@ -49,19 +49,19 @@ async function shortRoutineScript() {
   professionRoutine(player);
 }
 
-async function twoHrRoutineScript() {
+async function oneHrRoutineScript() {
   console.log('Do scheduling task');
   retainerRoutine(player.channel);
 }
 
-async function threeHrRoutineScript() {
+async function threeHrFoodScript() {
   console.log('Try to eat exp food');
   foodRoutine(player.channel);
 }
 
 setInterval(shortRoutineScript, delayMs);
-setInterval(twoHrRoutineScript, 2 * 60 * 60 * 1000 + 30 * 1000);
-setInterval(threeHrRoutineScript, 3 * 60 * 60 * 1000);
+setInterval(oneHrRoutineScript, 1 * 60 * 60 * 1000 + 30 * 1000);
+setInterval(threeHrFoodScript, 3 * 60 * 60 * 1000);
 
 client.on('ready', async () => {
   let welcomeMsg = `
