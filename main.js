@@ -7,6 +7,7 @@ const { mappingRoutine } = require('./mapping');
 const { checkTreasure } = require('./treasure');
 const { retainerRoutine, retainerHandler } = require('./retainer');
 const { foodRoutine } = require('./food');
+const { inventoryRoutine, inventoryHandler } = require('./inventory')
 const args = process.argv.slice(2);
 
 
@@ -52,6 +53,7 @@ async function shortRoutineScript() {
 async function oneHrRoutineScript() {
   console.log('Do scheduling task');
   retainerRoutine(player.channel);
+  inventoryRoutine(player);
 }
 
 async function threeHrFoodScript() {
@@ -147,6 +149,7 @@ client.on('messageCreate', async (message) => {
   retainerHandler(message, description);
   mapHandler(embedTitle, content, message);
   professionHandler(embedTitle, message);
+  inventoryHandler(player, embedTitle, description);
 })
 
 function verifyHandler(message, description, mention, user) {

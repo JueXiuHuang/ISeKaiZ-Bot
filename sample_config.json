@@ -7,5 +7,6 @@
   "treasureHunter": false,
   "treasureGuild": "",
   "expFood": "sushi-roll",
-  "captchaModel": "./model/captcha.onnx"
+  "captchaModel": "./model/captcha.onnx",
+  "sellEquip": ["F", "E", "D"]
 }

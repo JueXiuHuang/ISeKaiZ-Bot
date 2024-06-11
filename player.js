@@ -26,6 +26,7 @@ class Player {
   battleMsg = null;
   profMsg = null;
   verifyImg = null;
+  sell = 0;
 }
 
 module.exports = { Player, BattleState, ProfState };
