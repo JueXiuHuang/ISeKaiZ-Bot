@@ -18,7 +18,7 @@ function inventoryHandler(player, title, desc) {
   const re = /You gained (\d+) gold!/;
   desc = desc.replace(',', '');
   const gold = desc.match(re)[1];
-  if (gold.length < 7) {
+  if (gold.length < 5) {
     player.sell += 1;
   }
 }
