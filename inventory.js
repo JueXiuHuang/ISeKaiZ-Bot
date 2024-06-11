@@ -1,4 +1,4 @@
-const { sellEquip } = require('./config.json');
+const { sellEquip = ['F', 'E', 'D'] } = require('./config.json');
 
 async function inventoryRoutine(player) {
   if (player.channel === null) return;
