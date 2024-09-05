@@ -224,18 +224,13 @@ function mapHandler(title, content, message) {
     console.log('------------IN BATTL------------');
     if (player.bc > retryCount || player.bs == States.Idle) {
       console.log('try to leave battle...');
-      try {
-        message.clickButton({ X: 0, Y: 0 })
-          .then(successCallback)
-          .catch(err => {
-            console.log('--------------------------------');
-            console.log('Leave battle got error');
-            console.log(err);
-          })
-      } catch (err) {
-        console.log('AAA: Error message: ' + err.message);
-        console.log(err);
-      }
+      message.clickButton({ X: 0, Y: 0 })
+        .then(successCallback)
+        .catch(err => {
+          console.log('--------------------------------');
+          console.log('Leave battle got error');
+          console.log(err);
+        })
     }
 
     return;
@@ -248,18 +243,13 @@ function mapHandler(title, content, message) {
     console.log('------------IN PROFESSION------------');
     if (player.pc > retryCount || player.ps == States.Idle) {
       console.log('try to leave profession...');
-      try {
-        message.clickButton({ X: 0, Y: 0 })
-          .then(successCallback)
-          .catch(err => {
-            console.log('--------------------------------');
-            console.log('Leave profession got error');
-            console.log(err);
-          })
-      } catch (err) {
-        console.log('BBB: Error message: ' + err.message);
-        console.log(err);
-      }
+      message.clickButton({ X: 0, Y: 0 })
+        .then(successCallback)
+        .catch(err => {
+          console.log('--------------------------------');
+          console.log('Leave profession got error');
+          console.log(err);
+        })
     }
 
     return;

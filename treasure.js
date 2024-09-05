@@ -14,18 +14,13 @@ function checkTreasure(message) {
 
   if (title.includes('Chest Spawned!')) {
     console.log('Try to get treasure')
-    try {
-      message.clickButton({ X: 0, Y: 0 })
-        .then(successCallback)
-        .catch(err => {
-          console.log('--------------------------------');
-          console.log('Claim chest fail');
-          console.log(err);
-        })
-    } catch (err) {
-      console.log('Claim chest: Error message: ' + err.message);
-      console.log(err);
-    }
+    message.clickButton({ X: 0, Y: 0 })
+      .then(successCallback)
+      .catch(err => {
+        console.log('--------------------------------');
+        console.log('Claim chest fail');
+        console.log(err);
+      })
   }
 }
 
