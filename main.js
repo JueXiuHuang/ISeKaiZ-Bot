@@ -8,6 +8,7 @@ const { checkTreasure } = require('./treasure');
 const { retainerRoutine, retainerHandler } = require('./retainer');
 const { foodRoutine } = require('./food');
 const { inventoryRoutine, inventoryHandler } = require('./inventory')
+const { messageExtractor } = require('./helper');
 const args = process.argv.slice(2);
 
 
@@ -96,16 +97,7 @@ client.on('messageCreate', async (message) => {
     msgLogger(message);
   }
 
-  let embedTitle = 'empty_embed_title';
-  let description = 'empty_description';
-  let mention = 'empty_mention';
-  let content = message.content;
-
-  if (message.embeds.length > 0) {
-    if (message.embeds[0].title != null) embedTitle = message.embeds[0].title;
-    if (message.embeds[0].description != null) description = message.embeds[0].description;
-    if (message.embeds[0].author != null) mention = message.embeds[0].author.name;
-  }
+  let [embedTitle, embedDesc, mention, content] = messageExtractor(message);
 
   if (content === '!start') {
     player.channel = message.channel;
@@ -125,7 +117,7 @@ client.on('messageCreate', async (message) => {
     return;
   }
 
-  if (description === 'You don\'t have enough energy to battle!') {
+  if (embedDesc === 'You don\'t have enough energy to battle!') {
     console.log('>>>BOT stop due to no energy<<<');
     player.channel = null;
     player.battleMsg = null;
@@ -145,11 +137,11 @@ client.on('messageCreate', async (message) => {
     return;
   }
 
-  verifyHandler(message, description, mention, client.user.username);
-  retainerHandler(message, description);
+  verifyHandler(message, embedDesc, mention, client.user.username);
+  retainerHandler(message, embedDesc);
   mapHandler(embedTitle, content, message);
   professionHandler(embedTitle, message);
-  inventoryHandler(player, embedTitle, description);
+  inventoryHandler(player, embedTitle, embedDesc);
 })
 
 function verifyHandler(message, description, mention, user) {
@@ -289,7 +281,8 @@ client.on('messageUpdate', async (oldMsg, newMsg) => {
   if (newMsg.channelId != channelId) return;
   if (newMsg.author.username != 'Isekaid') return;
 
-  let embedTitle = 'empty_embed_title';
+  let [embedTitle, embedDesc, ,] = messageExtractor(newMsg);
+  let [, oldEmbedDesc, ,] = messageExtractor(oldMsg);
 
   if (newMsg.embeds.length > 0) {
     if (newMsg.embeds[0].title != null) embedTitle = newMsg.embeds[0].title;
@@ -315,6 +308,8 @@ client.on('messageUpdate', async (oldMsg, newMsg) => {
     player.pc = 0;
     return;
   }
+
+  retainerHandler(newMsg, embedDesc, oldEmbedDesc);
 })
 
 initCaptchaAI();
