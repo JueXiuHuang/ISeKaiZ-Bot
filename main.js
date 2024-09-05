@@ -1,7 +1,7 @@
 const { Client } = require('discord.js-selfbot-v13');
 const { token, channelId, delayMs, retryCount, captchaModel } = require('./config.json');
 const CaptchaAI = require('./captcha').CaptchaAI;
-const { Player, BattleState, ProfState } = require('./player');
+const { Player, States } = require('./player');
 const { professionRoutine } = require('./profession');
 const { mappingRoutine } = require('./mapping');
 const { checkTreasure } = require('./treasure');
@@ -33,13 +33,13 @@ const player = new Player();
 
 async function shortRoutineScript() {
   console.log(`B: ${player.bs} | P: ${player.ps}`);
-  if (player.bs === BattleState.NeedVerify || player.ps === ProfState.NeedVerify) {
+  if (player.bs === States.NeedVerify || player.ps === States.NeedVerify) {
     console.log('Try to solve verify');
     player.channel.send('$verify');
     return;
   }
 
-  if (player.bs === BattleState.Verifying || player.ps === ProfState.Verifying) {
+  if (player.bs === States.Verifying || player.ps === States.Verifying) {
     result = await captchaAI.predict(player.verifyImg.url);
     console.log('Verify Result: ' + result);
     player.channel.send(result);
@@ -109,8 +109,8 @@ client.on('messageCreate', async (message) => {
 
   if (content === '!start') {
     player.channel = message.channel;
-    player.bs = BattleState.Idle;
-    player.ps = ProfState.Idle;
+    player.bs = States.Idle;
+    player.ps = States.Idle;
     console.log('>>>BOT start<<<')
     return;
   }
@@ -119,8 +119,8 @@ client.on('messageCreate', async (message) => {
     player.channel = null;
     player.battleMsg = null;
     player.profMsg = null;
-    player.bs = BattleState.Idle;
-    player.ps = ProfState.Idle;
+    player.bs = States.Idle;
+    player.ps = States.Idle;
     console.log('>>>BOT stop<<<');
     return;
   }
@@ -130,8 +130,8 @@ client.on('messageCreate', async (message) => {
     player.channel = null;
     player.battleMsg = null;
     player.profMsg = null;
-    player.bs = BattleState.Idle;
-    player.ps = ProfState.Idle;
+    player.bs = States.Idle;
+    player.ps = States.Idle;
     return;
   }
 
@@ -140,8 +140,8 @@ client.on('messageCreate', async (message) => {
     player.channel = null;
     player.battleMsg = null;
     player.profMsg = null;
-    player.bs = BattleState.Idle;
-    player.ps = ProfState.Idle;
+    player.bs = States.Idle;
+    player.ps = States.Idle;
     return;
   }
 
@@ -156,8 +156,8 @@ function verifyHandler(message, description, mention, user) {
   if (description.includes('Please complete the captcha')) {
     if (mention != user) return;
     console.log('>>>BOT stop due to verify<<<');
-    player.bs = BattleState.NeedVerify;
-    player.ps = ProfState.NeedVerify;
+    player.bs = States.NeedVerify;
+    player.ps = States.NeedVerify;
     player.battleMsg = null;
     player.profMsg = null;
     return;
@@ -165,23 +165,23 @@ function verifyHandler(message, description, mention, user) {
 
   if (description.includes('Please Try doing $verify again.')) {
     console.log('You need to solve captcha again...');
-    player.bs = BattleState.NeedVerify;
-    player.ps = ProfState.NeedVerify;
+    player.bs = States.NeedVerify;
+    player.ps = States.NeedVerify;
     player.battleMsg = null;
     player.profMsg = null;
     return;
   }
 
   if (description.includes('Please enter the captcha code from the image to verify.')) {
-    player.bs = BattleState.Verifying;
-    player.ps = ProfState.Verifying;
+    player.bs = States.Verifying;
+    player.ps = States.Verifying;
     player.verifyImg = message.embeds[0].image;
   }
 
   if (description.includes('Successfully Verified.')) {
     console.log('>>>BOT start due to verify finished<<<');
-    player.bs = BattleState.Idle;
-    player.ps = ProfState.Idle;
+    player.bs = States.Idle;
+    player.ps = States.Idle;
     player.channel = message.channel;
     return;
   }
@@ -190,7 +190,7 @@ function verifyHandler(message, description, mention, user) {
 function mapHandler(title, content, message) {
   if (title.includes('Current Location:')) {
     console.log('Open new battle window');
-    player.bs = BattleState.Idle;
+    player.bs = States.Idle;
     player.bc = 0;
     player.battleMsg = message;
 
@@ -199,20 +199,20 @@ function mapHandler(title, content, message) {
 
   if (title.includes('You Defeated A')) {
     console.log('Battle finish');
-    player.bs = BattleState.Idle;
+    player.bs = States.Idle;
     player.bc = 0;
     return;
   }
 
   if (title.includes('BATTLE STARTED')) {
     console.log('Battle start');
-    player.bs = BattleState.InBattle;
+    player.bs = States.InBattle;
     player.bc = 0;
     return;
   }
 
   if (title.includes('Better Luck Next Time!')) {
-    player.bs = BattleState.Defeat;
+    player.bs = States.Defeat;
     player.bc = 0;
     return;
   }
@@ -222,7 +222,7 @@ function mapHandler(title, content, message) {
     console.log('Battle Counter: ' + player.bc);
     console.log('Battle State: ' + player.bs);
     console.log('------------IN BATTL------------');
-    if (player.bc > retryCount || player.bs == BattleState.Idle) {
+    if (player.bc > retryCount || player.bs == States.Idle) {
       console.log('try to leave battle...');
       try {
         message.clickButton({ X: 0, Y: 0 })
@@ -246,7 +246,7 @@ function mapHandler(title, content, message) {
     console.log('Profession Counter: ' + player.pc);
     console.log('Profession State: ' + player.ps);
     console.log('------------IN PROFESSION------------');
-    if (player.pc > retryCount || player.ps == ProfState.Idle) {
+    if (player.pc > retryCount || player.ps == States.Idle) {
       console.log('try to leave profession...');
       try {
         message.clickButton({ X: 0, Y: 0 })
@@ -269,7 +269,7 @@ function mapHandler(title, content, message) {
 function professionHandler(title, message) {
   if (title === 'Mining' || title == 'Fishing' || title === 'Foraging') {
     console.log('Open new profession window');
-    player.ps = ProfState.Idle;
+    player.ps = States.Idle;
     player.pc = 0;
     player.profMsg = message;
     return;
@@ -277,19 +277,19 @@ function professionHandler(title, message) {
 
   if (title === 'You started mining!') {
     console.log('Profession start (Mine)');
-    player.ps = ProfState.Doing;
+    player.ps = States.Doing;
     player.pc = 0;
     return;
   }
   if (title === 'You cast your rod!') {
     console.log('Profession start (Fish)');
-    player.ps = ProfState.Doing;
+    player.ps = States.Doing;
     player.pc = 0;
     return;
   }
   if (title === 'You start foraging!') {
     console.log('Profession start (Forage)');
-    player.ps = ProfState.Doing;
+    player.ps = States.Doing;
     player.pc = 0;
     return;
   }
@@ -307,21 +307,21 @@ client.on('messageUpdate', async (oldMsg, newMsg) => {
 
   if (embedTitle.includes('You caught a')) {
     console.log('Profession finish (Fish)');
-    player.ps = ProfState.Idle;
+    player.ps = States.Idle;
     player.pc = 0;
     return;
   }
 
   if (embedTitle.includes('Mining Complete!')) {
     console.log('Profession finish (Mine)');
-    player.ps = ProfState.Idle;
+    player.ps = States.Idle;
     player.pc = 0;
     return;
   }
 
   if (embedTitle.includes('You found a')) {
     console.log('Profession finish (Forage)');
-    player.ps = ProfState.Idle;
+    player.ps = States.Idle;
     player.pc = 0;
     return;
   }

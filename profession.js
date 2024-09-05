@@ -1,5 +1,5 @@
 const { profession, retryCount } = require('./config.json');
-const { ProfState } = require('./player')
+const { States } = require('./player')
 
 function successCallback() { }
 
@@ -13,13 +13,13 @@ function professionRoutine(player) {
     return;
   }
 
-  if (player.ps === ProfState.Idle && player.pc > retryCount) {
+  if (player.ps === States.Idle && player.pc > retryCount) {
     player.profMsg = null;
     player.channel.send('$' + profession);
     return;
   }
 
-  if (player.ps === ProfState.Idle) {
+  if (player.ps === States.Idle) {
     try {
       player.profMsg.clickButton({ X: 0, Y: 0 })
         .then(successCallback)
@@ -37,11 +37,11 @@ function professionRoutine(player) {
     return;
   }
 
-  if (player.ps === ProfState.Doing) {
+  if (player.ps === States.Doing) {
     player.pc += 1;
     if (player.pc > retryCount) {
       console.log('Profession might stuck, force finish...');
-      player.ps = ProfState.Idle;
+      player.ps = States.Idle;
     }
     return;
   }

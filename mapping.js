@@ -1,5 +1,5 @@
 const { retryCount } = require('./config.json');
-const { BattleState } = require('./player')
+const { States } = require('./player')
 
 function successCallback() { }
 
@@ -11,13 +11,13 @@ function mappingRoutine(player) {
     return;
   }
 
-  if (player.bs === BattleState.Idle && player.bc > retryCount) {
+  if (player.bs === States.Idle && player.bc > retryCount) {
     player.battleMsg = null;
     player.channel.send('$map');
     return;
   }
 
-  if (player.bs === BattleState.Idle) {
+  if (player.bs === States.Idle) {
     try {
       player.battleMsg.clickButton({ X: 0, Y: 0 })
         .then(successCallback)
@@ -35,11 +35,11 @@ function mappingRoutine(player) {
     return;
   }
 
-  if (player.bs === BattleState.InBattle) {
+  if (player.bs === States.InBattle) {
     player.bc += 1;
     if (player.bc > retryCount) {
       console.log('Battle might stuck, force finish...');
-      player.bs = BattleState.Idle;
+      player.bs = States.Idle;
     }
     return;
   }

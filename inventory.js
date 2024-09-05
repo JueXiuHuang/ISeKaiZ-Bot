@@ -1,7 +1,9 @@
 const { sellEquip = ['F', 'E', 'D'] } = require('./config.json');
+const { isVerify } = require('./helper');
 
 async function inventoryRoutine(player) {
   if (player.channel === null) return;
+  if (isVerify(player.bs) || isVerify(player.ps)) return;
   
   player.sell = player.sell % sellEquip.length;
   while (player.sell < sellEquip.length) {

@@ -1,13 +1,7 @@
-const BattleState = {
+const States = {
   InBattle: "in_battle",
-  Defeat: "defeat",
-  Idle: "idle",
-  NeedVerify: "need_verify",
-  Verifying: "verifying"
-}
-
-const ProfState = {
   Doing: "doing",
+  Defeat: "defeat",
   Idle: "idle",
   NeedVerify: "need_verify",
   Verifying: "verifying"
@@ -15,9 +9,9 @@ const ProfState = {
 
 class Player {
   // battle state
-  bs = BattleState.Idle;
+  bs = States.Idle;
   // profession state
-  ps = ProfState.Idle;
+  ps = States.Idle;
   // battle counter
   bc = 0;
   // profession counter
@@ -29,4 +23,4 @@ class Player {
   sell = 0;
 }
 
-module.exports = { Player, BattleState, ProfState };
+module.exports = { Player, States };
