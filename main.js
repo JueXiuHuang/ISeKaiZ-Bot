@@ -52,7 +52,7 @@ async function shortRoutineScript() {
 
 async function oneHrRoutineScript() {
   console.log('Do scheduling task');
-  retainerRoutine(player.channel);
+  retainerRoutine(player);
   inventoryRoutine(player);
 }
 

@@ -1,9 +1,12 @@
+const { isVerify } = require('./helper');
+
 function successCallback() { }
 
-function retainerRoutine(channel) {
-  if (channel === null) return;
+function retainerRoutine(player) {
+  if (player.channel === null) return;
+  if (isVerify(player.bs) || isVerify(player.ps)) return;
 
-  channel.send('$hired');
+  player.channel.send('$hired');
 }
 
 function retainerHandler(message, desc) {
