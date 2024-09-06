@@ -83,7 +83,8 @@ client.on('ready', async () => {
     let cacheChannel = client.channels.cache.get(channelId);
     cacheChannel.send('!!BOT auto-start activate!!');
     cacheChannel.send('!start');
-    retainerRoutine(cacheChannel);
+    player.channel = cacheChannel;
+    retainerRoutine(player);
     foodRoutine(cacheChannel);
   }
 })
