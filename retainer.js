@@ -7,7 +7,7 @@ const delay = (delayInMs) => {
 };
 
 function retainerRoutine(player) {
-  if (player.channel === null) return;
+  if (player.channel === undefined) return;
   if (isVerify(player.bs) || isVerify(player.ps)) return;
 
   player.channel.send('$hired');
