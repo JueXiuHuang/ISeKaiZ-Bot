@@ -18,16 +18,20 @@ function mappingRoutine(player) {
   }
 
   if (player.bs === States.Idle) {
-    player.battleMsg.clickButton({ X: 0, Y: 0 })
-      .then(successCallback)
-      .catch(err => {
-        console.log('--------------------------------');
-        console.log('click battle button fail');
-        console.log('Error message: ' + err.message);
-        console.log(err);
-        console.log('Add battle counter');
-        player.bc += 1;
-      });
+    try {
+      player.battleMsg.clickButton({ X: 0, Y: 0 })
+        .then(successCallback)
+        .catch(err => {
+          console.log('--------------------------------');
+          console.log('click battle button fail');
+          console.log('Error message: ' + err.message);
+          console.log(err);
+          console.log('Add battle counter');
+          player.bc += 1;
+        });
+    } catch (err) {
+      console.log(err);
+    }
     return;
   }
 

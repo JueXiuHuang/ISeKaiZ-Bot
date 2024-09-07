@@ -20,16 +20,20 @@ function professionRoutine(player) {
   }
 
   if (player.ps === States.Idle) {
-    player.profMsg.clickButton({ X: 0, Y: 0 })
-      .then(successCallback)
-      .catch(err => {
-        console.log('--------------------------------');
-        console.log('click profession button fail');
-        console.log('Error message: ' + err.message);
-        console.log(err);
-        console.log('Add profession counter');
-        player.pc += 1;
-      });
+    try {
+      player.profMsg.clickButton({ X: 0, Y: 0 })
+        .then(successCallback)
+        .catch(err => {
+          console.log('--------------------------------');
+          console.log('click profession button fail');
+          console.log('Error message: ' + err.message);
+          console.log(err);
+          console.log('Add profession counter');
+          player.pc += 1;
+        });
+    } catch (err) {
+      console.log(err);
+    }
     return;
   }
 
