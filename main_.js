@@ -36,7 +36,7 @@ client.on('messageCreate', async (message) => {
     const customId = message.components[0].components[0].customId
 
     try {
-      await message.selectMenu(customId, ['Electric Maelstrom'])
+      await message.selectMenu(0, ['Shadowcave Depths'])
         .then((response) => {
           console.log('選擇成功', response);
         })
