@@ -8,7 +8,7 @@ const { checkTreasure } = require('./treasure');
 const { retainerRoutine, retainerHandler } = require('./retainer');
 const { foodRoutine } = require('./food');
 const { inventoryRoutine, inventoryHandler } = require('./inventory')
-const { messageExtractor } = require('./helper');
+const { messageExtractor, emojiVerifier, delayer, errorLogWrapper } = require('./helper');
 const args = process.argv.slice(2);
 
 
@@ -33,48 +33,19 @@ const initCaptchaAI = async function () {
 const player = new Player();
 
 async function ImmediatelyRoutineScript() {
-  let call_again = true;
-  const minDelayMs = 300;
-  const maxDelayMs = 1300;
-  const waitMs = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-  // add a delay to imitate humans
-  const randomDelayMs = Math.floor(Math.random() * (maxDelayMs - minDelayMs)) + minDelayMs;
-  console.log(`Delay: ${randomDelayMs} ms`);
-  await waitMs(randomDelayMs);
+  await delayer(300, 1300);
 
   if (player.bs === States.NeedVerify_Image || player.ps === States.NeedVerify_Image) {
     console.log('Try to solve verify image');
     player.channel.send('$verify');
+    return;
   }
 
   if (player.bs === States.Verifying_Image || player.ps === States.Verifying_Image) {
     result = await captchaAI.predict(player.verifyImg.url);
     console.log('Verify Image Result: ' + result);
     player.channel.send(result);
-    call_again = false;
-  }
-
-  if (player.bs === States.NeedVerify_Emoji || player.ps === States.NeedVerify_Emoji) {
-    console.log('Try to solve verify emoji');
-
-    for(let i = 0; i < player.verifyEmojiMsg.components[0].components.length; ++i){
-      const X_emoji_id = '1284730320133951592';
-      let button = player.verifyEmojiMsg.components[0].components[i];
-      if (button.emoji.id != X_emoji_id) {
-        try {
-          const result = await player.verifyEmojiMsg.clickButton({ X: i, Y: 0});
-          break;
-        } catch (err) {
-          console.log(err);
-        }
-      }
-    }
-    call_again = false;
-  }
-
-  if (call_again){
-    await ImmediatelyRoutineScript();
+    return;
   }
 }
 
@@ -82,13 +53,13 @@ async function shortRoutineScript() {
   console.log(`B: ${player.bs} | P: ${player.ps}`);
 
   if ([States.NeedVerify_Image, States.Verifying_Image].includes(player.bs)) {
-    console.log('[Battle] Encounter pass states');
+    console.log('[Battle] Encounter verify states');
   } else {
     mappingRoutine(player);
   }
 
-  if ([States.NeedVerify_Image, States.Verifying_Image, States.NeedVerify_Emoji].includes(player.ps)) {
-    console.log('[Profession] Encounter pass states');
+  if ([States.NeedVerify_Image, States.Verifying_Image].includes(player.ps)) {
+    console.log('[Profession] Encounter verify states or already auto started');
   } else {
     professionRoutine(player);
   }
@@ -181,12 +152,13 @@ client.on('messageCreate', async (message) => {
     return;
   }
 
-  if (verifyHandler(message, embedDesc, mention, client.user.username)){
-    await ImmediatelyRoutineScript();
-  };
+  if (verifyHandler(message, embedDesc, mention, client.user.username)) {
+    ImmediatelyRoutineScript();
+    return;
+  }
   retainerHandler(message, embedDesc);
   mapHandler(embedTitle, content, message);
-  professionHandler(embedTitle, message);
+  professionHandler('create', message, embedDesc, embedTitle, content);
   inventoryHandler(player, embedTitle, embedDesc);
 })
 
@@ -225,14 +197,6 @@ function verifyHandler(message, description, mention, user) {
     player.channel = message.channel;
     return false;
   }
-
-  if (description.includes('Choose the correct option...')) {
-    console.log('>>>BOT stop due to select correct emoji<<<');
-    // only profession needs to verify
-    player.ps = States.NeedVerify_Emoji;
-    player.verifyEmojiMsg = message;
-    return true;
-  }
 }
 
 function mapHandler(title, content, message) {
@@ -266,19 +230,21 @@ function mapHandler(title, content, message) {
   }
 
   if (content.includes('You are already in a battle')) {
-    console.log('------------IN BATTL------------');
+    console.log('------------IN BATTLE------------');
     console.log('Battle Counter: ' + player.bc);
     console.log('Battle State: ' + player.bs);
-    console.log('------------IN BATTL------------');
+    console.log('------------IN BATTLE------------');
     if (player.bc > retryCount || player.bs == States.Idle) {
       console.log('try to leave battle...');
       try {
         message.clickButton({ X: 0, Y: 0 })
           .then(successCallback)
           .catch(err => {
-            console.log('--------------------------------');
-            console.log('Leave battle got error');
-            console.log(err);
+            logFunc = () => {
+              console.log('Leave battle got error');
+              console.log(err);
+            };
+            errorLogWrapper(logFunc);
           })
       } catch (err) {
         console.log(err);
@@ -300,9 +266,11 @@ function mapHandler(title, content, message) {
         message.clickButton({ X: 0, Y: 0 })
           .then(successCallback)
           .catch(err => {
-            console.log('--------------------------------');
-            console.log('Leave profession got error');
-            console.log(err);
+            logFunc = () => {
+              console.log('Leave profession got error');
+              console.log(err);
+            };
+            errorLogWrapper(logFunc);
           })
       } catch (err) {
         console.log(err);
@@ -313,12 +281,43 @@ function mapHandler(title, content, message) {
   }
 }
 
-function professionHandler(title, message) {
-  if (title === 'Mining' || title == 'Fishing' || title === 'Foraging') {
+function professionHandler(event, message, description, title, content) {
+  if (['Mining', 'Fishing', 'Foraging'].includes(title) && event === 'create') {
     console.log('Open new profession window');
     player.ps = States.Idle;
     player.pc = 0;
     player.profMsg = message;
+    return;
+  }
+
+  if (content.includes('Time ran out!')) {
+    player.ps = States.Idle;
+    return;
+  }
+
+  if (description.includes('Choose the correct option...')) {
+    emojiVerifier(message);
+    return;
+  }
+
+  if (title.includes('You caught a')) {
+    console.log('Profession finish (Fish)');
+    // player.ps = States.Idle;
+    player.pc = 0;
+    return;
+  }
+
+  if (title.includes('Mining Complete!')) {
+    console.log('Profession finish (Mine)');
+    // player.ps = States.Idle;
+    player.pc = 0;
+    return;
+  }
+
+  if (title.includes('You found a')) {
+    console.log('Profession finish (Forage)');
+    // player.ps = States.Idle;
+    player.pc = 0;
     return;
   }
 
@@ -346,33 +345,10 @@ client.on('messageUpdate', async (oldMsg, newMsg) => {
   if (newMsg.channelId != channelId) return;
   if (newMsg.author.username != 'Isekaid') return;
 
-  let [embedTitle, embedDesc, ,] = messageExtractor(newMsg);
+  let [embedTitle, embedDesc, , content] = messageExtractor(newMsg);
   let [, oldEmbedDesc, ,] = messageExtractor(oldMsg);
 
-  if (newMsg.embeds.length > 0) {
-    if (newMsg.embeds[0].title != null) embedTitle = newMsg.embeds[0].title;
-  }
-
-  if (embedTitle.includes('You caught a')) {
-    console.log('Profession finish (Fish)');
-    player.ps = States.Idle;
-    player.pc = 0;
-    return;
-  }
-
-  if (embedTitle.includes('Mining Complete!')) {
-    console.log('Profession finish (Mine)');
-    player.ps = States.Idle;
-    player.pc = 0;
-    return;
-  }
-
-  if (embedTitle.includes('You found a')) {
-    console.log('Profession finish (Forage)');
-    player.ps = States.Idle;
-    player.pc = 0;
-    return;
-  }
+  professionHandler('update', newMsg, embedDesc, embedTitle, content);
 
   retainerHandler(newMsg, embedDesc, oldEmbedDesc);
 })

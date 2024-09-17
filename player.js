@@ -5,7 +5,7 @@ const States = {
   Idle: "idle",
   NeedVerify_Image: "need_verify_image",  // Verify: enter the image code
   Verifying_Image: "verifying_image",  
-  NeedVerify_Emoji: "need_verify_emoji"  // Verify: choose the correct emoji
+  // NeedVerify_Emoji: "need_verify_emoji"  // Verify: choose the correct emoji
 }
 
 class Player {

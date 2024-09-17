@@ -1,5 +1,6 @@
 const { retryCount } = require('./config.json');
 const { States } = require('./player')
+const { errorLogWrapper } = require('./helper');
 
 function successCallback() { }
 
@@ -22,10 +23,12 @@ function mappingRoutine(player) {
       player.battleMsg.clickButton({ X: 0, Y: 0 })
         .then(successCallback)
         .catch(err => {
-          console.log('--------------------------------');
-          console.log('click battle button fail');
-          console.log('Error message: ' + err.message);
-          console.log(err);
+          logFunc = () => {
+            console.log('click battle button fail');
+            console.log('Error message: ' + err.message);
+            console.log(err);
+          };
+          errorLogWrapper(logFunc);
           console.log('Add battle counter');
           player.bc += 1;
         });

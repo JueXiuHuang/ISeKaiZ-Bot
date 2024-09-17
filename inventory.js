@@ -1,5 +1,5 @@
 const { sellEquip = ['F', 'E', 'D'] } = require('./config.json');
-const { isVerify } = require('./helper');
+const { isVerify, delayer } = require('./helper');
 
 async function inventoryRoutine(player) {
   if (player.channel === null) return;
@@ -8,7 +8,7 @@ async function inventoryRoutine(player) {
   player.sell = player.sell % sellEquip.length;
   while (player.sell < sellEquip.length) {
     player.channel.send(`$sell equipment all ${sellEquip[player.sell]}`);
-    await new Promise(r => setTimeout(r, 10000));
+    await delayer(10000, 10000);
   }
 }
 
