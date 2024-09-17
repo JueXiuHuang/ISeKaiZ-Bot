@@ -32,23 +32,65 @@ const initCaptchaAI = async function () {
 
 const player = new Player();
 
+async function ImmediatelyRoutineScript() {
+  let call_again = true;
+  const minDelayMs = 500;
+  const maxDelayMs = 1500;
+  const waitMs = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+  // add a delay to imitate humans
+  const randomDelayMs = Math.floor(Math.random() * (maxDelayMs - minDelayMs)) + minDelayMs;
+  console.log(`Delay: ${randomDelayMs} ms`);
+  await waitMs(randomDelayMs);
+
+  if (player.bs === States.NeedVerify_Image || player.ps === States.NeedVerify_Image) {
+    console.log('Try to solve verify image');
+    player.channel.send('$verify');
+  }
+
+  if (player.bs === States.Verifying_Image || player.ps === States.Verifying_Image) {
+    result = await captchaAI.predict(player.verifyImg.url);
+    console.log('Verify Image Result: ' + result);
+    player.channel.send(result);
+    call_again = false;
+  }
+
+  if (player.bs === States.NeedVerify_Emoji || player.ps === States.NeedVerify_Emoji) {
+    console.log('Try to solve verify emoji');
+    player.verifyEmojiMsg.components[0].components.forEach(async (Button, index) => {
+      const X_emoji_id = '1284730320133951592';
+      if (Button.emoji.id != X_emoji_id) {
+        try {
+          await player.verifyEmojiMsg.clickButton({ X: index, Y: 0});
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    });
+    call_again = false;
+  }
+
+  if (call_again){
+    
+    
+    await ImmediatelyRoutineScript();
+  }
+}
+
 async function shortRoutineScript() {
   console.log(`B: ${player.bs} | P: ${player.ps}`);
-  if (player.bs === States.NeedVerify || player.ps === States.NeedVerify) {
-    console.log('Try to solve verify');
-    player.channel.send('$verify');
-    return;
+
+  if ([States.NeedVerify_Image, States.Verifying_Image].includes(player.bs)) {
+    console.log('[Battle] Encounter pass states');
+  } else {
+    mappingRoutine(player);
   }
 
-  if (player.bs === States.Verifying || player.ps === States.Verifying) {
-    result = await captchaAI.predict(player.verifyImg.url);
-    console.log('Verify Result: ' + result);
-    player.channel.send(result);
-    return;
+  if ([States.NeedVerify_Image, States.Verifying_Image, States.NeedVerify_Emoji].includes(player.ps)) {
+    console.log('[Profession] Encounter pass states');
+  } else {
+    professionRoutine(player);
   }
-
-  mappingRoutine(player);
-  professionRoutine(player);
 }
 
 async function oneHrRoutineScript() {
@@ -138,7 +180,9 @@ client.on('messageCreate', async (message) => {
     return;
   }
 
-  verifyHandler(message, embedDesc, mention, client.user.username);
+  if (verifyHandler(message, embedDesc, mention, client.user.username)){
+    await ImmediatelyRoutineScript();
+  };
   retainerHandler(message, embedDesc);
   mapHandler(embedTitle, content, message);
   professionHandler(embedTitle, message);
@@ -149,26 +193,28 @@ function verifyHandler(message, description, mention, user) {
   if (description.includes('Please complete the captcha')) {
     if (mention != user) return;
     console.log('>>>BOT stop due to verify<<<');
-    player.bs = States.NeedVerify;
-    player.ps = States.NeedVerify;
+    player.bs = States.NeedVerify_Image;
+    player.ps = States.NeedVerify_Image;
     player.battleMsg = null;
     player.profMsg = null;
-    return;
+    return true;
   }
 
   if (description.includes('Please Try doing $verify again.')) {
     console.log('You need to solve captcha again...');
-    player.bs = States.NeedVerify;
-    player.ps = States.NeedVerify;
+    player.bs = States.NeedVerify_Image;
+    player.ps = States.NeedVerify_Image;
     player.battleMsg = null;
     player.profMsg = null;
-    return;
+    return true;
   }
 
   if (description.includes('Please enter the captcha code from the image to verify.')) {
-    player.bs = States.Verifying;
-    player.ps = States.Verifying;
+    console.log('>>>BOT stop due to verify image code<<<');
+    player.bs = States.Verifying_Image;
+    player.ps = States.Verifying_Image;
     player.verifyImg = message.embeds[0].image;
+    return true;
   }
 
   if (description.includes('Successfully Verified.')) {
@@ -176,7 +222,15 @@ function verifyHandler(message, description, mention, user) {
     player.bs = States.Idle;
     player.ps = States.Idle;
     player.channel = message.channel;
-    return;
+    return false;
+  }
+
+  if (description.includes('Choose the correct option...')) {
+    console.log('>>>BOT stop due to select correct emoji<<<');
+    // only profession needs to verify
+    player.ps = States.NeedVerify_Emoji;
+    player.verifyEmojiMsg = message;
+    return true;
   }
 }
 

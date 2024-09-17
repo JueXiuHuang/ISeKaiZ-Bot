@@ -3,8 +3,9 @@ const States = {
   Doing: "doing",
   Defeat: "defeat",
   Idle: "idle",
-  NeedVerify: "need_verify",
-  Verifying: "verifying"
+  NeedVerify_Image: "need_verify_image",  // Verify: enter the image code
+  Verifying_Image: "verifying_image",  
+  NeedVerify_Emoji: "need_verify_emoji"  // Verify: choose the correct emoji
 }
 
 class Player {
@@ -20,6 +21,7 @@ class Player {
   battleMsg = null;
   profMsg = null;
   verifyImg = null;
+  verifyEmojiMsg = null;
   sell = 0;
 }
 
