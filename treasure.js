@@ -1,16 +1,12 @@
 const { treasureHunter = false, treasureGuild = '' } = require('./config.json');
+const { messageExtractor, errorLogWrapper } = require('./helper');
 
 function successCallback() { }
 
 function checkTreasure(message) {
   if (treasureGuild === '' || !treasureHunter) return;
   if (message.guildId != treasureGuild) return;
-  let desc = 'empty_description';
-  let title = 'empty_title';
-  if (message.embeds.length > 0) {
-    if (message.embeds[0].title != null) title = message.embeds[0].title;
-    if (message.embeds[0].description != null) desc = message.embeds[0].description;
-  }
+  let [title, , ,] = messageExtractor(message);
 
   if (title.includes('Chest Spawned!')) {
     console.log('Try to get treasure')
@@ -18,9 +14,11 @@ function checkTreasure(message) {
       message.clickButton({ X: 0, Y: 0 })
         .then(successCallback)
         .catch(err => {
-          console.log('--------------------------------');
-          console.log('Claim chest fail');
-          console.log(err);
+          logFunc = () => {
+            console.log('Claim chest fail');
+            console.log(err);
+          };
+          errorLogWrapper(logFunc);
         })
     } catch (err) {
       console.log(err);

@@ -1,10 +1,4 @@
-const { isVerify } = require('./helper');
-
-function successCallback() { }
-
-const delay = (delayInMs) => {
-  return new Promise(resolve => setTimeout(resolve, delayInMs));
-};
+const { isVerify, delayer, errorLogWrapper } = require('./helper');
 
 function retainerRoutine(player) {
   if (player.channel === null) return;
@@ -20,7 +14,7 @@ async function retainerHandler(message, desc, oldDesc) {
 
   // retainer should stop at last page automatically
   // this is just prevent infinite loop
-  await delay(10000);
+  await delayer(10000, 10000);
   const elapsed = desc.match(regex)[1];
   if (elapsed === '0') {
     try {
@@ -29,9 +23,11 @@ async function retainerHandler(message, desc, oldDesc) {
           console.log('Turn to next page success');
         })
         .catch(err => {
-          console.log('--------------------------------');
-          console.log('Collect retainer material fail');
-          console.log(err);
+          logFunc = () => {
+            console.log('Turn to next page success');
+            console.log(err);
+          };
+          errorLogWrapper(logFunc);
         })
     } catch (err) {
       console.log(err);
@@ -46,9 +42,11 @@ async function retainerHandler(message, desc, oldDesc) {
         console.log('Harvest material success');
       })
       .catch(err => {
-        console.log('--------------------------------');
-        console.log('Collect retainer material fail');
-        console.log(err);
+        logFunc = () => {
+          console.log('Collect retainer material fail');
+          console.log(err);
+        };
+        errorLogWrapper(logFunc);
       })
   } catch (err) {
     console.log(err);

@@ -1,4 +1,5 @@
 const { profession, retryCount } = require('./config.json');
+const { errorLogWrapper } = require('./helper');
 const { States } = require('./player')
 
 function successCallback() { }
@@ -24,10 +25,12 @@ function professionRoutine(player) {
       player.profMsg.clickButton({ X: 0, Y: 0 })
         .then(successCallback)
         .catch(err => {
-          console.log('--------------------------------');
-          console.log('click profession button fail');
-          console.log('Error message: ' + err.message);
-          console.log(err);
+          logFunc = () => {
+            console.log('click profession button fail');
+            console.log('Error message: ' + err.message);
+            console.log(err);
+          };
+          errorLogWrapper(logFunc);
           console.log('Add profession counter');
           player.pc += 1;
         });
