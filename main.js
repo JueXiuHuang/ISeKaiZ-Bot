@@ -34,8 +34,8 @@ const player = new Player();
 
 async function ImmediatelyRoutineScript() {
   let call_again = true;
-  const minDelayMs = 500;
-  const maxDelayMs = 1500;
+  const minDelayMs = 300;
+  const maxDelayMs = 1300;
   const waitMs = ms => new Promise(resolve => setTimeout(resolve, ms));
 
   // add a delay to imitate humans
@@ -57,22 +57,23 @@ async function ImmediatelyRoutineScript() {
 
   if (player.bs === States.NeedVerify_Emoji || player.ps === States.NeedVerify_Emoji) {
     console.log('Try to solve verify emoji');
-    player.verifyEmojiMsg.components[0].components.forEach(async (Button, index) => {
+
+    for(let i = 0; i < player.verifyEmojiMsg.components[0].components.length; ++i){
       const X_emoji_id = '1284730320133951592';
-      if (Button.emoji.id != X_emoji_id) {
+      let button = player.verifyEmojiMsg.components[0].components[i];
+      if (button.emoji.id != X_emoji_id) {
         try {
-          await player.verifyEmojiMsg.clickButton({ X: index, Y: 0});
+          const result = await player.verifyEmojiMsg.clickButton({ X: i, Y: 0});
+          break;
         } catch (err) {
           console.log(err);
         }
       }
-    });
+    }
     call_again = false;
   }
 
   if (call_again){
-    
-    
     await ImmediatelyRoutineScript();
   }
 }
