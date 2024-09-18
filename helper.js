@@ -31,7 +31,7 @@ async function delayer(minDelayMs, maxDelayMs) {
 }
 
 async function emojiVerifier(message) {
-  await delayer(500, 1500);
+  await delayer(2000, 4000);
   const X_emoji_id = '1284730320133951592';
   let answer = 0;
 

@@ -33,7 +33,7 @@ const initCaptchaAI = async function () {
 const player = new Player();
 
 async function ImmediatelyRoutineScript() {
-  await delayer(300, 1300);
+  await delayer(2000, 5000);
 
   if (player.bs === States.NeedVerify_Image || player.ps === States.NeedVerify_Image) {
     console.log('Try to solve verify image');
@@ -199,7 +199,7 @@ function verifyHandler(message, description, mention, user) {
   }
 }
 
-function mapHandler(title, content, message) {
+async function mapHandler(title, content, message) {
   if (title.includes('Current Location:')) {
     console.log('Open new battle window');
     player.bs = States.Idle;
@@ -236,6 +236,7 @@ function mapHandler(title, content, message) {
     console.log('------------IN BATTLE------------');
     if (player.bc > retryCount || player.bs == States.Idle) {
       console.log('try to leave battle...');
+      await delayer(3000, 5000);
       try {
         message.clickButton({ X: 0, Y: 0 })
           .then(successCallback)
@@ -255,13 +256,15 @@ function mapHandler(title, content, message) {
     return;
   }
 
-  if (content.includes('You are already')) {
+  regex = /You are already mining|foraging|fishing/
+  if (regex.test(content)) {
     console.log('------------IN PROFESSION------------');
     console.log('Profession Counter: ' + player.pc);
     console.log('Profession State: ' + player.ps);
     console.log('------------IN PROFESSION------------');
     if (player.pc > retryCount || player.ps == States.Idle) {
       console.log('try to leave profession...');
+      await delayer(3000, 5000);
       try {
         message.clickButton({ X: 0, Y: 0 })
           .then(successCallback)
