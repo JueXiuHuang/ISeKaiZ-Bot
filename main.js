@@ -33,7 +33,7 @@ const initCaptchaAI = async function () {
 const player = new Player();
 
 async function ImmediatelyRoutineScript() {
-  await delayer(2000, 5000);
+  await delayer(2000, 5000, '(image verify)');
 
   if (player.bs === States.NeedVerify_Image || player.ps === States.NeedVerify_Image) {
     console.log('Try to solve verify image');
@@ -99,7 +99,7 @@ client.on('ready', async () => {
     cacheChannel.send('!start');
     player.channel = cacheChannel;
     retainerRoutine(player);
-    foodRoutine(cacheChannel);
+    // foodRoutine(cacheChannel);
   }
 })
 
@@ -236,7 +236,7 @@ async function mapHandler(title, content, message) {
     console.log('------------IN BATTLE------------');
     if (player.bc > retryCount || player.bs == States.Idle) {
       console.log('try to leave battle...');
-      await delayer(3000, 5000);
+      await delayer(3000, 5000, '(leave battle)');
       try {
         message.clickButton({ X: 0, Y: 0 })
           .then(successCallback)
@@ -256,7 +256,7 @@ async function mapHandler(title, content, message) {
     return;
   }
 
-  regex = /You are already mining|foraging|fishing/
+  let regex = /You are already mining|foraging|fishing/
   if (regex.test(content)) {
     console.log('------------IN PROFESSION------------');
     console.log('Profession Counter: ' + player.pc);
@@ -264,7 +264,7 @@ async function mapHandler(title, content, message) {
     console.log('------------IN PROFESSION------------');
     if (player.pc > retryCount || player.ps == States.Idle) {
       console.log('try to leave profession...');
-      await delayer(3000, 5000);
+      await delayer(3000, 5000, '(leave profession)');
       try {
         message.clickButton({ X: 0, Y: 0 })
           .then(successCallback)
@@ -295,10 +295,16 @@ function professionHandler(event, message, description, title, content) {
 
   if (content.includes('Time ran out!')) {
     player.ps = States.Idle;
+    player.profMsg = null;
     return;
   }
 
   if (description.includes('Choose the correct option...')) {
+    // random failure to avoid long term profession gameplay
+    if (Math.random() > 0.9) {
+      console.log('Randomly time out');
+      return;
+    }
     emojiVerifier(message);
     return;
   }

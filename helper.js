@@ -22,16 +22,17 @@ function messageExtractor(message) {
   return [embedTitle, embedDesc, mention, content]
 }
 
-async function delayer(minDelayMs, maxDelayMs) {
+async function delayer(minDelayMs, maxDelayMs, detail) {
   const waitMs = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+  detail = detail ?? ''
   const randomDelayMs = Math.floor(Math.random() * (maxDelayMs - minDelayMs)) + minDelayMs;
-  console.log(`Delay: ${randomDelayMs} ms`);
+  console.log(`Delay: ${randomDelayMs} ms ${detail}`);
   await waitMs(randomDelayMs);
 }
 
 async function emojiVerifier(message) {
-  await delayer(2000, 4000);
+  await delayer(2000, 4000, '(emoji verify)');
   const X_emoji_id = '1284730320133951592';
   let answer = 0;
 

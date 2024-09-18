@@ -8,7 +8,7 @@ async function inventoryRoutine(player) {
   player.sell = player.sell % sellEquip.length;
   while (player.sell < sellEquip.length) {
     player.channel.send(`$sell equipment all ${sellEquip[player.sell]}`);
-    await delayer(10000, 10000);
+    await delayer(10000, 10000, '(sell equipment)');
   }
 }
 

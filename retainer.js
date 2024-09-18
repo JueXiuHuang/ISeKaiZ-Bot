@@ -8,14 +8,14 @@ function retainerRoutine(player) {
 }
 
 async function retainerHandler(message, desc, oldDesc) {
-  regex = /Time elapsed: (\d) hours\sMaterials produced:/
+  let regex = /Time elapsed: (\d) hours\sMaterials produced:/
 
   if (!regex.test(desc)) return;
 
   // retainer should stop at last page automatically
   // this is just prevent infinite loop
-  await delayer(5000, 10000);
-  const elapsed = desc.match(regex)[1];
+  await delayer(5000, 10000, '(collect retainer)');
+  const elapsed = desc.match(regex)?.[1] ?? '0';
   if (elapsed === '0') {
     try {
       message.clickButton({ X: 1, Y: 0 })
