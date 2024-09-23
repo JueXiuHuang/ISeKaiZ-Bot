@@ -1,48 +1,67 @@
 const { retryCount } = require('./config.json');
-const { States } = require('./player')
+const { States } = require('./player');
+const { Task } = require('./controller');
 const { errorLogWrapper } = require('./helper');
 
-function successCallback() { }
-
 // @param {Player} player
-function mappingRoutine(player) {
-  if (player.channel === null) return;
-  if (player.battleMsg === null) {
-    player.channel.send('$map');
+function mappingRoutine(ctrl) {
+  if (ctrl.player['channel'] === null) return;
+
+  if (ctrl.player['battleMsg'] === null) {
+    const taskFunc = () => {
+      ctrl.player['channel']?.send('$map');
+      return {};
+    };
+    const expireAt = Date.now() + 10;
+    const task = new Task(taskFunc, expireAt, '$map');
+    ctrl.addTask(task);
     return;
   }
 
-  if (player.bs === States.Idle && player.bc > retryCount) {
-    player.battleMsg = null;
-    player.channel.send('$map');
+  if (ctrl.player['bs'] === States.Idle && ctrl.player['bc'] > retryCount) {
+    const taskFunc = () => {
+      ctrl.player['channel']?.send('$map');
+      return { 'battleMsg': null };
+    };
+    const expireAt = Date.now() + 10;
+    const task = new Task(taskFunc, expireAt, '$map');
+    ctrl.addTask(task);
     return;
   }
 
-  if (player.bs === States.Idle) {
-    try {
-      player.battleMsg.clickButton({ X: 0, Y: 0 })
-        .then(successCallback)
-        .catch(err => {
-          logFunc = () => {
-            console.log('click battle button fail');
-            console.log('Error message: ' + err.message);
-            console.log(err);
-          };
-          errorLogWrapper(logFunc);
-          console.log('Add battle counter');
-          player.bc += 1;
-        });
-    } catch (err) {
-      console.log(err);
-    }
+  if (ctrl.player['bs'] === States.Idle) {
+    const taskFunc = () => {
+      const modified = {};
+      try {
+        ctrl.player['battleMsg'].clickButton({ X: 0, Y: 0 })
+          .catch(err => {
+            logFunc = () => {
+              console.log('click battle button fail');
+              console.log('Error message: ' + err.message);
+              console.log(err);
+            };
+            errorLogWrapper(logFunc);
+            console.log('Add battle counter');
+            modified['bc'] = ctrl.player['bc'] + 1;
+          });
+      } catch (err) {
+        console.log(err);
+      }
+
+      return modified;
+    };
+    const expireAt = Date.now() + 10;
+    const task = new Task(taskFunc, expireAt, 'start new battle');
+    ctrl.addTask(task);
+
     return;
   }
 
-  if (player.bs === States.InBattle) {
-    player.bc += 1;
-    if (player.bc > retryCount) {
+  if (ctrl.player['bs'] === States.InBattle) {
+    ctrl.player['bc'] += 1;
+    if (ctrl.player['bc'] > retryCount) {
       console.log('Battle might stuck, force finish...');
-      player.bs = States.Idle;
+      ctrl.player['bs'] = States.Idle;
     }
     return;
   }

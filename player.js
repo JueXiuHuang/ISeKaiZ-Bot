@@ -4,7 +4,7 @@ const States = {
   Defeat: "defeat",
   Idle: "idle",
   NeedVerify_Image: "need_verify_image",  // Verify: enter the image code
-  Verifying_Image: "verifying_image",  
+  Verifying_Image: "verifying_image",
   // NeedVerify_Emoji: "need_verify_emoji"  // Verify: choose the correct emoji
 }
 
@@ -25,4 +25,18 @@ class Player {
   sell = 0;
 }
 
-module.exports = { Player, States };
+function newPlayer() {
+  return {
+    'bs': States.Idle,
+    'ps': States.Idle,
+    'bc': 0,
+    'pc': 0,
+    'channel': null,
+    'battleMsg': null,
+    'profMsg': null,
+    'verifyImg': null,
+    'sell': 0,
+  };
+}
+
+module.exports = { Player, States, newPlayer };

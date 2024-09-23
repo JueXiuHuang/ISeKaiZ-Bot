@@ -30,37 +30,10 @@ async function delayer(minDelayMs, maxDelayMs) {
   await waitMs(randomDelayMs);
 }
 
-async function emojiVerifier(message) {
-  await delayer(500, 1500);
-  const X_emoji_id = '1284730320133951592';
-  let answer = 0;
-
-  let buttons = message.components?.[0]?.components ?? [];
-  for (let i = 0; i < buttons.length; ++i) {
-    if (buttons[i]?.emoji?.id != X_emoji_id) {
-      answer = i;
-      break;
-    }
-  }
-
-  try {
-    message.clickButton({ X: answer, Y: 0 })
-      .catch((err) => {
-        logFunc = () => {
-          console.log('Verify emoji got error');
-          console.log(err);
-        };
-        errorLogWrapper(logFunc);
-      })
-  } catch (err) {
-    console.log(err);
-  }
-}
-
 function errorLogWrapper(logFunc) {
   console.log('WWWWWWWW Error Block WWWWWWWW');
   logFunc();
   console.log('MMMMMMMM Error Block MMMMMMMM');
 }
 
-module.exports = { isVerify, messageExtractor, delayer, emojiVerifier, errorLogWrapper };
+module.exports = { isVerify, messageExtractor, delayer, errorLogWrapper };
