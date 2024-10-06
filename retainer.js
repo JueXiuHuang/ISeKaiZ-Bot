@@ -9,7 +9,7 @@ function retainerRoutine(ctrl) {
     ctrl.player['channel']?.send('$hired');
     return {};
   };
-  const expireAt = Date.now() + 10;
+  const expireAt = Date.now() + 10000;
   const task = new Task(taskFunc, expireAt, '$hired');
   ctrl.addTask(task);
 }
@@ -42,7 +42,7 @@ async function retainerHandler(ctrl, message, desc, oldDesc) {
       }
       return {};
     };
-    const expireAt = Date.now() + 10;
+    const expireAt = Date.now() + 10000;
     const task = new Task(taskFunc, expireAt, 'retainer trun to next page');
     ctrl.addTask(task);
 
@@ -68,7 +68,7 @@ async function retainerHandler(ctrl, message, desc, oldDesc) {
     }
     return {};
   };
-  const expireAt = Date.now() + 10;
+  const expireAt = Date.now() + 10000;
   const task = new Task(taskFunc, expireAt, 'retainer harvest');
   ctrl.addTask(task);
 }

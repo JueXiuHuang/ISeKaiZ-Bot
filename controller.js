@@ -18,7 +18,7 @@ class Controller {
 
     this.queue = [];
     this.lastExecuteAt = 0;
-    this.gap = 0; // can change in future
+    this.gap = 2000; // can change in future, the unit is milliseconds
     this.player = player;
     this.lock = false;
     Controller.instance = this;
@@ -36,7 +36,7 @@ class Controller {
       const task = this.queue.shift();
       console.log('--------------------------------')
       console.log(`Checking task <${task.info}>`);
-      const timeNow = Math.floor(Date.now() / 1000);
+      const timeNow = Date.now();
       if (task.isExpire(timeNow)) {
         console.log('Task fail due to expired');
         console.log('--------------------------------')
@@ -50,8 +50,8 @@ class Controller {
       }
       if (timeNow - this.lastExecuteAt < this.gap) {
         const delta = this.lastExecuteAt + this.gap - timeNow;
-        console.log(`Task execute too fast, wait for at least ${delta} second`);
-        // await delayer(delta * 1000, delta * 1000 + 2000);
+        console.log(`Task execute too fast, wait for at least ${delta} ms`);
+        await delayer(delta, delta + 2000);
       }
       let modified;
       if (task.func.constructor.name === 'AsyncFunction') {

@@ -24,7 +24,7 @@ function checkTreasure(ctrl, message) {
       }
       return {};
     };
-    const expireAt = Date.now() + 10;
+    const expireAt = Date.now() + 10000;
     const task = new Task(taskFunc, expireAt, 'collect treasure');
     ctrl.addTask(task);
   }

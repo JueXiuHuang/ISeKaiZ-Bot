@@ -13,7 +13,7 @@ function professionRoutine(ctrl) {
       ctrl.player['channel']?.send('$' + profession);
       return {};
     };
-    const expireAt = Date.now() + 10;
+    const expireAt = Date.now() + 10000;
     const task = new Task(taskFunc, expireAt, '$profession');
     ctrl.addTask(task);
     return;
@@ -24,7 +24,7 @@ function professionRoutine(ctrl) {
       ctrl.player['channel'].send('$' + profession);
       return { 'profMsg': null };
     };
-    const expireAt = Date.now() + 10;
+    const expireAt = Date.now() + 10000;
     const task = new Task(taskFunc, expireAt, '$profession');
     ctrl.addTask(task);
     return;
@@ -47,10 +47,12 @@ function professionRoutine(ctrl) {
           });
       } catch (err) {
         console.log(err);
+        console.log('Add profession counter');
+        modified['pc'] = ctrl.player['pc'] + 1;
       }
       return modified;
     };
-    const expireAt = Date.now() + 10;
+    const expireAt = Date.now() + 10000;
     const task = new Task(taskFunc, expireAt, 'start profession');
     ctrl.addTask(task);
 

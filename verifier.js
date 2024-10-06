@@ -29,7 +29,7 @@ async function emojiVerifier(ctrl, message) {
     }
     return {};
   };
-  const expireAt = Date.now() + 5;
+  const expireAt = Date.now() + 5000;
   const task = new Task(taskFunc, expireAt, 'emoji verify');
   ctrl.addTask(task)
 }

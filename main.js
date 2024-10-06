@@ -39,7 +39,7 @@ async function ImmediatelyRoutineScript() {
       ctrl.player['channel']?.send('$verify');
       return {};
     };
-    const expireAt = Date.now() + 10;
+    const expireAt = Date.now() + 10000;
     const task = new Task(taskFunc, expireAt, 'type $verify');
     ctrl.addTask(task);
     return;
@@ -52,7 +52,7 @@ async function ImmediatelyRoutineScript() {
       ctrl.player['channel']?.send(result);
       return {};
     };
-    const expireAt = Date.now() + 10;
+    const expireAt = Date.now() + 10000;
     const task = new Task(taskFunc, expireAt, 'send verify result');
     ctrl.addTask(task);
     return;
@@ -268,7 +268,7 @@ function mapHandler(ctrl, message, title, content) {
         }
         return {};
       };
-      const expireAt = Date.now() + 10;
+      const expireAt = Date.now() + 10000;
       const task = new Task(taskFunc, expireAt, 'leave battle');
       ctrl.addTask(task);
     }
@@ -298,7 +298,7 @@ function mapHandler(ctrl, message, title, content) {
         }
         return {};
       };
-      const expireAt = Date.now() + 10;
+      const expireAt = Date.now() + 10000;
       const task = new Task(taskFunc, expireAt, 'leave profession');
       ctrl.addTask(task);
     }

@@ -12,7 +12,7 @@ function mappingRoutine(ctrl) {
       ctrl.player['channel']?.send('$map');
       return {};
     };
-    const expireAt = Date.now() + 10;
+    const expireAt = Date.now() + 10000;
     const task = new Task(taskFunc, expireAt, '$map');
     ctrl.addTask(task);
     return;
@@ -23,7 +23,7 @@ function mappingRoutine(ctrl) {
       ctrl.player['channel']?.send('$map');
       return { 'battleMsg': null };
     };
-    const expireAt = Date.now() + 10;
+    const expireAt = Date.now() + 10000;
     const task = new Task(taskFunc, expireAt, '$map');
     ctrl.addTask(task);
     return;
@@ -46,11 +46,13 @@ function mappingRoutine(ctrl) {
           });
       } catch (err) {
         console.log(err);
+        console.log('Add battle counter');
+        modified['bc'] = ctrl.player['bc'] + 1;
       }
 
       return modified;
     };
-    const expireAt = Date.now() + 10;
+    const expireAt = Date.now() + 10000;
     const task = new Task(taskFunc, expireAt, 'start new battle');
     ctrl.addTask(task);
 

@@ -11,7 +11,7 @@ async function inventoryRoutine(ctrl) {
     ctrl.player['channel']?.send(`$sell equipment all ${sellEquip[ctrl.player['sell']]}`);
     return {};
   };
-  const expireAt = Date.now() + 10;
+  const expireAt = Date.now() + 10000;
   const task = new Task(taskFunc, expireAt, 'Sell equipment');
   ctrl.addTask(task);
 }
@@ -33,7 +33,7 @@ function inventoryHandler(ctrl, title, desc) {
     ctrl.player['channel'].send(`$sell equipment all ${sellEquip[ctrl.player['sell']]}`);
     return {};
   };
-  const expireAt = Date.now() + 10;
+  const expireAt = Date.now() + 10000;
   const task = new Task(taskFunc, expireAt, 'Sell equipment');
   ctrl.addTask(task);
 }
