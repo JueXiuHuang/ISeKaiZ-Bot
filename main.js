@@ -60,7 +60,8 @@ async function ImmediatelyRoutineScript() {
 }
 
 async function shortRoutineScript() {
-  console.log(`B: ${ctrl.player['bs']} | P: ${ctrl.player['ps']}`);
+  console.log(`BS: ${ctrl.player['bs']} | PS: ${ctrl.player['ps']}`);
+  console.log(`BC: ${ctrl.player['bc']} | PC: ${ctrl.player['pc']}`);
 
   if ([States.NeedVerify_Image, States.Verifying_Image].includes(ctrl.player['bs'])) {
     console.log('[Battle] Encounter verify states');
@@ -220,6 +221,7 @@ function verifyHandler(message, description, mention, user) {
 function mapHandler(ctrl, message, title, content) {
   if (title.includes('Current Location:')) {
     console.log('Open new battle window');
+    console.log('Reset battle counter');
     ctrl.player['bs'] = States.Idle;
     ctrl.player['bc'] = 0;
     ctrl.player['battleMsg'] = message;
@@ -228,6 +230,7 @@ function mapHandler(ctrl, message, title, content) {
 
   if (title.includes('You Defeated A')) {
     console.log('Battle finish');
+    console.log('Reset battle counter');
     ctrl.player['bs'] = States.Idle;
     ctrl.player['bc'] = 0;
     return;
@@ -235,12 +238,14 @@ function mapHandler(ctrl, message, title, content) {
 
   if (title.includes('BATTLE STARTED')) {
     console.log('Battle start');
+    console.log('Reset battle counter');
     ctrl.player['bs'] = States.InBattle;
     ctrl.player['bc'] = 0;
     return;
   }
 
   if (title.includes('Better Luck Next Time!')) {
+    console.log('Reset battle counter');
     ctrl.player['bs'] = States.Defeat;
     ctrl.player['bc'] = 0;
     return;
@@ -310,6 +315,7 @@ function mapHandler(ctrl, message, title, content) {
 function professionHandler(ctrl, event, message, title, description, content) {
   if (['Mining', 'Fishing', 'Foraging'].includes(title) && event === 'create') {
     console.log('Open new profession window');
+    console.log('Reset profession counter');
     ctrl.player['ps'] = States.Idle;
     ctrl.player['pc'] = 0;
     ctrl.player['profMsg'] = message;
@@ -318,6 +324,7 @@ function professionHandler(ctrl, event, message, title, description, content) {
 
   if (title.includes('You caught a')) {
     console.log('Profession finish (Fish)');
+    console.log('Reset profession counter');
     // ctrl.player['ps'] = States.Idle;
     ctrl.player['pc'] = 0;
     return;
@@ -325,6 +332,7 @@ function professionHandler(ctrl, event, message, title, description, content) {
 
   if (title.includes('Mining Complete!')) {
     console.log('Profession finish (Mine)');
+    console.log('Reset profession counter');
     // ctrl.player['ps'] = States.Idle;
     ctrl.player['pc'] = 0;
     return;
@@ -332,6 +340,7 @@ function professionHandler(ctrl, event, message, title, description, content) {
 
   if (title.includes('You found a')) {
     console.log('Profession finish (Forage)');
+    console.log('Reset profession counter');
     // ctrl.player['ps'] = States.Idle;
     ctrl.player['pc'] = 0;
     return;
@@ -339,18 +348,21 @@ function professionHandler(ctrl, event, message, title, description, content) {
 
   if (title === 'You started mining!') {
     console.log('Profession start (Mine)');
+    console.log('Reset profession counter');
     ctrl.player['ps'] = States.Doing;
     ctrl.player['pc'] = 0;
     return;
   }
   if (title === 'You cast your rod!') {
     console.log('Profession start (Fish)');
+    console.log('Reset profession counter');
     ctrl.player['ps'] = States.Doing;
     ctrl.player['pc'] = 0;
     return;
   }
   if (title === 'You start foraging!') {
     console.log('Profession start (Forage)');
+    console.log('Reset profession counter');
     ctrl.player['ps'] = States.Doing;
     ctrl.player['pc'] = 0;
     return;
