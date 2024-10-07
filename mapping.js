@@ -41,12 +41,12 @@ function mappingRoutine(ctrl) {
               console.log(err);
             };
             errorLogWrapper(logFunc);
-            console.log(`Add battle counter, expected value: ${ctrl.palyer['bc']}`);
+            console.log(`Add battle counter, expected value: ${ctrl.palyer['bc'] + 1}`);
             modified['bc'] = ctrl.player['bc'] + 1;
           });
       } catch (err) {
         console.log(err);
-        console.log(`Add battle counter, expected value: ${ctrl.palyer['bc']}`);
+        console.log(`Add battle counter, expected value: ${ctrl.palyer['bc'] + 1}`);
         modified['bc'] = ctrl.player['bc'] + 1;
       }
 
