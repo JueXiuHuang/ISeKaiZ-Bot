@@ -281,7 +281,8 @@ function mapHandler(ctrl, message, title, content) {
     return;
   }
 
-  if (content.includes('You are already')) {
+  let regex = /You are already mining|foraging|fishing/
+  if (regex.test(content)) {
     console.log('------------IN PROFESSION------------');
     console.log('Profession Counter: ' + ctrl.player['pc']);
     console.log('Profession State: ' + ctrl.player['ps']);

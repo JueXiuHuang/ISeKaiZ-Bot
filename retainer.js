@@ -21,8 +21,8 @@ async function retainerHandler(ctrl, message, desc, oldDesc) {
 
   // retainer should stop at last page automatically
   // this is just prevent infinite loop
-  await delayer(10000, 10000);
-  const elapsed = desc.match(regex)[1];
+  await delayer(5000, 10000, '(collect retainer)');
+  const elapsed = desc.match(regex)?.[1] ?? '0';
   if (elapsed === '0') {
     const taskFunc = () => {
       try {

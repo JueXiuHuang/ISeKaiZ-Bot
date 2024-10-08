@@ -22,11 +22,12 @@ function messageExtractor(message) {
   return [embedTitle, embedDesc, mention, content]
 }
 
-async function delayer(minDelayMs, maxDelayMs) {
+async function delayer(minDelayMs, maxDelayMs, detail) {
   const waitMs = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+  detail = detail ?? ''
   const randomDelayMs = Math.floor(Math.random() * (maxDelayMs - minDelayMs)) + minDelayMs;
-  console.log(`Delay: ${randomDelayMs} ms`);
+  console.log(`Delay: ${randomDelayMs} ms ${detail}`);
   await waitMs(randomDelayMs);
 }
 
