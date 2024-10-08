@@ -1,18 +1,22 @@
 const { sellEquip = ['F', 'E', 'D'] } = require('./config.json');
-const { isVerify, delayer } = require('./helper');
+const { Task } = require('./controller');
+const { isVerify } = require('./helper');
 
-async function inventoryRoutine(player) {
-  if (player.channel === null) return;
-  if (isVerify(player.bs) || isVerify(player.ps)) return;
-  
-  player.sell = player.sell % sellEquip.length;
-  while (player.sell < sellEquip.length) {
-    player.channel.send(`$sell equipment all ${sellEquip[player.sell]}`);
-    await delayer(10000, 10000, '(sell equipment)');
-  }
+async function inventoryRoutine(ctrl) {
+  if (ctrl.player['channel'] === null) return;
+  if (isVerify(ctrl.player['bs'], ctrl.player['ps'])) return;
+
+  ctrl.player['sell'] = 0;
+  const taskFunc = () => {
+    ctrl.player['channel']?.send(`$sell equipment all ${sellEquip[ctrl.player['sell']]}`);
+    return {};
+  };
+  const expireAt = Date.now() + 10000;
+  const task = new Task(taskFunc, expireAt, 'Sell equipment');
+  ctrl.addTask(task);
 }
 
-function inventoryHandler(player, title, desc) {
+function inventoryHandler(ctrl, title, desc) {
   if (!title.includes('Equipment Sold')) {
     return;
   }
@@ -21,8 +25,17 @@ function inventoryHandler(player, title, desc) {
   desc = desc.replace(',', '');
   const gold = desc.match(re)[1];
   if (gold.length < 5) {
-    player.sell += 1;
+    ctrl.player['sell'] += 1;
   }
+
+  if (ctrl.player['sell'] >= sellEquip.length) return;
+  const taskFunc = () => {
+    ctrl.player['channel'].send(`$sell equipment all ${sellEquip[ctrl.player['sell']]}`);
+    return {};
+  };
+  const expireAt = Date.now() + 10000;
+  const task = new Task(taskFunc, expireAt, 'Sell equipment');
+  ctrl.addTask(task);
 }
 
 module.exports = { inventoryRoutine, inventoryHandler };

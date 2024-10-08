@@ -1,50 +1,69 @@
 const { profession, retryCount } = require('./config.json');
 const { errorLogWrapper } = require('./helper');
+const { Task } = require('./controller');
 const { States } = require('./player')
 
-function successCallback() { }
-
 // @param {Player} player
-function professionRoutine(player) {
-  if (player.channel === null) return;
+function professionRoutine(ctrl) {
+  if (ctrl.player['channel'] === null) return;
   if (profession === 'none') return;
 
-  if (player.profMsg === null) {
-    player.channel.send('$' + profession);
+  if (ctrl.player['profMsg'] === null) {
+    const taskFunc = () => {
+      ctrl.player['channel']?.send('$' + profession);
+      return {};
+    };
+    const expireAt = Date.now() + 10000;
+    const task = new Task(taskFunc, expireAt, '$profession');
+    ctrl.addTask(task);
     return;
   }
 
-  if (player.ps === States.Idle && player.pc > retryCount) {
-    player.profMsg = null;
-    player.channel.send('$' + profession);
+  if (ctrl.player['ps'] === States.Idle && ctrl.player['pc'] > retryCount) {
+    const taskFunc = () => {
+      ctrl.player['channel'].send('$' + profession);
+      return { 'profMsg': null };
+    };
+    const expireAt = Date.now() + 10000;
+    const task = new Task(taskFunc, expireAt, '$profession');
+    ctrl.addTask(task);
     return;
   }
 
-  if (player.ps === States.Idle) {
-    try {
-      player.profMsg.clickButton({ X: 0, Y: 0 })
-        .then(successCallback)
-        .catch(err => {
-          logFunc = () => {
-            console.log('click profession button fail');
-            console.log('Error message: ' + err.message);
-            console.log(err);
-          };
-          errorLogWrapper(logFunc);
-          console.log('Add profession counter');
-          player.pc += 1;
-        });
-    } catch (err) {
-      console.log(err);
-    }
+  if (ctrl.player['ps'] === States.Idle) {
+    const taskFunc = () => {
+      const modified = {};
+      try {
+        ctrl.player['profMsg'].clickButton({ X: 0, Y: 0 })
+          .catch(err => {
+            logFunc = () => {
+              console.log('click profession button fail');
+              console.log('Error message: ' + err.message);
+              console.log(err);
+            };
+            errorLogWrapper(logFunc);
+            console.log(`Add profession counter, expected value: ${ctrl.player['pc'] + 1}`);
+            modified['pc'] = ctrl.player['pc'] + 1;
+          });
+      } catch (err) {
+        console.log(err);
+        console.log(`Add profession counter, expected value: ${ctrl.player['pc'] + 1}`);
+        modified['pc'] = ctrl.player['pc'] + 1;
+      }
+      return modified;
+    };
+    const expireAt = Date.now() + 10000;
+    const task = new Task(taskFunc, expireAt, 'start profession');
+    ctrl.addTask(task);
+
     return;
   }
 
-  if (player.ps === States.Doing) {
-    player.pc += 1;
-    if (player.pc > retryCount) {
+  if (ctrl.player['ps'] === States.Doing) {
+    ctrl.player['pc'] += 1;
+    if (ctrl.player['pc'] > retryCount) {
       console.log('Profession might stuck, force finish...');
-      player.ps = States.Idle;
+      ctrl.player['ps'] = States.Idle;
     }
     return;
   }
