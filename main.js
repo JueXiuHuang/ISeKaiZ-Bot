@@ -231,7 +231,7 @@ function mapHandler(ctrl, message, title, content) {
   if (title.includes('You Defeated A')) {
     console.log('Battle finish');
     console.log('Reset battle counter');
-    ctrl.player['bs'] = States.Idle;
+    // ctrl.player['bs'] = States.Idle;
     ctrl.player['bc'] = 0;
     return;
   }
