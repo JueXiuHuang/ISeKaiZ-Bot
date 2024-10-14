@@ -8,14 +8,15 @@ function foodRoutine(ctrl) {
   const lastEatAt = ctrl.player['userData']['last_eat_at'] ?? 0;
   dateString = formatTimeString(lastEatAt);
   const now = new Date();
-  logger(`Last eat at ${dateString}`);
   if (now.getTime() - lastEatAt < 1000 * 60 * 60 * 3) {
     logger(`Last eat at ${dateString}, skip...`);
     return;
   }
   const taskFunc = () => {
     ctrl.player['channel']?.send('$eat ' + expFood);
-    ctrl.player['userData']['last_eat_at'] = now;
+    ctrl.player['userData']['last_eat_at'] = now.getTime();
+    nowDateString = formatTimeString(now.getTime());
+    logger(`Eat at ${nowDateString}`);
     saveUserData(ctrl.player['userData']);
     return {'userData': ctrl.player['userData']};
   };
