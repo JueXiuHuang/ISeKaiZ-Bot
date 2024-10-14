@@ -41,11 +41,13 @@ function mappingRoutine(ctrl) {
               console.log(err);
             };
             errorLogWrapper(logFunc);
+            logger('Inner Error');
             logger(`Add battle counter, expected value: ${ctrl.player['bc'] + 1}`)
             modified['bc'] = ctrl.player['bc'] + 1;
           });
       } catch (err) {
         console.log(err);
+        logger('Outer error');
         logger(`Add battle counter, expected value: ${ctrl.player['bc'] + 1}`)
         modified['bc'] = ctrl.player['bc'] + 1;
       }

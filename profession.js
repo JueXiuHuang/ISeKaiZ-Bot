@@ -42,11 +42,13 @@ function professionRoutine(ctrl) {
               console.log(err);
             };
             errorLogWrapper(logFunc);
+            logger('Inner error');
             logger(`Add profession counter, expected value: ${ctrl.player['pc'] + 1}`);
             modified['pc'] = ctrl.player['pc'] + 1;
           });
       } catch (err) {
         console.log(err);
+        logger('Outer error');
         logger(`Add profession counter, expected value: ${ctrl.player['pc'] + 1}`);
         modified['pc'] = ctrl.player['pc'] + 1;
       }
