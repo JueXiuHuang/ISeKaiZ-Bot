@@ -5,6 +5,7 @@ const States = {
   Idle: "idle",
   NeedVerify_Image: "need_verify_image",  // Verify: enter the image code
   Verifying_Image: "verifying_image",
+  Ban: "banned"
   // NeedVerify_Emoji: "need_verify_emoji"  // Verify: choose the correct emoji
 }
 

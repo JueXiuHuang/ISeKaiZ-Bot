@@ -1,4 +1,4 @@
-const { isVerify, delayer, errorLogWrapper } = require('./helper');
+const { isVerify, delayer, errorLogWrapper, logger } = require('./helper');
 const { Task } = require('./controller');
 
 function retainerRoutine(ctrl) {
@@ -49,7 +49,7 @@ async function retainerHandler(ctrl, message, desc, oldDesc) {
     return;
   }
 
-  console.log('Try to collect material')
+  logger('Try to collect material');
   const taskFunc = () => {
     try {
       message.clickButton({ X: 2, Y: 0 })

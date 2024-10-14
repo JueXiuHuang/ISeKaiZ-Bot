@@ -1,4 +1,4 @@
-const { delayer } = require('./helper');
+const { delayer, getTimeString, logger } = require('./helper');
 
 class Task {
   constructor(func, expireAt, info) {
@@ -25,7 +25,7 @@ class Controller {
   }
 
   addTask(task) {
-    console.log('Add Task');
+    logger('Add Task');
     this.queue.push(task);
   }
 
@@ -34,23 +34,21 @@ class Controller {
     this.lock = true;
     while (this.queue.length > 0) {
       const task = this.queue.shift();
-      console.log('--------------------------------')
-      console.log(`Checking task <${task.info}>`);
+      const time = getTimeString();
+      logger(`Checking task <${task.info}>`);
       const timeNow = Date.now();
       if (task.isExpire(timeNow)) {
-        console.log('Task fail due to expired');
-        console.log('--------------------------------')
+        logger('Task fail due to expired');
         continue;
       }
       const expectExecuteTime = this.lastExecuteAt + this.gap
       if (task.isExpire(expectExecuteTime)) {
-        console.log('Task fail due to expect execute time expire');
-        console.log('--------------------------------')
+        logger('Task fail due to expect execute time expire');
         continue;
       }
       if (timeNow - this.lastExecuteAt < this.gap) {
         const delta = this.lastExecuteAt + this.gap - timeNow;
-        console.log(`Task execute too fast, wait for at least ${delta} ms`);
+        logger(`Task execute too fast, wait for at least ${delta} ms`);
         await delayer(delta, delta + 2000);
       }
       let modified;
@@ -63,8 +61,7 @@ class Controller {
         this.player[key] = value;
       }
       this.lastExecuteAt = Math.floor(Date.now() / 1000);
-      console.log('Task finish, unlock');
-      console.log('--------------------------------')
+      logger('Task finish, unlock');
       break;
     }
     this.lock = false;

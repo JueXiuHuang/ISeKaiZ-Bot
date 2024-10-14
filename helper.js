@@ -1,4 +1,6 @@
 const { States } = require('./player');
+const { format } = require('date-fns');
+const { zhTW } = require('date-fns/locale/zh-TW');
 
 function isVerify(...args) {
   for (var i = 0; i < args.length; i++) {
@@ -33,8 +35,40 @@ async function delayer(minDelayMs, maxDelayMs, detail) {
 
 function errorLogWrapper(logFunc) {
   console.log('WWWWWWWW Error Block WWWWWWWW');
+  const formattedDate = format(new Date(), 'yyyy/dd/MM HH:mm:ss', { locale: zhTW });
+  console.log(formattedDate)
   logFunc();
   console.log('MMMMMMMM Error Block MMMMMMMM');
 }
 
-module.exports = { isVerify, messageExtractor, delayer, errorLogWrapper };
+function logger(log, seperator=false, customSepStart=null, customSepEnd=null) {
+  const sepStart = customSepStart ?? '---------------'
+  const sepEdn = customSepEnd ?? '---------------'
+  const formattedDate = format(new Date(), 'yyyy/dd/MM HH:mm:ss', { locale: zhTW });
+  
+  if (seperator) { console.log(sepStart) }
+  
+  if (typeof log === 'string') {
+    console.log(`[${formattedDate}] ${log}`);
+  } else if (typeof log === 'function') {
+    console.log(`[${formattedDate}]`)
+    log()
+  }
+
+  if (seperator) { console.log(sepEdn) }
+}
+
+function logWithTime(logFunc) {
+  console.log('---------------')
+  const formattedDate = format(new Date(), 'yyyy/dd/MM HH:mm:ss', { locale: zhTW });
+  console.log(formattedDate)
+  logFunc();
+  console.log('---------------')
+}
+
+function getTimeString() {
+  const formattedTime = format(new Date(), 'yyyy/dd/MM HH:mm:ss', { locale: zhTW });
+  return formattedTime
+}
+
+module.exports = { isVerify, messageExtractor, delayer, errorLogWrapper, getTimeString, logger};

@@ -9,18 +9,9 @@ const { retainerRoutine, retainerHandler } = require('./retainer');
 const { foodRoutine } = require('./food');
 const { inventoryRoutine, inventoryHandler } = require('./inventory')
 const { Task, Controller } = require('./controller')
-const { messageExtractor, errorLogWrapper } = require('./helper');
+const { messageExtractor, errorLogWrapper, logger } = require('./helper');
 const { emojiVerifier } = require('./verifier');
 const args = process.argv.slice(2);
-
-function msgLogger(msg) {
-  let date = new Date();
-  console.log('--------------------------')
-  console.log(date.toLocaleString('en-US', { timeZone: 'Asia/Taipei' }))
-  console.log('Context: ' + msg.content)
-  console.log('Embeds: ' + JSON.stringify(msg.embeds))
-  console.log('--------------------------')
-}
 
 const client = new Client();
 
@@ -34,7 +25,7 @@ const ctrl = new Controller(player)
 
 async function ImmediatelyRoutineScript() {
   if (ctrl.player['bs'] === States.NeedVerify_Image || ctrl.player['ps'] === States.NeedVerify_Image) {
-    console.log('Try to solve verify image');
+    logger('Try to solve verify image');
     const taskFunc = () => {
       ctrl.player['channel']?.send('$verify');
       return {};
@@ -48,7 +39,7 @@ async function ImmediatelyRoutineScript() {
   if (ctrl.player['bs'] === States.Verifying_Image || ctrl.player['ps'] === States.Verifying_Image) {
     const taskFunc = async () => {
       const result = await captchaAI.predict(ctrl.player['verifyImg'].url);
-      console.log('Verify Image Result: ' + result);
+      logger(`Verify Image Result: ${result}`)
       ctrl.player['channel']?.send(result);
       return {};
     };
@@ -60,30 +51,30 @@ async function ImmediatelyRoutineScript() {
 }
 
 async function shortRoutineScript() {
-  console.log(`BS: ${ctrl.player['bs']} | PS: ${ctrl.player['ps']}`);
-  console.log(`BC: ${ctrl.player['bc']} | PC: ${ctrl.player['pc']}`);
+  logger(`BS: ${ctrl.player['bs']} | PS: ${ctrl.player['ps']}`);
+  logger(`BC: ${ctrl.player['bc']} | PC: ${ctrl.player['pc']}`);
 
   if ([States.NeedVerify_Image, States.Verifying_Image].includes(ctrl.player['bs'])) {
-    console.log('[Battle] Encounter verify states');
+    logger('[Battle] Encounter verify states')
   } else {
     mappingRoutine(ctrl);
   }
 
   if ([States.NeedVerify_Image, States.Verifying_Image].includes(ctrl.player['ps'])) {
-    console.log('[Profession] Encounter verify states or already auto started');
+    logger('[Profession] Encounter verify states or already auto started');
   } else {
     professionRoutine(ctrl);
   }
 }
 
 async function oneHrRoutineScript() {
-  console.log('Do scheduling task');
+  logger('Do scheduling task');
   retainerRoutine(ctrl);
   inventoryRoutine(ctrl);
 }
 
 async function threeHrFoodScript() {
-  console.log('Try to eat exp food');
+  logger('Try to eat exp food');
   foodRoutine(ctrl);
 }
 
@@ -103,9 +94,9 @@ client.on('ready', async () => {
 
  `
   console.log(welcomeMsg);
-  console.log(`Login as ${client.user.username}`);
+  logger(`Login as ${client.user.username}`);
   if (args.includes('--auto-start')) {
-    console.log('bot auto-start activate')
+    logger('bot auto-start activate');
     let cacheChannel = client.channels.cache.get(channelId);
     cacheChannel.send('!!BOT auto-start activate!!');
     cacheChannel.send('!start');
@@ -126,7 +117,7 @@ client.on('messageCreate', async (message) => {
     ctrl.player['channel'] = message.channel;
     ctrl.player['bs'] = States.Idle;
     ctrl.player['ps'] = States.Idle;
-    console.log('>>>BOT start<<<')
+    logger('>>>BOT start<<<');
     return;
   }
 
@@ -136,12 +127,12 @@ client.on('messageCreate', async (message) => {
     ctrl.player['profMsg'] = null;
     ctrl.player['bs'] = States.Idle;
     ctrl.player['ps'] = States.Idle;
-    console.log('>>>BOT stop<<<');
+    logger('>>>BOT stop<<<');
     return;
   }
 
   if (desc === 'You don\'t have enough energy to battle!') {
-    console.log('>>>BOT stop due to no energy<<<');
+    logger('>>>BOT stop due to no energy<<<');
     ctrl.player['channel'] = null;
     ctrl.player['battleMsg'] = null;
     ctrl.player['profMsg'] = null;
@@ -151,12 +142,12 @@ client.on('messageCreate', async (message) => {
   }
 
   if (title === 'Suspended') {
-    console.log('>>>YOU GOT BANNED<<<')
+    logger('>>>YOU GOT BANNED<<<');
     ctrl.player['channel'] = null;
     ctrl.player['battleMsg'] = null;
     ctrl.player['profMsg'] = null;
-    ctrl.player['bs'] = States.Idle;
-    ctrl.player['ps'] = States.Idle;
+    ctrl.player['bs'] = States.Ban;
+    ctrl.player['ps'] = States.Ban;
     return;
   }
 
@@ -184,7 +175,7 @@ client.on('messageCreate', async (message) => {
 function verifyHandler(message, description, mention, user) {
   if (description.includes('Please complete the captcha')) {
     if (mention != user) return;
-    console.log('>>>BOT stop due to verify<<<');
+    logger('>>>BOT stop due to verify<<<');
     ctrl.player['bs'] = States.NeedVerify_Image;
     ctrl.player['ps'] = States.NeedVerify_Image;
     ctrl.player['battleMsg'] = null;
@@ -193,7 +184,7 @@ function verifyHandler(message, description, mention, user) {
   }
 
   if (description.includes('Please Try doing $verify again.')) {
-    console.log('You need to solve captcha again...');
+    logger('You need to solve captcha again...');
     ctrl.player['bs'] = States.NeedVerify_Image;
     ctrl.player['ps'] = States.NeedVerify_Image;
     ctrl.player['battleMsg'] = null;
@@ -202,7 +193,7 @@ function verifyHandler(message, description, mention, user) {
   }
 
   if (description.includes('Please enter the captcha code from the image to verify.')) {
-    console.log('>>>BOT stop due to verify image code<<<');
+    logger('>>>BOT stop due to verify image code<<<');
     ctrl.player['bs'] = States.Verifying_Image;
     ctrl.player['ps'] = States.Verifying_Image;
     ctrl.player['verifyImg'] = message.embeds[0].image;
@@ -210,7 +201,7 @@ function verifyHandler(message, description, mention, user) {
   }
 
   if (description.includes('Successfully Verified.')) {
-    console.log('>>>BOT start due to verify finished<<<');
+    logger('>>>BOT start due to verify finished<<<');
     ctrl.player['bs'] = States.Idle;
     ctrl.player['ps'] = States.Idle;
     ctrl.player['channel'] = message.channel;
@@ -220,8 +211,11 @@ function verifyHandler(message, description, mention, user) {
 
 function mapHandler(ctrl, message, title, content) {
   if (title.includes('Current Location:')) {
-    console.log('Open new battle window');
-    console.log('Reset battle counter');
+    logFn = () => {
+      console.log('Open new battle window');
+      console.log('Reset battle counter');
+    }
+    logger(logFn, seperator=true);
     ctrl.player['bs'] = States.Idle;
     ctrl.player['bc'] = 0;
     ctrl.player['battleMsg'] = message;
@@ -229,35 +223,43 @@ function mapHandler(ctrl, message, title, content) {
   }
 
   if (title.includes('You Defeated A')) {
-    console.log('Battle finish');
-    console.log('Reset battle counter');
+    logFn = () => {
+      console.log('Battle finish');
+      console.log('Reset battle counter');
+    }
+    logger(logFn, seperator=true);
     // ctrl.player['bs'] = States.Idle;
     ctrl.player['bc'] = 0;
     return;
   }
 
   if (title.includes('BATTLE STARTED')) {
-    console.log('Battle start');
-    console.log('Reset battle counter');
+    logFn = () => {
+      console.log('Battle start');
+      console.log('Reset battle counter');
+    }
+    logger(logFn, seperator=true);
     ctrl.player['bs'] = States.InBattle;
     ctrl.player['bc'] = 0;
     return;
   }
 
   if (title.includes('Better Luck Next Time!')) {
-    console.log('Reset battle counter');
+    logger('Reset battle counter');
     ctrl.player['bs'] = States.Defeat;
     ctrl.player['bc'] = 0;
     return;
   }
 
   if (content.includes('You are already in a battle')) {
-    console.log('------------IN BATTLE------------');
-    console.log('Battle Counter: ' + ctrl.player['bc']);
-    console.log('Battle State: ' + ctrl.player['bs']);
-    console.log('------------IN BATTLE------------');
+    const customSep = '------------IN BATTLE------------'
+    logFn = () => {
+      console.log('Battle Counter: ' + ctrl.player['bc']);
+      console.log('Battle State: ' + ctrl.player['bs']);
+    }
+    logger(logFn, seperator=true, customSepStart=customSep, customSepEnd=customSep);
     if (ctrl.player['bc'] > retryCount || ctrl.player['bs'] == States.Idle) {
-      console.log('try to leave battle...');
+      logger('try to leave battle...');
       const taskFunc = async () => {
         try {
           message.clickButton({ X: 0, Y: 0 })
@@ -283,12 +285,14 @@ function mapHandler(ctrl, message, title, content) {
 
   let regex = /You are already mining|foraging|fishing/
   if (regex.test(content)) {
-    console.log('------------IN PROFESSION------------');
-    console.log('Profession Counter: ' + ctrl.player['pc']);
-    console.log('Profession State: ' + ctrl.player['ps']);
-    console.log('------------IN PROFESSION------------');
+    const customSep = '------------IN PROFESSION------------';
+    logFn = () => {
+      console.log('Profession Counter: ' + ctrl.player['pc']);
+      console.log('Profession State: ' + ctrl.player['ps']);
+    }
+    logger(logFn, seperator=true, customSepStart=customSep, customSepEnd=customSep);
     if (ctrl.player['pc'] > retryCount || ctrl.player['ps'] == States.Idle) {
-      console.log('try to leave profession...');
+      logger('try to leave profession...');
       const taskFunc = async () => {
         try {
           message.clickButton({ X: 0, Y: 0 })
@@ -315,8 +319,8 @@ function mapHandler(ctrl, message, title, content) {
 
 function professionHandler(ctrl, event, message, title, description, content) {
   if (['Mining', 'Fishing', 'Foraging'].includes(title) && event === 'create') {
-    console.log('Open new profession window');
-    console.log('Reset profession counter');
+    logger('Open new profession window');
+    logger('Reset profession counter')
     ctrl.player['ps'] = States.Idle;
     ctrl.player['pc'] = 0;
     ctrl.player['profMsg'] = message;
@@ -324,46 +328,46 @@ function professionHandler(ctrl, event, message, title, description, content) {
   }
 
   if (title.includes('You caught a')) {
-    console.log('Profession finish (Fish)');
-    console.log('Reset profession counter');
+    logger('Profession finish (Fish)');
+    logger('Reset profession counter');
     // ctrl.player['ps'] = States.Idle;
     ctrl.player['pc'] = 0;
     return;
   }
 
   if (title.includes('Mining Complete!')) {
-    console.log('Profession finish (Mine)');
-    console.log('Reset profession counter');
+    logger('Profession finish (Mine)');
+    logger('Reset profession counter');
     // ctrl.player['ps'] = States.Idle;
     ctrl.player['pc'] = 0;
     return;
   }
 
   if (title.includes('You found a')) {
-    console.log('Profession finish (Forage)');
-    console.log('Reset profession counter');
+    logger('Profession finish (Forage)');
+    logger('Reset profession counter');
     // ctrl.player['ps'] = States.Idle;
     ctrl.player['pc'] = 0;
     return;
   }
 
   if (title === 'You started mining!') {
-    console.log('Profession start (Mine)');
-    console.log('Reset profession counter');
+    logger('Profession start (Mine)');
+    logger('Reset profession counter');
     ctrl.player['ps'] = States.Doing;
     ctrl.player['pc'] = 0;
     return;
   }
   if (title === 'You cast your rod!') {
-    console.log('Profession start (Fish)');
-    console.log('Reset profession counter');
+    logger('Profession start (Fish)');
+    logger('Reset profession counter');
     ctrl.player['ps'] = States.Doing;
     ctrl.player['pc'] = 0;
     return;
   }
   if (title === 'You start foraging!') {
-    console.log('Profession start (Forage)');
-    console.log('Reset profession counter');
+    logger('Profession start (Forage)');
+    logger('Reset profession counter');
     ctrl.player['ps'] = States.Doing;
     ctrl.player['pc'] = 0;
     return;

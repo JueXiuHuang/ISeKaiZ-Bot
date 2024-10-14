@@ -1,5 +1,5 @@
 const { profession, retryCount } = require('./config.json');
-const { errorLogWrapper } = require('./helper');
+const { errorLogWrapper, logger } = require('./helper');
 const { Task } = require('./controller');
 const { States } = require('./player')
 
@@ -22,7 +22,7 @@ function professionRoutine(ctrl) {
   if (ctrl.player['ps'] === States.Idle && ctrl.player['pc'] > retryCount) {
     const taskFunc = () => {
       ctrl.player['channel'].send('$' + profession);
-      return { 'profMsg': null };
+      return { 'profMsg': null , 'pc': 0};
     };
     const expireAt = Date.now() + 10000;
     const task = new Task(taskFunc, expireAt, '$profession');
@@ -42,12 +42,12 @@ function professionRoutine(ctrl) {
               console.log(err);
             };
             errorLogWrapper(logFunc);
-            console.log(`Add profession counter, expected value: ${ctrl.player['pc'] + 1}`);
+            logger(`Add profession counter, expected value: ${ctrl.player['pc'] + 1}`);
             modified['pc'] = ctrl.player['pc'] + 1;
           });
       } catch (err) {
         console.log(err);
-        console.log(`Add profession counter, expected value: ${ctrl.player['pc'] + 1}`);
+        logger(`Add profession counter, expected value: ${ctrl.player['pc'] + 1}`);
         modified['pc'] = ctrl.player['pc'] + 1;
       }
       return modified;
@@ -62,7 +62,7 @@ function professionRoutine(ctrl) {
   if (ctrl.player['ps'] === States.Doing) {
     ctrl.player['pc'] += 1;
     if (ctrl.player['pc'] > retryCount) {
-      console.log('Profession might stuck, force finish...');
+      logger('Profession might stuck, force finish...');
       ctrl.player['ps'] = States.Idle;
     }
     return;
