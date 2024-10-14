@@ -58,14 +58,6 @@ function logger(log, seperator=false, customSepStart=null, customSepEnd=null) {
   if (seperator) { console.log(sepEdn) }
 }
 
-function logWithTime(logFunc) {
-  console.log('---------------')
-  const formattedDate = format(new Date(), 'yyyy/dd/MM HH:mm:ss', { locale: zhTW });
-  console.log(formattedDate)
-  logFunc();
-  console.log('---------------')
-}
-
 function getTimeString() {
   const formattedTime = format(new Date(), 'yyyy/dd/MM HH:mm:ss', { locale: zhTW });
   return formattedTime
