@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 const States = {
   InBattle: "in_battle",
   Doing: "doing",
@@ -27,6 +29,7 @@ class Player {
 }
 
 function newPlayer() {
+  userData = loadUserData();
   return {
     'bs': States.Idle,
     'ps': States.Idle,
@@ -37,7 +40,23 @@ function newPlayer() {
     'profMsg': null,
     'verifyImg': null,
     'sell': 0,
+    'userData': userData,
   };
 }
 
-module.exports = { Player, States, newPlayer };
+function saveUserData(data) {
+  fs.writeFileSync('./user_data.json', JSON.stringify(data, null, 2));
+}
+
+function loadUserData() {
+  try {
+    return JSON.parse(fs.readFileSync('./user_data.json', 'utf8'));
+  } catch (err) {
+    console.error('Error reading user_data.json:', err);
+    return {
+      'last_eat_at': 0,
+    };
+  }
+}
+
+module.exports = { Player, States, newPlayer, loadUserData, saveUserData };
