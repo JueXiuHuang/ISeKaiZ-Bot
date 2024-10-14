@@ -59,6 +59,7 @@ class Controller {
         modified = task.func();
       }
       for (const [key, value] of Object.entries(modified)) {
+        logger(`${key} change to ${value}`);
         this.player[key] = value;
       }
       this.lastExecuteAt = Math.floor(Date.now() / 1000);
