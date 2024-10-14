@@ -1,6 +1,7 @@
 const { treasureHunter = false, treasureGuild = '' } = require('./config.json');
 const { Task } = require('./controller');
-const { messageExtractor, errorLogWrapper } = require('./helper');
+const { messageExtractor } = require('./helper');
+const { errorLogWrapper } = require('./log');
 
 function checkTreasure(ctrl, message) {
   if (treasureGuild === '' || !treasureHunter) return;

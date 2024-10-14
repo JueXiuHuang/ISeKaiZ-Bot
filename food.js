@@ -1,11 +1,15 @@
 const { expFood = 'sushi-roll' } = require('./config.json');
-const { Task } = require('./controller')
+const { Task } = require('./controller');
 const { saveUserData } = require('./player');
+const { logger, formatTimeString } = require('./log');
+
 
 function foodRoutine(ctrl) {
   const lastEatAt = ctrl.player['userData']['last_eat_at'] ?? 0;
-  const now = Date.now()
-  if (now - lastEatAt < 1000 * 60 * 60 * 3) {
+  const now = new Date()
+  if (now.getTime() - lastEatAt < 1000 * 60 * 60 * 3) {
+    dateString = formatTimeString(now);
+    logger(`Last eat at ${dateString}, skip...`);
     return;
   }
   const taskFunc = () => {

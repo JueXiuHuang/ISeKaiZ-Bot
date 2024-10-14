@@ -1,4 +1,4 @@
-const { errorLogWrapper } = require('./helper');
+const { errorLogWrapper } = require('./log');
 const { Task } = require('./controller');
 
 

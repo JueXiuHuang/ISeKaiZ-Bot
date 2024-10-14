@@ -1,4 +1,5 @@
 const fs = require('fs');
+const logger = require('./log');
 
 const States = {
   InBattle: "in_battle",
@@ -52,7 +53,7 @@ function loadUserData() {
   try {
     return JSON.parse(fs.readFileSync('./user_data.json', 'utf8'));
   } catch (err) {
-    console.error('Error reading user_data.json:', err);
+    logger('User data not found, use default data');
     return {
       'last_eat_at': 0,
     };

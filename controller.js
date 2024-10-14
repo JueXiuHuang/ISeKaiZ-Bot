@@ -1,4 +1,5 @@
-const { delayer, getTimeString, logger } = require('./helper');
+const { delayer } = require('./helper');
+const { getTimeString, logger } = require('./log');
 
 class Task {
   constructor(func, expireAt, info) {

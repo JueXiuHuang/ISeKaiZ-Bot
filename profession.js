@@ -1,5 +1,5 @@
 const { profession, retryCount } = require('./config.json');
-const { errorLogWrapper, logger } = require('./helper');
+const { errorLogWrapper, logger } = require('./log');
 const { Task } = require('./controller');
 const { States } = require('./player')
 

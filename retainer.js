@@ -1,4 +1,5 @@
-const { isVerify, delayer, errorLogWrapper, logger } = require('./helper');
+const { isVerify, delayer } = require('./helper');
+const { errorLogWrapper, logger } = require('./log');
 const { Task } = require('./controller');
 
 function retainerRoutine(ctrl) {

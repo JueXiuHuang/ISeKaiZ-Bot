@@ -9,7 +9,8 @@ const { retainerRoutine, retainerHandler } = require('./retainer');
 const { foodRoutine } = require('./food');
 const { inventoryRoutine, inventoryHandler } = require('./inventory')
 const { Task, Controller } = require('./controller')
-const { messageExtractor, errorLogWrapper, logger } = require('./helper');
+const { messageExtractor } = require('./helper');
+const { errorLogWrapper, logger } = require('./log');
 const { emojiVerifier } = require('./verifier');
 const args = process.argv.slice(2);
 
@@ -215,7 +216,7 @@ function mapHandler(ctrl, message, title, content) {
       console.log('Open new battle window');
       console.log('Reset battle counter');
     }
-    logger(logFn, seperator=true);
+    logger(logFn, seperator = true);
     ctrl.player['bs'] = States.Idle;
     ctrl.player['bc'] = 0;
     ctrl.player['battleMsg'] = message;
@@ -227,7 +228,7 @@ function mapHandler(ctrl, message, title, content) {
       console.log('Battle finish');
       console.log('Reset battle counter');
     }
-    logger(logFn, seperator=true);
+    logger(logFn, seperator = true);
     // ctrl.player['bs'] = States.Idle;
     ctrl.player['bc'] = 0;
     return;
@@ -238,7 +239,7 @@ function mapHandler(ctrl, message, title, content) {
       console.log('Battle start');
       console.log('Reset battle counter');
     }
-    logger(logFn, seperator=true);
+    logger(logFn, seperator = true);
     ctrl.player['bs'] = States.InBattle;
     ctrl.player['bc'] = 0;
     return;
@@ -257,7 +258,7 @@ function mapHandler(ctrl, message, title, content) {
       console.log('Battle Counter: ' + ctrl.player['bc']);
       console.log('Battle State: ' + ctrl.player['bs']);
     }
-    logger(logFn, seperator=true, customSepStart=customSep, customSepEnd=customSep);
+    logger(logFn, seperator = true, customSepStart = customSep, customSepEnd = customSep);
     if (ctrl.player['bc'] > retryCount || ctrl.player['bs'] == States.Idle) {
       logger('try to leave battle...');
       const taskFunc = async () => {
@@ -290,7 +291,7 @@ function mapHandler(ctrl, message, title, content) {
       console.log('Profession Counter: ' + ctrl.player['pc']);
       console.log('Profession State: ' + ctrl.player['ps']);
     }
-    logger(logFn, seperator=true, customSepStart=customSep, customSepEnd=customSep);
+    logger(logFn, seperator = true, customSepStart = customSep, customSepEnd = customSep);
     if (ctrl.player['pc'] > retryCount || ctrl.player['ps'] == States.Idle) {
       logger('try to leave profession...');
       const taskFunc = async () => {
