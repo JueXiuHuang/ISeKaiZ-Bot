@@ -1,4 +1,5 @@
 const { delayer } = require('./helper');
+const { retryCount } = require('./config.json');
 const { getTimeString, logger } = require('./log');
 
 class Task {
@@ -6,6 +7,7 @@ class Task {
     this.func = func;
     this.expireAt = expireAt;
     this.info = info ?? '';
+    this.retry = 0;
   }
 
   isExpire(timeNow) { return this.expireAt < timeNow; }
@@ -36,7 +38,6 @@ class Controller {
     this.lock = true;
     while (this.queue.length > 0) {
       const task = this.queue.shift();
-      const time = getTimeString();
       logger(`Checking task <${task.info}>`);
       const now = new Date;
       const timeNow = now.getTime();
@@ -60,6 +61,13 @@ class Controller {
         modified = await task.func();
       } else {
         modified = task.func();
+      }
+
+
+      if (Object.keys(modified).length > 0 && task.retry < retryCount) {
+        logger('Task failed, add to queue for retry');
+        task.retry += 1;
+        this.addTask(task);
       }
       for (const [key, value] of Object.entries(modified)) {
         logger(`${key} change to ${value}`);
