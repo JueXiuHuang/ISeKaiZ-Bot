@@ -12,7 +12,7 @@ function mappingRoutine(ctrl) {
       ctrl.player['channel']?.send('$map');
       return {};
     };
-    const expireAt = Date.now() + 10000;
+    const expireAt = Date.now() + 60000;
     const task = new Task(taskFunc, expireAt, '$map');
     ctrl.addTask(task);
     return;
@@ -23,7 +23,7 @@ function mappingRoutine(ctrl) {
       ctrl.player['channel']?.send('$map');
       return { 'battleMsg': null, 'bc': 0 };
     };
-    const expireAt = Date.now() + 10000;
+    const expireAt = Date.now() + 60000;
     const task = new Task(taskFunc, expireAt, '$map');
     ctrl.addTask(task);
     return;
@@ -36,7 +36,7 @@ function mappingRoutine(ctrl) {
         await ctrl.player['battleMsg'].clickButton({ X: 0, Y: 0 })
           .catch(err => {
             logFunc = () => {
-              console.log('click battle button fail');
+              console.log('start new battle fail');
               console.log('Error message: ' + err.message);
               console.log(err);
             };
@@ -54,7 +54,7 @@ function mappingRoutine(ctrl) {
 
       return modified;
     };
-    const expireAt = Date.now() + 10000;
+    const expireAt = Date.now() + 30000;
     const task = new Task(taskFunc, expireAt, 'start new battle');
     ctrl.addTask(task);
 

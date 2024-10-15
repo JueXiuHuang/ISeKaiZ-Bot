@@ -14,9 +14,9 @@ async function emojiVerifier(ctrl, message) {
     }
   }
 
-  const taskFunc = () => {
+  const taskFunc = async () => {
     try {
-      message.clickButton({ X: answer, Y: 0 })
+      await message.clickButton({ X: answer, Y: 0 })
         .catch((err) => {
           logFunc = () => {
             console.log('Verify emoji got error');
@@ -29,7 +29,7 @@ async function emojiVerifier(ctrl, message) {
     }
     return {};
   };
-  const expireAt = Date.now() + 5000;
+  const expireAt = Date.now() + 10000;
   const task = new Task(taskFunc, expireAt, 'emoji verify');
   ctrl.addTask(task)
 }
