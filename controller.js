@@ -19,8 +19,8 @@ class Controller {
 
     this.queue = [];
     this.lastExecuteAt = 0;
-    this.gap = 10000; // can change in future, the unit is milliseconds
-    this.bias = 7000;
+    this.gap = 5000; // can change in future, the unit is milliseconds
+    this.bias = 5000;
     this.player = player;
     this.lock = false;
     Controller.instance = this;
@@ -38,7 +38,8 @@ class Controller {
       const task = this.queue.shift();
       const time = getTimeString();
       logger(`Checking task <${task.info}>`);
-      const timeNow = Date.now();
+      const now = new Date;
+      const timeNow = now.getTime();
       if (task.isExpire(timeNow)) {
         logger('Task fail due to expired');
         continue;
@@ -51,7 +52,8 @@ class Controller {
       if (timeNow - this.lastExecuteAt < this.gap) {
         const delta = this.lastExecuteAt + this.gap - timeNow;
         logger(`Task execute too fast, wait for at least ${delta} ms`);
-        await delayer(delta, delta + this.bias);
+        await delayer(delta, delta + this.bias, '(Controller)');
+        logger('Controller delay ends');
       }
       let modified;
       if (task.func.constructor.name === 'AsyncFunction') {
@@ -63,7 +65,8 @@ class Controller {
         logger(`${key} change to ${value}`);
         this.player[key] = value;
       }
-      this.lastExecuteAt = Math.floor(Date.now() / 1000);
+      const unlockTime = new Date()
+      this.lastExecuteAt = unlockTime.getTime();
       logger('Task finish, unlock');
       break;
     }
