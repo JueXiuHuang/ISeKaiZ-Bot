@@ -30,10 +30,10 @@ function mappingRoutine(ctrl) {
   }
 
   if (ctrl.player['bs'] === States.Idle) {
-    const taskFunc = () => {
+    const taskFunc = async () => {
       const modified = {};
       try {
-        ctrl.player['battleMsg'].clickButton({ X: 0, Y: 0 })
+        await ctrl.player['battleMsg'].clickButton({ X: 0, Y: 0 })
           .catch(err => {
             logFunc = () => {
               console.log('click battle button fail');

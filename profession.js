@@ -31,10 +31,10 @@ function professionRoutine(ctrl) {
   }
 
   if (ctrl.player['ps'] === States.Idle) {
-    const taskFunc = () => {
+    const taskFunc = async () => {
       const modified = {};
       try {
-        ctrl.player['profMsg'].clickButton({ X: 0, Y: 0 })
+        await ctrl.player['profMsg'].clickButton({ X: 0, Y: 0 })
           .catch(err => {
             logFunc = () => {
               console.log('click profession button fail');

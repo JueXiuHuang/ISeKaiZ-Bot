@@ -19,7 +19,8 @@ class Controller {
 
     this.queue = [];
     this.lastExecuteAt = 0;
-    this.gap = 2000; // can change in future, the unit is milliseconds
+    this.gap = 10000; // can change in future, the unit is milliseconds
+    this.bias = 7000;
     this.player = player;
     this.lock = false;
     Controller.instance = this;
@@ -50,7 +51,7 @@ class Controller {
       if (timeNow - this.lastExecuteAt < this.gap) {
         const delta = this.lastExecuteAt + this.gap - timeNow;
         logger(`Task execute too fast, wait for at least ${delta} ms`);
-        await delayer(delta, delta + 2000);
+        await delayer(delta, delta + this.bias);
       }
       let modified;
       if (task.func.constructor.name === 'AsyncFunction') {
