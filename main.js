@@ -8,7 +8,7 @@ const { checkTreasure } = require('./treasure');
 const { retainerRoutine, retainerHandler } = require('./retainer');
 const { foodRoutine } = require('./food');
 const { inventoryRoutine, inventoryHandler } = require('./inventory')
-const { Task, Controller } = require('./controller')
+const { Task, Controller, TaskRank } = require('./controller')
 const { messageExtractor } = require('./helper');
 const { errorLogWrapper, logger } = require('./log');
 const { emojiVerifier } = require('./verifier');
@@ -31,8 +31,8 @@ async function ImmediatelyRoutineScript() {
       ctrl.player['channel']?.send('$verify');
       return {};
     };
-    const expireAt = Date.now() + 10000;
-    const task = new Task(taskFunc, expireAt, 'type $verify');
+    const expireAt = Date.now() + 60000;
+    const task = new Task(taskFunc, expireAt, 'type $verify', TaskRank.Verify);
     ctrl.addTask(task);
     return;
   }
@@ -44,8 +44,8 @@ async function ImmediatelyRoutineScript() {
       ctrl.player['channel']?.send(result);
       return {};
     };
-    const expireAt = Date.now() + 10000;
-    const task = new Task(taskFunc, expireAt, 'send verify result');
+    const expireAt = Date.now() + 60000;
+    const task = new Task(taskFunc, expireAt, 'send verify result', TaskRank.Verify);
     ctrl.addTask(task);
     return;
   }
@@ -276,8 +276,8 @@ function mapHandler(ctrl, message, title, content) {
         }
         return {};
       };
-      const expireAt = Date.now() + 10000;
-      const task = new Task(taskFunc, expireAt, 'leave battle');
+      const expireAt = Date.now() + 30000;
+      const task = new Task(taskFunc, expireAt, 'leave battle', TaskRank.NewBattle);
       ctrl.addTask(task);
     }
 
@@ -309,8 +309,8 @@ function mapHandler(ctrl, message, title, content) {
         }
         return {};
       };
-      const expireAt = Date.now() + 10000;
-      const task = new Task(taskFunc, expireAt, 'leave profession');
+      const expireAt = Date.now() + 30000;
+      const task = new Task(taskFunc, expireAt, 'leave profession', TaskRank.NewProf);
       ctrl.addTask(task);
     }
 

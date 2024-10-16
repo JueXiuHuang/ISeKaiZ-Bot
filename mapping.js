@@ -1,6 +1,6 @@
 const { retryCount } = require('./config.json');
 const { States } = require('./player');
-const { Task } = require('./controller');
+const { Task, TaskRank } = require('./controller');
 const { errorLogWrapper, logger } = require('./log');
 
 // @param {Player} player
@@ -13,7 +13,7 @@ function mappingRoutine(ctrl) {
       return {};
     };
     const expireAt = Date.now() + 60000;
-    const task = new Task(taskFunc, expireAt, '$map');
+    const task = new Task(taskFunc, expireAt, '$map', TaskRank.NewBattleWindow);
     ctrl.addTask(task);
     return;
   }
@@ -24,7 +24,7 @@ function mappingRoutine(ctrl) {
       return { 'battleMsg': null, 'bc': 0 };
     };
     const expireAt = Date.now() + 60000;
-    const task = new Task(taskFunc, expireAt, '$map');
+    const task = new Task(taskFunc, expireAt, '$map', TaskRank.NewBattleWindow);
     ctrl.addTask(task);
     return;
   }
@@ -55,7 +55,7 @@ function mappingRoutine(ctrl) {
       return modified;
     };
     const expireAt = Date.now() + 30000;
-    const task = new Task(taskFunc, expireAt, 'start new battle');
+    const task = new Task(taskFunc, expireAt, 'start new battle', TaskRank.NewBattle);
     ctrl.addTask(task);
 
     return;

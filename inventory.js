@@ -1,5 +1,5 @@
 const { sellEquip = ['F', 'E', 'D'] } = require('./config.json');
-const { Task } = require('./controller');
+const { Task, TaskRank } = require('./controller');
 const { isVerify } = require('./helper');
 
 async function inventoryRoutine(ctrl) {
@@ -11,8 +11,8 @@ async function inventoryRoutine(ctrl) {
     ctrl.player['channel']?.send(`$sell equipment all ${sellEquip[ctrl.player['sell']]}`);
     return {};
   };
-  const expireAt = Date.now() + 10000;
-  const task = new Task(taskFunc, expireAt, 'Sell equipment');
+  const expireAt = Date.now() + 120000;
+  const task = new Task(taskFunc, expireAt, 'Sell equipment', TaskRank.Inventory);
   ctrl.addTask(task);
 }
 
@@ -33,8 +33,8 @@ function inventoryHandler(ctrl, title, desc) {
     ctrl.player['channel'].send(`$sell equipment all ${sellEquip[ctrl.player['sell']]}`);
     return {};
   };
-  const expireAt = Date.now() + 10000;
-  const task = new Task(taskFunc, expireAt, 'Sell equipment');
+  const expireAt = Date.now() + 120000;
+  const task = new Task(taskFunc, expireAt, 'Sell equipment', TaskRank.Inventory);
   ctrl.addTask(task);
 }
 

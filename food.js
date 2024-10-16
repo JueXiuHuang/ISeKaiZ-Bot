@@ -1,5 +1,5 @@
 const { expFood = 'sushi-roll' } = require('./config.json');
-const { Task } = require('./controller');
+const { Task, TaskRank } = require('./controller');
 const { saveUserData } = require('./player');
 const { logger, formatTimeString } = require('./log');
 
@@ -20,8 +20,8 @@ function foodRoutine(ctrl) {
     saveUserData(ctrl.player['userData']);
     return {'userData': ctrl.player['userData']};
   };
-  const expireAt = Date.now() + 10000;
-  const task = new Task(taskFunc, expireAt, 'Eat food');
+  const expireAt = Date.now() + 60000;
+  const task = new Task(taskFunc, expireAt, 'Eat food', TaskRank.Food);
   ctrl.addTask(task);
 }
 

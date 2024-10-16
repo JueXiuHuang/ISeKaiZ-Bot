@@ -1,5 +1,5 @@
 const { errorLogWrapper } = require('./log');
-const { Task } = require('./controller');
+const { Task, TaskRank } = require('./controller');
 
 
 async function emojiVerifier(ctrl, message) {
@@ -29,8 +29,8 @@ async function emojiVerifier(ctrl, message) {
     }
     return {};
   };
-  const expireAt = Date.now() + 10000;
-  const task = new Task(taskFunc, expireAt, 'emoji verify');
+  const expireAt = Date.now() + 30000;
+  const task = new Task(taskFunc, expireAt, 'emoji verify', TaskRank.EmojiVerify);
   ctrl.addTask(task)
 }
 

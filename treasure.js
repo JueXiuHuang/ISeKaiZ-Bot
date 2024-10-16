@@ -1,5 +1,5 @@
 const { treasureHunter = false, treasureGuild = '' } = require('./config.json');
-const { Task } = require('./controller');
+const { Task, TaskRank } = require('./controller');
 const { messageExtractor } = require('./helper');
 const { errorLogWrapper } = require('./log');
 

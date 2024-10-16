@@ -1,13 +1,26 @@
 const { delayer } = require('./helper');
 const { retryCount } = require('./config.json');
-const { getTimeString, logger } = require('./log');
+const { logger } = require('./log');
+
+const TaskRank = {
+  Verify: 0,
+  EmojiVerify: 1,
+  Inventory: 2,
+  Food: 2,
+  Retainer: 2,
+  NewBattleWindow: 4,
+  NewBattle: 3,
+  NewProfWindow: 4,
+  NewProf: 3,
+}
 
 class Task {
-  constructor(func, expireAt, info) {
+  constructor(func, expireAt, info, priority=0) {
     this.func = func;
     this.expireAt = expireAt;
     this.info = info ?? '';
     this.retry = 0;
+    this.priority = priority;
   }
 
   isExpire(timeNow) { return this.expireAt < timeNow; }
@@ -21,15 +34,15 @@ class Controller {
 
     this.queue = [];
     this.lastExecuteAt = 0;
-    this.gap = 5000; // can change in future, the unit is milliseconds
-    this.bias = 5000;
+    this.gap = 3000; // can change in future, the unit is milliseconds
+    this.bias = 4000;
     this.player = player;
     this.lock = false;
     Controller.instance = this;
   }
 
   addTask(task) {
-    logger('Add Task');
+    logger(`Try add task: ${task.info}`);
     this.queue.push(task);
   }
 
@@ -37,6 +50,15 @@ class Controller {
     if (this.lock) return;
     this.lock = true;
     while (this.queue.length > 0) {
+      this.queue = this.queue.sort((a, b) => a.priority - b.priority);
+      const logFunc = () => {
+        console.log('Task queue info:');
+        this.queue.forEach(task => {
+          console.log(`> ${task.info}`);
+        });
+      }
+      logger(logFunc, true);
+
       const task = this.queue.shift();
       logger(`Checking task <${task.info}>`);
       const now = new Date;
@@ -82,4 +104,4 @@ class Controller {
   }
 }
 
-module.exports = { Task, Controller };
+module.exports = { Task, Controller, TaskRank };
