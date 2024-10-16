@@ -14,7 +14,7 @@ function professionRoutine(ctrl) {
       return {};
     };
     const expireAt = Date.now() + 60000;
-    const task = new Task(taskFunc, expireAt, '$profession', TaskRank.NewProfWindow);
+    const task = new Task(taskFunc, expireAt, '$profession', 'NewProfWindow');
     ctrl.addTask(task);
     return;
   }
@@ -25,7 +25,7 @@ function professionRoutine(ctrl) {
       return { 'profMsg': null , 'pc': 0};
     };
     const expireAt = Date.now() + 60000;
-    const task = new Task(taskFunc, expireAt, '$profession', TaskRank.NewProfWindow);
+    const task = new Task(taskFunc, expireAt, '$profession', 'NewProfWindow');
     ctrl.addTask(task);
     return;
   }
@@ -55,7 +55,7 @@ function professionRoutine(ctrl) {
       return modified;
     };
     const expireAt = Date.now() + 30000;
-    const task = new Task(taskFunc, expireAt, 'start profession', TaskRank.NewProf);
+    const task = new Task(taskFunc, expireAt, 'start profession', 'NewProf');
     ctrl.addTask(task);
 
     return;

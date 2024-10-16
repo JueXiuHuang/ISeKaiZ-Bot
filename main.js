@@ -32,7 +32,7 @@ async function ImmediatelyRoutineScript() {
       return {};
     };
     const expireAt = Date.now() + 60000;
-    const task = new Task(taskFunc, expireAt, 'type $verify', TaskRank.Verify);
+    const task = new Task(taskFunc, expireAt, 'type $verify', 'Verify');
     ctrl.addTask(task);
     return;
   }
@@ -45,7 +45,7 @@ async function ImmediatelyRoutineScript() {
       return {};
     };
     const expireAt = Date.now() + 60000;
-    const task = new Task(taskFunc, expireAt, 'send verify result', TaskRank.Verify);
+    const task = new Task(taskFunc, expireAt, 'send verify result', 'Verify');
     ctrl.addTask(task);
     return;
   }
@@ -277,7 +277,7 @@ function mapHandler(ctrl, message, title, content) {
         return {};
       };
       const expireAt = Date.now() + 30000;
-      const task = new Task(taskFunc, expireAt, 'leave battle', TaskRank.NewBattle);
+      const task = new Task(taskFunc, expireAt, 'leave battle', 'NewBattle');
       ctrl.addTask(task);
     }
 
@@ -310,7 +310,7 @@ function mapHandler(ctrl, message, title, content) {
         return {};
       };
       const expireAt = Date.now() + 30000;
-      const task = new Task(taskFunc, expireAt, 'leave profession', TaskRank.NewProf);
+      const task = new Task(taskFunc, expireAt, 'leave profession', 'NewProf');
       ctrl.addTask(task);
     }
 

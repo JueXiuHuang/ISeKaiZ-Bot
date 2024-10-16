@@ -30,7 +30,7 @@ async function emojiVerifier(ctrl, message) {
     return {};
   };
   const expireAt = Date.now() + 30000;
-  const task = new Task(taskFunc, expireAt, 'emoji verify', TaskRank.EmojiVerify);
+  const task = new Task(taskFunc, expireAt, 'emoji verify', 'EmojiVerify');
   ctrl.addTask(task)
 }
 

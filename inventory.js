@@ -12,7 +12,7 @@ async function inventoryRoutine(ctrl) {
     return {};
   };
   const expireAt = Date.now() + 120000;
-  const task = new Task(taskFunc, expireAt, 'Sell equipment', TaskRank.Inventory);
+  const task = new Task(taskFunc, expireAt, 'Sell equipment', 'Inventory');
   ctrl.addTask(task);
 }
 
@@ -34,7 +34,7 @@ function inventoryHandler(ctrl, title, desc) {
     return {};
   };
   const expireAt = Date.now() + 120000;
-  const task = new Task(taskFunc, expireAt, 'Sell equipment', TaskRank.Inventory);
+  const task = new Task(taskFunc, expireAt, 'Sell equipment', 'Inventory');
   ctrl.addTask(task);
 }
 

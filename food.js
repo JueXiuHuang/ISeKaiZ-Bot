@@ -21,7 +21,7 @@ function foodRoutine(ctrl) {
     return {'userData': ctrl.player['userData']};
   };
   const expireAt = Date.now() + 60000;
-  const task = new Task(taskFunc, expireAt, 'Eat food', TaskRank.Food);
+  const task = new Task(taskFunc, expireAt, 'Eat food', 'Food');
   ctrl.addTask(task);
 }
 

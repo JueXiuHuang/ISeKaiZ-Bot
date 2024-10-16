@@ -2,25 +2,33 @@ const { delayer } = require('./helper');
 const { retryCount } = require('./config.json');
 const { logger } = require('./log');
 
-const TaskRank = {
-  Verify: 0,
-  EmojiVerify: 1,
-  Inventory: 2,
-  Food: 2,
-  Retainer: 2,
-  NewBattleWindow: 4,
-  NewBattle: 3,
-  NewProfWindow: 4,
-  NewProf: 3,
+class TaskType {
+  constructor(rank, limit) {
+    this.rank = rank;
+    this.limit = limit;
+  }
 }
 
+const TaskTypes = {
+  'Verify': new TaskType(0, 999),
+  'EmojiVerify': new TaskType(1, 999),
+  'Treasure': new TaskType(5, 999),
+  'Inventory': new TaskType(2, 2),
+  'Food': new TaskType(2, 1),
+  'Retainer': new TaskType(2, 2),
+  'NewBattle': new TaskType(3, 1),
+  'NewProf': new TaskType(3, 1),
+  'NewBattleWindow': new TaskType(4, 1),
+  'NewProfWindow': new TaskType(4, 1),
+};
+
 class Task {
-  constructor(func, expireAt, info, priority=0) {
+  constructor(func, expireAt, info, tag) {
     this.func = func;
     this.expireAt = expireAt;
     this.info = info ?? '';
     this.retry = 0;
-    this.priority = priority;
+    this.tag = tag;
   }
 
   isExpire(timeNow) { return this.expireAt < timeNow; }
@@ -33,6 +41,7 @@ class Controller {
     }
 
     this.queue = [];
+    this.taskTypeCounter = {};
     this.lastExecuteAt = 0;
     this.gap = 3000; // can change in future, the unit is milliseconds
     this.bias = 4000;
@@ -43,14 +52,22 @@ class Controller {
 
   addTask(task) {
     logger(`Try add task: ${task.info}`);
+
+    const count = this.taskTypeCounter[task.tag] ?? 0;
+    if (count >= TaskTypes[task.tag].limit) {
+      logger(`Add fail since task limit`);
+      return;
+    }
     this.queue.push(task);
+    this.taskTypeCounter[task.tag] = count + 1;
+    logger('Add task success');
   }
 
   async checkQueueAndExecute() {
     if (this.lock) return;
     this.lock = true;
     while (this.queue.length > 0) {
-      this.queue = this.queue.sort((a, b) => a.priority - b.priority);
+      this.queue = this.queue.sort((a, b) => TaskTypes[a.tag].rank - TaskTypes[b.tag].rank);
       const logFunc = () => {
         console.log('Task queue info:');
         this.queue.forEach(task => {
@@ -97,6 +114,7 @@ class Controller {
       }
       const unlockTime = new Date()
       this.lastExecuteAt = unlockTime.getTime();
+      this.taskTypeCounter[task.tag] -= 1;
       logger('Task finish, unlock');
       break;
     }
@@ -104,4 +122,4 @@ class Controller {
   }
 }
 
-module.exports = { Task, Controller, TaskRank };
+module.exports = { Task, Controller, TaskTypes };

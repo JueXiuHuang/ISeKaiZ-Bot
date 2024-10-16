@@ -11,7 +11,7 @@ function retainerRoutine(ctrl) {
     return {};
   };
   const expireAt = Date.now() + 20000;
-  const task = new Task(taskFunc, expireAt, '$hired', TaskRank.Retainer);
+  const task = new Task(taskFunc, expireAt, '$hired', 'Retainer');
   ctrl.addTask(task);
 }
 
@@ -44,7 +44,7 @@ async function retainerHandler(ctrl, message, desc, oldDesc) {
       return {};
     };
     const expireAt = Date.now() + 20000;
-    const task = new Task(taskFunc, expireAt, '$hired Next Page', TaskRank.Retainer);
+    const task = new Task(taskFunc, expireAt, '$hired Next Page', 'Retainer');
     ctrl.addTask(task);
 
     return;
@@ -70,7 +70,7 @@ async function retainerHandler(ctrl, message, desc, oldDesc) {
     return {};
   };
   const expireAt = Date.now() + 20000;
-  const task = new Task(taskFunc, expireAt, '$hired Collect', TaskRank.Retainer);
+  const task = new Task(taskFunc, expireAt, '$hired Collect', 'Retainer');
   ctrl.addTask(task);
 }
 
