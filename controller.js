@@ -10,16 +10,16 @@ class TaskType {
 }
 
 const TaskTypes = {
-  'Verify': new TaskType(0, 999),
-  'EmojiVerify': new TaskType(1, 999),
-  'Treasure': new TaskType(5, 999),
-  'Inventory': new TaskType(2, 2),
-  'Food': new TaskType(2, 1),
-  'Retainer': new TaskType(2, 2),
-  'NewBattle': new TaskType(3, 1),
-  'NewProf': new TaskType(3, 1),
-  'NewBattleWindow': new TaskType(4, 1),
-  'NewProfWindow': new TaskType(4, 1),
+  'Verify': new TaskType(rank=0, limit=999),
+  'EmojiVerify': new TaskType(rank=2, limit=999),
+  'Treasure': new TaskType(rank=1, limit=999),
+  'Inventory': new TaskType(rank=1, limit=2),
+  'Food': new TaskType(rank=1, limit=1),
+  'Retainer': new TaskType(rank=1, limit=2),
+  'NewBattle': new TaskType(rank=3, limit=1),
+  'NewProf': new TaskType(rank=3, limit=1),
+  'NewBattleWindow': new TaskType(rank=4, limit=1),
+  'NewProfWindow': new TaskType(rank=4, limit=1),
 };
 
 class Task {
