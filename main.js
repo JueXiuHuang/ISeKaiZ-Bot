@@ -8,7 +8,7 @@ const { checkTreasure } = require('./treasure');
 const { retainerRoutine, retainerHandler } = require('./retainer');
 const { foodRoutine } = require('./food');
 const { inventoryRoutine, inventoryHandler } = require('./inventory')
-const { Task, Controller } = require('./controller')
+const { Task, Controller, TaskType, getDefaultRank } = require('./controller')
 const { messageExtractor } = require('./helper');
 const { errorLogWrapper, logger } = require('./log');
 const { emojiVerifier } = require('./verifier');
@@ -32,7 +32,9 @@ async function ImmediatelyRoutineScript() {
       return {};
     };
     const expireAt = Date.now() + 60000;
-    const task = new Task(taskFunc, expireAt, 'type $verify', 'Verify');
+    const tag = TaskType.Verfiy;
+    let rank = getDefaultRank(tag);
+    const task = new Task(taskFunc, expireAt, 'type $verify', tag, rank);
     ctrl.addTask(task);
     return;
   }
@@ -45,7 +47,9 @@ async function ImmediatelyRoutineScript() {
       return {};
     };
     const expireAt = Date.now() + 60000;
-    const task = new Task(taskFunc, expireAt, 'send verify result', 'Verify');
+    const tag = TaskType.Verfiy;
+    let rank = getDefaultRank(tag);
+    const task = new Task(taskFunc, expireAt, 'send verify result', tag, rank);
     ctrl.addTask(task);
     return;
   }
@@ -277,7 +281,9 @@ function mapHandler(ctrl, message, title, content) {
         return {};
       };
       const expireAt = Date.now() + 30000;
-      const task = new Task(taskFunc, expireAt, 'leave battle', 'NewBattle');
+      const tag = TaskType.NB;
+      let rank = getDefaultRank(tag);
+      const task = new Task(taskFunc, expireAt, 'leave battle', tag, rank);
       ctrl.addTask(task);
     }
 
@@ -310,7 +316,9 @@ function mapHandler(ctrl, message, title, content) {
         return {};
       };
       const expireAt = Date.now() + 30000;
-      const task = new Task(taskFunc, expireAt, 'leave profession', 'NewProf');
+      const tag = TaskType.NP;
+      let rank = getDefaultRank(tag);
+      const task = new Task(taskFunc, expireAt, 'leave profession', tag, rank);
       ctrl.addTask(task);
     }
 

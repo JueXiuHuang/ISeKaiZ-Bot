@@ -1,5 +1,5 @@
 const { sellEquip = ['F', 'E', 'D'] } = require('./config.json');
-const { Task } = require('./controller');
+const { Task, TaskType, getDefaultRank } = require('./controller');
 const { isVerify } = require('./helper');
 
 async function inventoryRoutine(ctrl) {
@@ -12,7 +12,9 @@ async function inventoryRoutine(ctrl) {
     return {};
   };
   const expireAt = Date.now() + 120000;
-  const task = new Task(taskFunc, expireAt, 'Sell equipment', 'Inventory');
+  const tag = TaskType.Inv;
+  let rank = getDefaultRank(tag);
+  const task = new Task(taskFunc, expireAt, 'Sell equipment', tag, rank);
   ctrl.addTask(task);
 }
 
@@ -34,7 +36,9 @@ function inventoryHandler(ctrl, title, desc) {
     return {};
   };
   const expireAt = Date.now() + 120000;
-  const task = new Task(taskFunc, expireAt, 'Sell equipment', 'Inventory');
+  const tag = TaskType.Inv;
+  let rank = getDefaultRank(tag);
+  const task = new Task(taskFunc, expireAt, 'Sell equipment', tag, rank);
   ctrl.addTask(task);
 }
 

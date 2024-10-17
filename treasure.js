@@ -1,5 +1,5 @@
 const { treasureHunter = false, treasureGuild = '' } = require('./config.json');
-const { Task } = require('./controller');
+const { Task, TaskType, getDefaultRank } = require('./controller');
 const { messageExtractor } = require('./helper');
 const { errorLogWrapper } = require('./log');
 
@@ -26,7 +26,9 @@ function checkTreasure(ctrl, message) {
       return {};
     };
     const expireAt = Date.now() + 10000;
-    const task = new Task(taskFunc, expireAt, 'collect treasure', 'Treasure');
+    const tag = TaskType.Treasure;
+    let rank = getDefaultRank(tag);
+    const task = new Task(taskFunc, expireAt, 'collect treasure', tag, rank);
     ctrl.addTask(task);
   }
 }

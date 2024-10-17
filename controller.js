@@ -2,33 +2,55 @@ const { delayer } = require('./helper');
 const { retryCount } = require('./config.json');
 const { logger } = require('./log');
 
-class TaskType {
+class TaskSetting {
   constructor(rank, limit) {
     this.rank = rank;
     this.limit = limit;
   }
 }
 
-const TaskTypes = {
-  'Verify': new TaskType(rank=0, limit=999),
-  'EmojiVerify': new TaskType(rank=2, limit=999),
-  'Treasure': new TaskType(rank=1, limit=999),
-  'Inventory': new TaskType(rank=1, limit=2),
-  'Food': new TaskType(rank=1, limit=1),
-  'Retainer': new TaskType(rank=1, limit=2),
-  'NewBattle': new TaskType(rank=3, limit=1),
-  'NewProf': new TaskType(rank=3, limit=1),
-  'NewBattleWindow': new TaskType(rank=4, limit=1),
-  'NewProfWindow': new TaskType(rank=4, limit=1),
+const TaskType = {
+  Verfiy: 'Verify',
+  EVerify: 'EmojiVerify',
+  Treasure: 'Treasure',
+  Inv: 'Inventory',
+  Food: 'Food',
+  Retainer: 'Retainer',
+  NB: 'NewBattle',
+  NBW: 'NewBattleWindow',
+  NP: 'NewProfession',
+  NPW: 'NewProfessionWindow',
 };
 
+const TaskSettingList = {
+  'Verify': new TaskSetting(rank = -999, limit = 999),
+  'EmojiVerify': new TaskSetting(rank = 2, limit = 999),
+  'Treasure': new TaskSetting(rank = 1, limit = 999),
+  'Inventory': new TaskSetting(rank = 1, limit = 2),
+  'Food': new TaskSetting(rank = 1, limit = 1),
+  'Retainer': new TaskSetting(rank = 1, limit = 2),
+  'NewBattle': new TaskSetting(rank = 3, limit = 1),
+  'NewProfession': new TaskSetting(rank = 3, limit = 1),
+  'NewBattleWindow': new TaskSetting(rank = 4, limit = 1),
+  'NewProfessionWindow': new TaskSetting(rank = 4, limit = 1),
+};
+
+function getDefaultRank(tag) {
+  return TaskSettingList[tag]?.rank ?? 5;
+}
+
+function getTaskLimit(tag) {
+  return TaskSettingList[tag]?.limit ?? 1;
+}
+
 class Task {
-  constructor(func, expireAt, info, tag) {
+  constructor(func, expireAt, info, tag, rank) {
     this.func = func;
     this.expireAt = expireAt;
     this.info = info ?? '';
     this.retry = 0;
     this.tag = tag;
+    this.rank = rank;
   }
 
   isExpire(timeNow) { return this.expireAt < timeNow; }
@@ -54,7 +76,7 @@ class Controller {
     logger(`Try add task: ${task.info}`);
 
     const count = this.taskTypeCounter[task.tag] ?? 0;
-    if (count >= TaskTypes[task.tag].limit) {
+    if (count >= getTaskLimit(task.tag)) {
       logger(`Add fail since task limit`);
       return;
     }
@@ -73,15 +95,16 @@ class Controller {
     if (this.lock) return;
     this.lock = true;
     while (this.queue.length > 0) {
-      this.priorityAging();
-      this.queue = this.queue.sort((a, b) => TaskTypes[a.tag].rank - TaskTypes[b.tag].rank);
+      this.queue = this.queue.sort((a, b) => a.rank - b.rank);
       const logFunc = () => {
         console.log('Task queue info:');
         this.queue.forEach(task => {
-          console.log(`> ${task.info}`);
+          console.log(`> ${String(task.rank).padStart(2, ' ')} - ${task.info}`);
         });
       }
       logger(logFunc, true);
+
+      this.priorityAging();
 
       const task = this.queue.shift();
       this.taskTypeCounter[task.tag] -= 1;
@@ -92,7 +115,7 @@ class Controller {
         logger('Task fail due to expired');
         continue;
       }
-      const expectExecuteTime = this.lastExecuteAt + this.gap + this.bias/2
+      const expectExecuteTime = this.lastExecuteAt + this.gap + this.bias / 2
       if (task.isExpire(expectExecuteTime)) {
         logger('Task fail due to expect execute time expire');
         continue;
@@ -129,4 +152,4 @@ class Controller {
   }
 }
 
-module.exports = { Task, Controller, TaskTypes };
+module.exports = { Task, Controller, TaskType, getDefaultRank };

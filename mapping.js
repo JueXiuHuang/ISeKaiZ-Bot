@@ -1,6 +1,6 @@
 const { retryCount } = require('./config.json');
 const { States } = require('./player');
-const { Task } = require('./controller');
+const { Task, TaskType, getDefaultRank } = require('./controller');
 const { errorLogWrapper, logger } = require('./log');
 
 // @param {Player} player
@@ -13,7 +13,9 @@ function mappingRoutine(ctrl) {
       return {};
     };
     const expireAt = Date.now() + 180000;
-    const task = new Task(taskFunc, expireAt, '$map', 'NewBattleWindow');
+    const tag = TaskType.NBW;
+    let rank = getDefaultRank(tag);
+    const task = new Task(taskFunc, expireAt, '$map', tag, rank);
     ctrl.addTask(task);
     return;
   }
@@ -24,7 +26,9 @@ function mappingRoutine(ctrl) {
       return { 'battleMsg': null, 'bc': 0 };
     };
     const expireAt = Date.now() + 180000;
-    const task = new Task(taskFunc, expireAt, '$map', 'NewBattleWindow');
+    const tag = TaskType.NBW;
+    let rank = getDefaultRank(tag);
+    const task = new Task(taskFunc, expireAt, '$map', tag, rank);
     ctrl.addTask(task);
     return;
   }
@@ -55,7 +59,9 @@ function mappingRoutine(ctrl) {
       return modified;
     };
     const expireAt = Date.now() + 30000;
-    const task = new Task(taskFunc, expireAt, 'start new battle', 'NewBattle');
+    const tag = TaskType.NB;
+    let rank = getDefaultRank(tag);
+    const task = new Task(taskFunc, expireAt, 'start new battle', tag, rank);
     ctrl.addTask(task);
 
     return;

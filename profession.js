@@ -1,6 +1,6 @@
 const { profession, retryCount } = require('./config.json');
 const { errorLogWrapper, logger } = require('./log');
-const { Task } = require('./controller');
+const { Task, TaskType, getDefaultRank } = require('./controller');
 const { States } = require('./player')
 
 // @param {Player} player
@@ -14,7 +14,9 @@ function professionRoutine(ctrl) {
       return {};
     };
     const expireAt = Date.now() + 180000;
-    const task = new Task(taskFunc, expireAt, '$profession', 'NewProfWindow');
+    const tag = TaskType.NPW;
+    let rank = getDefaultRank(tag);
+    const task = new Task(taskFunc, expireAt, '$profession', tag, rank);
     ctrl.addTask(task);
     return;
   }
@@ -22,10 +24,12 @@ function professionRoutine(ctrl) {
   if (ctrl.player['ps'] === States.Idle && ctrl.player['pc'] > retryCount) {
     const taskFunc = () => {
       ctrl.player['channel'].send('$' + profession);
-      return { 'profMsg': null , 'pc': 0};
+      return { 'profMsg': null, 'pc': 0 };
     };
     const expireAt = Date.now() + 180000;
-    const task = new Task(taskFunc, expireAt, '$profession', 'NewProfWindow');
+    const tag = TaskType.NPW;
+    let rank = getDefaultRank(tag);
+    const task = new Task(taskFunc, expireAt, '$profession', tag, rank);
     ctrl.addTask(task);
     return;
   }
@@ -55,7 +59,9 @@ function professionRoutine(ctrl) {
       return modified;
     };
     const expireAt = Date.now() + 30000;
-    const task = new Task(taskFunc, expireAt, 'start profession', 'NewProf');
+    const tag = TaskType.NP;
+    let rank = getDefaultRank(tag);
+    const task = new Task(taskFunc, expireAt, 'start profession', tag, rank);
     ctrl.addTask(task);
 
     return;

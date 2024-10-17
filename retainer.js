@@ -1,6 +1,6 @@
-const { isVerify, delayer } = require('./helper');
+const { isVerify } = require('./helper');
 const { errorLogWrapper, logger } = require('./log');
-const { Task } = require('./controller');
+const { Task, TaskType, getDefaultRank } = require('./controller');
 
 function retainerRoutine(ctrl) {
   if (ctrl.player['channel'] === null) return;
@@ -11,7 +11,9 @@ function retainerRoutine(ctrl) {
     return {};
   };
   const expireAt = Date.now() + 20000;
-  const task = new Task(taskFunc, expireAt, '$hired', 'Retainer');
+  const tag = TaskType.Retainer;
+  let rank = getDefaultRank(tag);
+  const task = new Task(taskFunc, expireAt, '$hired', tag, rank);
   ctrl.addTask(task);
 }
 
@@ -44,7 +46,9 @@ async function retainerHandler(ctrl, message, desc, oldDesc) {
       return {};
     };
     const expireAt = Date.now() + 20000;
-    const task = new Task(taskFunc, expireAt, '$hired Next Page', 'Retainer');
+    const tag = TaskType.Retainer;
+    let rank = getDefaultRank(tag);
+    const task = new Task(taskFunc, expireAt, '$hired Next Page', tag, rank);
     ctrl.addTask(task);
 
     return;
@@ -55,7 +59,7 @@ async function retainerHandler(ctrl, message, desc, oldDesc) {
     try {
       message.clickButton({ X: 2, Y: 0 })
         .then(() => {
-          console.log('Harvest material success');
+          logger('Harvest material success');
         })
         .catch(err => {
           logFunc = () => {
@@ -70,7 +74,9 @@ async function retainerHandler(ctrl, message, desc, oldDesc) {
     return {};
   };
   const expireAt = Date.now() + 20000;
-  const task = new Task(taskFunc, expireAt, '$hired Collect', 'Retainer');
+  const tag = TaskType.Retainer;
+  let rank = getDefaultRank(tag);
+  const task = new Task(taskFunc, expireAt, '$hired Collect', tag, rank);
   ctrl.addTask(task);
 }
 
