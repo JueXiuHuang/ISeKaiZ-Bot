@@ -77,6 +77,7 @@ class Controller {
       logger(logFunc, true);
 
       const task = this.queue.shift();
+      this.taskTypeCounter[task.tag] -= 1;
       logger(`Checking task <${task.info}>`);
       const now = new Date;
       const timeNow = now.getTime();
@@ -84,7 +85,7 @@ class Controller {
         logger('Task fail due to expired');
         continue;
       }
-      const expectExecuteTime = this.lastExecuteAt + this.gap
+      const expectExecuteTime = this.lastExecuteAt + this.gap + this.bias/2
       if (task.isExpire(expectExecuteTime)) {
         logger('Task fail due to expect execute time expire');
         continue;
@@ -114,7 +115,6 @@ class Controller {
       }
       const unlockTime = new Date()
       this.lastExecuteAt = unlockTime.getTime();
-      this.taskTypeCounter[task.tag] -= 1;
       logger('Task finish, unlock');
       break;
     }
