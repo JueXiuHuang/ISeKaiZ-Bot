@@ -12,7 +12,7 @@ function mappingRoutine(ctrl) {
       ctrl.player['channel']?.send('$map');
       return {};
     };
-    const expireAt = Date.now() + 60000;
+    const expireAt = Date.now() + 180000;
     const task = new Task(taskFunc, expireAt, '$map', 'NewBattleWindow');
     ctrl.addTask(task);
     return;
@@ -23,7 +23,7 @@ function mappingRoutine(ctrl) {
       ctrl.player['channel']?.send('$map');
       return { 'battleMsg': null, 'bc': 0 };
     };
-    const expireAt = Date.now() + 60000;
+    const expireAt = Date.now() + 180000;
     const task = new Task(taskFunc, expireAt, '$map', 'NewBattleWindow');
     ctrl.addTask(task);
     return;

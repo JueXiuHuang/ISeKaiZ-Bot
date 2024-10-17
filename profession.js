@@ -13,7 +13,7 @@ function professionRoutine(ctrl) {
       ctrl.player['channel']?.send('$' + profession);
       return {};
     };
-    const expireAt = Date.now() + 60000;
+    const expireAt = Date.now() + 180000;
     const task = new Task(taskFunc, expireAt, '$profession', 'NewProfWindow');
     ctrl.addTask(task);
     return;
@@ -24,7 +24,7 @@ function professionRoutine(ctrl) {
       ctrl.player['channel'].send('$' + profession);
       return { 'profMsg': null , 'pc': 0};
     };
-    const expireAt = Date.now() + 60000;
+    const expireAt = Date.now() + 180000;
     const task = new Task(taskFunc, expireAt, '$profession', 'NewProfWindow');
     ctrl.addTask(task);
     return;

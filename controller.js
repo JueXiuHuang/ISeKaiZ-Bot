@@ -43,8 +43,8 @@ class Controller {
     this.queue = [];
     this.taskTypeCounter = {};
     this.lastExecuteAt = 0;
-    this.gap = 3000; // can change in future, the unit is milliseconds
-    this.bias = 4000;
+    this.gap = 2000; // can change in future, the unit is milliseconds
+    this.bias = 3000;
     this.player = player;
     this.lock = false;
     Controller.instance = this;
