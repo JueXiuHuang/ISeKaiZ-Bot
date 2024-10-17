@@ -63,10 +63,17 @@ class Controller {
     logger('Add task success');
   }
 
+  priorityAging() {
+    this.queue.forEach((task) => {
+      task.rank -= 1;
+    });
+  }
+
   async checkQueueAndExecute() {
     if (this.lock) return;
     this.lock = true;
     while (this.queue.length > 0) {
+      this.priorityAging();
       this.queue = this.queue.sort((a, b) => TaskTypes[a.tag].rank - TaskTypes[b.tag].rank);
       const logFunc = () => {
         console.log('Task queue info:');
