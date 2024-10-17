@@ -1,5 +1,5 @@
 const { expFood = 'sushi-roll' } = require('./config.json');
-const { Task, TaskRank } = require('./controller');
+const { Task } = require('./controller');
 const { saveUserData } = require('./player');
 const { logger, formatTimeString } = require('./log');
 

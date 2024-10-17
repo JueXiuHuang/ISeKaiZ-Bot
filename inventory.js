@@ -1,5 +1,5 @@
 const { sellEquip = ['F', 'E', 'D'] } = require('./config.json');
-const { Task, TaskRank } = require('./controller');
+const { Task } = require('./controller');
 const { isVerify } = require('./helper');
 
 async function inventoryRoutine(ctrl) {

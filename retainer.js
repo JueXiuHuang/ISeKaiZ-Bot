@@ -1,6 +1,6 @@
 const { isVerify, delayer } = require('./helper');
 const { errorLogWrapper, logger } = require('./log');
-const { Task, TaskRank } = require('./controller');
+const { Task } = require('./controller');
 
 function retainerRoutine(ctrl) {
   if (ctrl.player['channel'] === null) return;

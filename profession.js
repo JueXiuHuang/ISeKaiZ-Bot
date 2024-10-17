@@ -1,6 +1,6 @@
 const { profession, retryCount } = require('./config.json');
 const { errorLogWrapper, logger } = require('./log');
-const { Task, TaskRank } = require('./controller');
+const { Task } = require('./controller');
 const { States } = require('./player')
 
 // @param {Player} player
