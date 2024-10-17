@@ -104,7 +104,7 @@ class Controller {
       }
 
 
-      if (Object.keys(modified).length > 0 && task.retry < retryCount) {
+      if (Object.keys(modified).length > 0 && task.retry < retryCount && task.tag !== 'Food') {
         logger('Task failed, add to queue for retry');
         task.retry += 1;
         this.addTask(task);
