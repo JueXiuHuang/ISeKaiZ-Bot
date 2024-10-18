@@ -23,7 +23,7 @@ function checkTreasure(ctrl, message) {
       } catch (err) {
         console.log(err);
       }
-      return {};
+      return [{}, true];
     };
     const expireAt = Date.now() + 10000;
     const tag = TaskType.Treasure;

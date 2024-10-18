@@ -1,5 +1,6 @@
 const { errorLogWrapper } = require('./log');
 const { Task, TaskType, getDefaultRank } = require('./controller');
+const { makeHash } = require('./helper');
 
 
 async function emojiVerifier(ctrl, message) {
@@ -24,7 +25,18 @@ async function emojiVerifier(ctrl, message) {
     }
   }
 
+  let key = '';
+  let tag = 'Unknown';
+  if (emoji === 'Battle') {
+    key = 'bhash';
+    tag = TaskType.EVB;
+  } else {
+    key = 'phash';
+    tag = TaskType.EVP;
+  }
+
   const taskFunc = async () => {
+    let hash = makeHash();
     try {
       await message.clickButton({ X: answer, Y: 0 })
         .catch((err) => {
@@ -37,13 +49,12 @@ async function emojiVerifier(ctrl, message) {
     } catch (err) {
       console.log(err);
     }
-    return {};
+    return [{ [key]: hash }, true];
   };
   const expireAt = Date.now() + 30000;
-  const tag = TaskType.EVerify;
   let rank = getDefaultRank(tag);
   const task = new Task(taskFunc, expireAt, `emoji verify: ${emoji}`, tag, rank);
-  ctrl.addTask(task)
+  ctrl.addTask(task);
 }
 
 module.exports = { emojiVerifier };

@@ -9,7 +9,7 @@ async function inventoryRoutine(ctrl) {
   ctrl.player['sell'] = 0;
   const taskFunc = () => {
     ctrl.player['channel']?.send(`$sell equipment all ${sellEquip[ctrl.player['sell']]}`);
-    return {};
+    return [{}, true];
   };
   const expireAt = Date.now() + 120000;
   const tag = TaskType.Inv;
@@ -33,7 +33,7 @@ function inventoryHandler(ctrl, title, desc) {
   if (ctrl.player['sell'] >= sellEquip.length) return;
   const taskFunc = () => {
     ctrl.player['channel'].send(`$sell equipment all ${sellEquip[ctrl.player['sell']]}`);
-    return {};
+    return [{}, true];
   };
   const expireAt = Date.now() + 120000;
   const tag = TaskType.Inv;

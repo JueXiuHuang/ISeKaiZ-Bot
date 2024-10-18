@@ -29,7 +29,7 @@ async function ImmediatelyRoutineScript() {
     logger('Try to solve verify image');
     const taskFunc = () => {
       ctrl.player['channel']?.send('$verify');
-      return {};
+      return [{}, true];
     };
     const expireAt = Date.now() + 60000;
     const tag = TaskType.Verfiy;
@@ -44,7 +44,7 @@ async function ImmediatelyRoutineScript() {
       const result = await captchaAI.predict(ctrl.player['verifyImg'].url);
       logger(`Verify Image Result: ${result}`)
       ctrl.player['channel']?.send(result);
-      return {};
+      return [{}, true];
     };
     const expireAt = Date.now() + 60000;
     const tag = TaskType.Verfiy;
@@ -57,7 +57,6 @@ async function ImmediatelyRoutineScript() {
 
 async function shortRoutineScript() {
   logger(`BS: ${ctrl.player['bs']} | PS: ${ctrl.player['ps']}`);
-  logger(`BC: ${ctrl.player['bc']} | PC: ${ctrl.player['pc']}`);
 
   if ([States.NeedVerify_Image, States.Verifying_Image].includes(ctrl.player['bs'])) {
     logger('[Battle] Encounter verify states')
@@ -222,8 +221,36 @@ function mapHandler(ctrl, message, title, content) {
     }
     logger(logFn, seperator = true);
     ctrl.player['bs'] = States.Idle;
-    ctrl.player['bc'] = 0;
     ctrl.player['battleMsg'] = message;
+
+    const taskFunc = async () => {
+      const modified = {};
+      let success = true;
+      try {
+        await ctrl.player['battleMsg'].clickButton({ X: 0, Y: 0 })
+          .catch(err => {
+            logFunc = () => {
+              console.log('start new battle fail');
+              console.log('Error message: ' + err.message);
+              console.log(err);
+            };
+            errorLogWrapper(logFunc);
+            logger('Inner Error');
+            success = false;
+          });
+      } catch (err) {
+        console.log(err);
+        logger('Outer error');
+        success = false;
+      }
+
+      return [modified, success];
+    };
+    const expireAt = Date.now() + 30000;
+    const tag = TaskType.NB;
+    let rank = getDefaultRank(tag);
+    const task = new Task(taskFunc, expireAt, 'start new battle', tag, rank);
+    ctrl.addTask(task);
     return;
   }
 
@@ -233,8 +260,6 @@ function mapHandler(ctrl, message, title, content) {
       console.log('Reset battle counter');
     }
     logger(logFn, seperator = true);
-    // ctrl.player['bs'] = States.Idle;
-    ctrl.player['bc'] = 0;
     return;
   }
 
@@ -245,48 +270,113 @@ function mapHandler(ctrl, message, title, content) {
     }
     logger(logFn, seperator = true);
     ctrl.player['bs'] = States.InBattle;
-    ctrl.player['bc'] = 0;
     return;
   }
 
   if (title.includes('Better Luck Next Time!')) {
     logger('Reset battle counter');
     ctrl.player['bs'] = States.Defeat;
-    ctrl.player['bc'] = 0;
     return;
   }
 
   if (content.includes('You are already in a battle')) {
     const customSep = '------------IN BATTLE------------'
     logFn = () => {
-      console.log('Battle Counter: ' + ctrl.player['bc']);
       console.log('Battle State: ' + ctrl.player['bs']);
+      console.log('Battle Hash: ' + ctrl.player['bhash']);
     }
     logger(logFn, seperator = true, customSepStart = customSep, customSepEnd = customSep);
-    if (ctrl.player['bc'] > retryCount || ctrl.player['bs'] == States.Idle) {
-      logger('try to leave battle...');
-      const taskFunc = async () => {
-        try {
-          message.clickButton({ X: 0, Y: 0 })
-            .catch(err => {
-              logFunc = () => {
-                console.log('Leave battle got error');
-                console.log(err);
-              };
-              errorLogWrapper(logFunc);
-            })
-        } catch (err) {
-          console.log(err);
-        }
-        return {};
-      };
-      const expireAt = Date.now() + 30000;
-      const tag = TaskType.NB;
-      let rank = getDefaultRank(tag);
-      const task = new Task(taskFunc, expireAt, 'leave battle', tag, rank);
-      ctrl.addTask(task);
-    }
+    
+    logger('try to leave battle...');
+    const taskFunc = async () => {
+      try {
+        message.clickButton({ X: 0, Y: 0 })
+          .catch(err => {
+            logFunc = () => {
+              console.log('Leave profession got error');
+              console.log(err);
+            };
+            errorLogWrapper(logFunc);
+          })
+      } catch (err) {
+        console.log(err);
+      }
+      return {};
+    };
+    const expireAt = Date.now() + 30000;
+    const tag = TaskType.NP;
+    let rank = getDefaultRank(tag);
+    const task = new Task(taskFunc, expireAt, 'leave profession', tag, rank);
+    ctrl.addTask(task);
+    return;
+  }
+}
 
+function professionHandler(ctrl, event, message, title, desc, content) {
+  if (['Mining', 'Fishing', 'Foraging'].includes(title) && event === 'create') {
+    logger('Open new profession window');
+    logger('Reset profession counter')
+    ctrl.player['ps'] = States.Idle;
+    ctrl.player['profMsg'] = message;
+
+    const taskFunc = async () => {
+      const modified = {};
+      let success = true;
+      try {
+        await ctrl.player['profMsg'].clickButton({ X: 0, Y: 0 })
+          .catch(err => {
+            logFunc = () => {
+              console.log('click profession button fail');
+              console.log('Error message: ' + err.message);
+              console.log(err);
+            };
+            errorLogWrapper(logFunc);
+            logger('Inner error');
+            success = false;
+          });
+      } catch (err) {
+        console.log(err);
+        logger('Outer error');
+        success = false;
+      }
+      return [modified, success];
+    };
+    const expireAt = Date.now() + 30000;
+    const tag = TaskType.NP;
+    let rank = getDefaultRank(tag);
+    const task = new Task(taskFunc, expireAt, 'start profession', tag, rank);
+    ctrl.addTask(task);
+    return;
+  }
+
+  if (title.includes('You caught a')) {
+    logger('Profession finish (Fish)');
+    return;
+  }
+
+  if (title.includes('Mining Complete!')) {
+    logger('Profession finish (Mine)');
+    return;
+  }
+
+  if (title.includes('You found a')) {
+    logger('Profession finish (Forage)');
+    return;
+  }
+
+  if (title === 'You started mining!') {
+    logger('Profession start (Mine)');
+    ctrl.player['ps'] = States.Doing;
+    return;
+  }
+  if (title === 'You cast your rod!') {
+    logger('Profession start (Fish)');
+    ctrl.player['ps'] = States.Doing;
+    return;
+  }
+  if (title === 'You start foraging!') {
+    logger('Profession start (Forage)');
+    ctrl.player['ps'] = States.Doing;
     return;
   }
 
@@ -294,91 +384,32 @@ function mapHandler(ctrl, message, title, content) {
   if (regex.test(content)) {
     const customSep = '------------IN PROFESSION------------';
     logFn = () => {
-      console.log('Profession Counter: ' + ctrl.player['pc']);
       console.log('Profession State: ' + ctrl.player['ps']);
+      console.log('Profession Hash: ' + ctrl.player['phash']);
     }
     logger(logFn, seperator = true, customSepStart = customSep, customSepEnd = customSep);
-    if (ctrl.player['pc'] > retryCount || ctrl.player['ps'] == States.Idle) {
-      logger('try to leave profession...');
-      const taskFunc = async () => {
-        try {
-          message.clickButton({ X: 0, Y: 0 })
-            .catch(err => {
-              logFunc = () => {
-                console.log('Leave profession got error');
-                console.log(err);
-              };
-              errorLogWrapper(logFunc);
-            })
-        } catch (err) {
-          console.log(err);
-        }
-        return {};
-      };
-      const expireAt = Date.now() + 30000;
-      const tag = TaskType.NP;
-      let rank = getDefaultRank(tag);
-      const task = new Task(taskFunc, expireAt, 'leave profession', tag, rank);
-      ctrl.addTask(task);
-    }
+    logger('try to leave profession...');
 
-    return;
-  }
-}
-
-function professionHandler(ctrl, event, message, title, description, content) {
-  if (['Mining', 'Fishing', 'Foraging'].includes(title) && event === 'create') {
-    logger('Open new profession window');
-    logger('Reset profession counter')
-    ctrl.player['ps'] = States.Idle;
-    ctrl.player['pc'] = 0;
-    ctrl.player['profMsg'] = message;
-    return;
-  }
-
-  if (title.includes('You caught a')) {
-    logger('Profession finish (Fish)');
-    logger('Reset profession counter');
-    // ctrl.player['ps'] = States.Idle;
-    ctrl.player['pc'] = 0;
-    return;
-  }
-
-  if (title.includes('Mining Complete!')) {
-    logger('Profession finish (Mine)');
-    logger('Reset profession counter');
-    // ctrl.player['ps'] = States.Idle;
-    ctrl.player['pc'] = 0;
-    return;
-  }
-
-  if (title.includes('You found a')) {
-    logger('Profession finish (Forage)');
-    logger('Reset profession counter');
-    // ctrl.player['ps'] = States.Idle;
-    ctrl.player['pc'] = 0;
-    return;
-  }
-
-  if (title === 'You started mining!') {
-    logger('Profession start (Mine)');
-    logger('Reset profession counter');
-    ctrl.player['ps'] = States.Doing;
-    ctrl.player['pc'] = 0;
-    return;
-  }
-  if (title === 'You cast your rod!') {
-    logger('Profession start (Fish)');
-    logger('Reset profession counter');
-    ctrl.player['ps'] = States.Doing;
-    ctrl.player['pc'] = 0;
-    return;
-  }
-  if (title === 'You start foraging!') {
-    logger('Profession start (Forage)');
-    logger('Reset profession counter');
-    ctrl.player['ps'] = States.Doing;
-    ctrl.player['pc'] = 0;
+    const taskFunc = async () => {
+      try {
+        message.clickButton({ X: 0, Y: 0 })
+          .catch(err => {
+            logFunc = () => {
+              console.log('Leave profession got error');
+              console.log(err);
+            };
+            errorLogWrapper(logFunc);
+          })
+      } catch (err) {
+        console.log(err);
+      }
+      return {};
+    };
+    const expireAt = Date.now() + 30000;
+    const tag = TaskType.NP;
+    let rank = getDefaultRank(tag);
+    const task = new Task(taskFunc, expireAt, 'leave profession', tag, rank);
+    ctrl.addTask(task);
     return;
   }
 }

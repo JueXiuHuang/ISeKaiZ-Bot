@@ -11,7 +11,8 @@ class TaskSetting {
 
 const TaskType = {
   Verfiy: 'Verify',
-  EVerify: 'EmojiVerify',
+  EVB: 'EmojiVerifyBattle',
+  EVP: 'EmojiVerifyProfession',
   Treasure: 'Treasure',
   Inv: 'Inventory',
   Food: 'Food',
@@ -24,7 +25,8 @@ const TaskType = {
 
 const TaskSettingList = {
   'Verify': new TaskSetting(rank = -999, limit = 999),
-  'EmojiVerify': new TaskSetting(rank = 2, limit = 999),
+  'EmojiVerifyBattle': new TaskSetting(rank = 2, limit = 1),
+  'EmojiVerifyProfession': new TaskSetting(rank = 2, limit = 1),
   'Treasure': new TaskSetting(rank = 1, limit = 999),
   'Inventory': new TaskSetting(rank = 1, limit = 2),
   'Food': new TaskSetting(rank = 1, limit = 1),
@@ -127,14 +129,14 @@ class Controller {
         logger('Controller delay ends');
       }
       let modified;
+      let success;
       if (task.func.constructor.name === 'AsyncFunction') {
-        modified = await task.func();
+        [modified, success] = await task.func();
       } else {
-        modified = task.func();
+        [modified, success] = task.func();
       }
 
-
-      if (Object.keys(modified).length > 0 && task.retry < retryCount && task.tag !== 'Food') {
+      if (!success && task.retry < retryCount) {
         logger('Task failed, add to queue for retry');
         task.retry += 1;
         this.addTask(task);

@@ -10,7 +10,7 @@ function mappingRoutine(ctrl) {
   if (ctrl.player['battleMsg'] === null) {
     const taskFunc = () => {
       ctrl.player['channel']?.send('$map');
-      return {};
+      return [{}, true];
     };
     const expireAt = Date.now() + 180000;
     const tag = TaskType.NBW;
@@ -20,10 +20,14 @@ function mappingRoutine(ctrl) {
     return;
   }
 
-  if (ctrl.player['bs'] === States.Idle && ctrl.player['bc'] > retryCount) {
+  if (ctrl.player['bhash'] === ctrl.player['prevBhash']) {
+    if (ctrl.player['bs'] === States.Ban) return;
+    if (ctrl.player['bs'] === States.Defeat) return;
+
+    logger(`Battle hash duplicate: ${ctrl.player['bhash']}`)
     const taskFunc = () => {
       ctrl.player['channel']?.send('$map');
-      return { 'battleMsg': null, 'bc': 0 };
+      return [{ 'battleMsg': null }, true];
     };
     const expireAt = Date.now() + 180000;
     const tag = TaskType.NBW;
@@ -33,48 +37,7 @@ function mappingRoutine(ctrl) {
     return;
   }
 
-  if (ctrl.player['bs'] === States.Idle) {
-    const taskFunc = async () => {
-      const modified = {};
-      try {
-        await ctrl.player['battleMsg'].clickButton({ X: 0, Y: 0 })
-          .catch(err => {
-            logFunc = () => {
-              console.log('start new battle fail');
-              console.log('Error message: ' + err.message);
-              console.log(err);
-            };
-            errorLogWrapper(logFunc);
-            logger('Inner Error');
-            logger(`Add battle counter, expected value: ${ctrl.player['bc'] + 1}`)
-            modified['bc'] = ctrl.player['bc'] + 1;
-          });
-      } catch (err) {
-        console.log(err);
-        logger('Outer error');
-        logger(`Add battle counter, expected value: ${ctrl.player['bc'] + 1}`)
-        modified['bc'] = ctrl.player['bc'] + 1;
-      }
-
-      return modified;
-    };
-    const expireAt = Date.now() + 30000;
-    const tag = TaskType.NB;
-    let rank = getDefaultRank(tag);
-    const task = new Task(taskFunc, expireAt, 'start new battle', tag, rank);
-    ctrl.addTask(task);
-
-    return;
-  }
-
-  if (ctrl.player['bs'] === States.InBattle) {
-    ctrl.player['bc'] += 1;
-    if (ctrl.player['bc'] > retryCount) {
-      logger('Battle might stuck, force finish...');
-      ctrl.player['bs'] = States.Idle;
-    }
-    return;
-  }
+  ctrl.player['prevBhash'] = ctrl.player['bhash'];
 }
 
 module.exports = { mappingRoutine };

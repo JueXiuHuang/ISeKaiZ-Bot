@@ -18,7 +18,7 @@ function foodRoutine(ctrl) {
     nowDateString = formatTimeString(now.getTime());
     logger(`Eat at ${nowDateString}`);
     saveUserData(ctrl.player['userData']);
-    return { 'userData': ctrl.player['userData'] };
+    return [{ 'userData': ctrl.player['userData'] }, true];
   };
   const expireAt = Date.now() + 60000;
   const tag = TaskType.Food;

@@ -8,7 +8,7 @@ function retainerRoutine(ctrl) {
 
   const taskFunc = () => {
     ctrl.player['channel']?.send('$hired');
-    return {};
+    return [{}, true];
   };
   const expireAt = Date.now() + 20000;
   const tag = TaskType.Retainer;
@@ -43,7 +43,7 @@ async function retainerHandler(ctrl, message, desc, oldDesc) {
       } catch (err) {
         console.log(err);
       }
-      return {};
+      return [{}, true];
     };
     const expireAt = Date.now() + 20000;
     const tag = TaskType.Retainer;
@@ -71,7 +71,7 @@ async function retainerHandler(ctrl, message, desc, oldDesc) {
     } catch (err) {
       console.log(err);
     }
-    return {};
+    return [{}, true];
   };
   const expireAt = Date.now() + 20000;
   const tag = TaskType.Retainer;
