@@ -301,7 +301,7 @@ function mapHandler(ctrl, message, title, content) {
       } catch (err) {
         console.log(err);
       }
-      return {};
+      return [{}, true];
     };
     const expireAt = Date.now() + 30000;
     const tag = TaskType.NP;
@@ -403,7 +403,7 @@ function professionHandler(ctrl, event, message, title, desc, content) {
       } catch (err) {
         console.log(err);
       }
-      return {};
+      return [{}, true];
     };
     const expireAt = Date.now() + 30000;
     const tag = TaskType.NP;
