@@ -75,7 +75,7 @@ class Controller {
   }
 
   addTask(task) {
-    logger(`Try add task: ${task.info}`);
+    logger(`Try add task: <${task.info}>`);
 
     const count = this.taskTypeCounter[task.tag] ?? 0;
     if (count >= getTaskLimit(task.tag)) {
