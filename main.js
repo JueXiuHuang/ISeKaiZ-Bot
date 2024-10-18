@@ -1,5 +1,5 @@
 const { Client } = require('discord.js-selfbot-v13');
-const { token, channelId, delayMs, retryCount, captchaModel } = require('./config.json');
+const { token, channelId, checkDelay = 60000, captchaModel } = require('./config.json');
 const CaptchaAI = require('./captcha').CaptchaAI;
 const { Player, States, newPlayer } = require('./player');
 const { professionRoutine } = require('./profession');
@@ -55,7 +55,7 @@ async function ImmediatelyRoutineScript() {
   }
 }
 
-async function shortRoutineScript() {
+async function checkRoutineScript() {
   logger(`BS: ${ctrl.player['bs']} | PS: ${ctrl.player['ps']}`);
 
   if ([States.NeedVerify_Image, States.Verifying_Image].includes(ctrl.player['bs'])) {
@@ -83,7 +83,7 @@ async function threeHrFoodScript() {
 }
 
 setInterval(ctrl.checkQueueAndExecute.bind(ctrl), 200);
-setInterval(shortRoutineScript, delayMs);
+setInterval(checkRoutineScript, checkDelay);
 setInterval(oneHrRoutineScript, 1 * 60 * 60 * 1000 + 30 * 1000);
 setInterval(threeHrFoodScript, 3 * 60 * 60 * 1000);
 
@@ -286,7 +286,7 @@ function mapHandler(ctrl, message, title, content) {
       console.log('Battle Hash: ' + ctrl.player['bhash']);
     }
     logger(logFn, seperator = true, customSepStart = customSep, customSepEnd = customSep);
-    
+
     logger('try to leave battle...');
     const taskFunc = async () => {
       try {

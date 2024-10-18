@@ -1,5 +1,5 @@
 const { delayer } = require('./helper');
-const { retryCount } = require('./config.json');
+const { retryCount, taskGap = 2000, taskBias = 3000 } = require('./config.json');
 const { logger } = require('./log');
 
 class TaskSetting {
@@ -67,8 +67,8 @@ class Controller {
     this.queue = [];
     this.taskTypeCounter = {};
     this.lastExecuteAt = 0;
-    this.gap = 2000; // can change in future, the unit is milliseconds
-    this.bias = 3000;
+    this.gap = taskGap;
+    this.bias = taskBias;
     this.player = player;
     this.lock = false;
     Controller.instance = this;
