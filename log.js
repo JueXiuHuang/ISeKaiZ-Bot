@@ -9,13 +9,13 @@ function errorLogWrapper(logFunc) {
   console.log('MMMMMMMM Error Block MMMMMMMM');
 }
 
-function logger(log, seperator=false, customSepStart=null, customSepEnd=null) {
+function logger(log, seperator = false, customSepStart = null, customSepEnd = null) {
   const sepStart = customSepStart ?? '---------------'
   const sepEdn = customSepEnd ?? '---------------'
   const formattedDate = format(new Date(), 'yyyy/dd/MM HH:mm:ss', { locale: zhTW });
-  
+
   if (seperator) { console.log(sepStart) }
-  
+
   if (typeof log === 'string') {
     console.log(`[${formattedDate}] ${log}`);
   } else if (typeof log === 'function') {

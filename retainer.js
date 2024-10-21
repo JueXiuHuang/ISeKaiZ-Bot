@@ -1,6 +1,6 @@
-const { isVerify, delayer } = require('./helper');
+const { isVerify } = require('./helper');
 const { errorLogWrapper, logger } = require('./log');
-const { Task } = require('./controller');
+const { Task, TaskType, getDefaultRank } = require('./controller');
 
 function retainerRoutine(ctrl) {
   if (ctrl.player['channel'] === null) return;
@@ -8,10 +8,12 @@ function retainerRoutine(ctrl) {
 
   const taskFunc = () => {
     ctrl.player['channel']?.send('$hired');
-    return {};
+    return [{}, true];
   };
-  const expireAt = Date.now() + 10000;
-  const task = new Task(taskFunc, expireAt, '$hired');
+  const expireAt = Date.now() + 20000;
+  const tag = TaskType.Retainer;
+  let rank = getDefaultRank(tag);
+  const task = new Task(taskFunc, expireAt, '$hired', tag, rank);
   ctrl.addTask(task);
 }
 
@@ -22,18 +24,18 @@ async function retainerHandler(ctrl, message, desc, oldDesc) {
 
   // retainer should stop at last page automatically
   // this is just prevent infinite loop
-  await delayer(5000, 10000, '(collect retainer)');
+  // await delayer(5000, 10000, '(collect retainer)');
   const elapsed = desc.match(regex)?.[1] ?? '0';
   if (elapsed === '0') {
-    const taskFunc = () => {
+    const taskFunc = async () => {
       try {
-        message.clickButton({ X: 1, Y: 0 })
+        await message.clickButton({ X: 1, Y: 0 })
           .then(() => {
-            console.log('Turn to next page success');
+            logger('Turn to next page success');
           })
           .catch(err => {
             logFunc = () => {
-              console.log('Turn to next page success');
+              console.log('Turn to next page fail');
               console.log(err);
             };
             errorLogWrapper(logFunc);
@@ -41,10 +43,12 @@ async function retainerHandler(ctrl, message, desc, oldDesc) {
       } catch (err) {
         console.log(err);
       }
-      return {};
+      return [{}, true];
     };
-    const expireAt = Date.now() + 10000;
-    const task = new Task(taskFunc, expireAt, 'retainer trun to next page');
+    const expireAt = Date.now() + 20000;
+    const tag = TaskType.Retainer;
+    let rank = getDefaultRank(tag);
+    const task = new Task(taskFunc, expireAt, '$hired Next Page', tag, rank);
     ctrl.addTask(task);
 
     return;
@@ -55,7 +59,7 @@ async function retainerHandler(ctrl, message, desc, oldDesc) {
     try {
       message.clickButton({ X: 2, Y: 0 })
         .then(() => {
-          console.log('Harvest material success');
+          logger('Harvest material success');
         })
         .catch(err => {
           logFunc = () => {
@@ -67,10 +71,12 @@ async function retainerHandler(ctrl, message, desc, oldDesc) {
     } catch (err) {
       console.log(err);
     }
-    return {};
+    return [{}, true];
   };
-  const expireAt = Date.now() + 10000;
-  const task = new Task(taskFunc, expireAt, 'retainer harvest');
+  const expireAt = Date.now() + 20000;
+  const tag = TaskType.Retainer;
+  let rank = getDefaultRank(tag);
+  const task = new Task(taskFunc, expireAt, '$hired Collect', tag, rank);
   ctrl.addTask(task);
 }
 

@@ -34,14 +34,16 @@ function newPlayer() {
   return {
     'bs': States.Idle,
     'ps': States.Idle,
-    'bc': 0,
-    'pc': 0,
     'channel': null,
     'battleMsg': null,
     'profMsg': null,
     'verifyImg': null,
     'sell': 0,
     'userData': userData,
+    'bhash': '',
+    'phash': '',
+    'prevBhash': '',
+    'prevPhash': '',
   };
 }
 
