@@ -216,11 +216,7 @@ function verifyHandler(message, description, mention, user) {
 
 function mapHandler(ctrl, message, title, content) {
   if (title.includes('Current Location:')) {
-    logFn = () => {
-      console.log('Open new battle window');
-      console.log('Reset battle counter');
-    }
-    logger(logFn, seperator = true);
+    logger('Open new battle window, reset battle counter');
     ctrl.player['bs'] = States.Idle;
     ctrl.player['battleMsg'] = message;
 
@@ -249,26 +245,18 @@ function mapHandler(ctrl, message, title, content) {
   }
 
   if (title.includes('You Defeated A')) {
-    logFn = () => {
-      console.log('Battle finish');
-      console.log('Reset battle counter');
-    }
-    logger(logFn, seperator = true);
+    logger('Battle finish, reset battle counter');
     return;
   }
 
   if (title.includes('BATTLE STARTED')) {
-    logFn = () => {
-      console.log('Battle start');
-      console.log('Reset battle counter');
-    }
-    logger(logFn, seperator = true);
+    logger('Battle start, reset battle counter');
     ctrl.player['bs'] = States.InBattle;
     return;
   }
 
   if (title.includes('Better Luck Next Time!')) {
-    logger('Reset battle counter');
+    logger('You dead, reset battle counter');
     ctrl.player['bs'] = States.Defeat;
     return;
   }
