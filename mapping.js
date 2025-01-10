@@ -1,7 +1,7 @@
 const { retryCount } = require('./config.json');
 const { States } = require('./player');
 const { Task, TaskType, getDefaultRank } = require('./controller');
-const { errorLogWrapper, logger } = require('./log');
+const { logger } = require('./log');
 
 // @param {Player} player
 function mappingRoutine(ctrl) {

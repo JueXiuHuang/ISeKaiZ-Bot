@@ -1,4 +1,4 @@
-const { errorLogWrapper } = require('./log');
+const { handleError } = require('./error');
 const { Task, TaskType, getDefaultRank } = require('./controller');
 const { makeHash } = require('./helper');
 
@@ -40,11 +40,7 @@ async function emojiVerifier(ctrl, message) {
     try {
       await message.clickButton({ X: answer, Y: 0 })
         .catch((err) => {
-          logFunc = () => {
-            console.log('Verify emoji got error');
-            console.log(err);
-          };
-          errorLogWrapper(logFunc);
+          handleError(err, 'Verify emoji got error')
         })
     } catch (err) {
       console.log(err);

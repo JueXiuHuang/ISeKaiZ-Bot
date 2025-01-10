@@ -10,7 +10,8 @@ const { foodRoutine } = require('./food');
 const { inventoryRoutine, inventoryHandler } = require('./inventory')
 const { Task, Controller, TaskType, getDefaultRank } = require('./controller')
 const { messageExtractor } = require('./helper');
-const { errorLogWrapper, logger } = require('./log');
+const { logger } = require('./log');
+const { handleError } = require('./error');
 const { emojiVerifier } = require('./verifier');
 const args = process.argv.slice(2);
 
@@ -229,14 +230,7 @@ function mapHandler(ctrl, message, title, content) {
       try {
         await ctrl.player['battleMsg'].clickButton({ X: 0, Y: 0 })
           .catch(err => {
-            logFunc = () => {
-              console.log('start new battle fail');
-              console.log('Error message: ' + err.message);
-              console.log(err);
-            };
-            errorLogWrapper(logFunc);
-            logger('Inner Error');
-            success = false;
+            success = handleError(err, 'start new battle fail');
           });
       } catch (err) {
         console.log(err);
@@ -292,11 +286,7 @@ function mapHandler(ctrl, message, title, content) {
       try {
         message.clickButton({ X: 0, Y: 0 })
           .catch(err => {
-            logFunc = () => {
-              console.log('Leave profession got error');
-              console.log(err);
-            };
-            errorLogWrapper(logFunc);
+            handleError(err, 'Leave profession got error');
           })
       } catch (err) {
         console.log(err);
@@ -325,14 +315,7 @@ function professionHandler(ctrl, event, message, title, desc, content) {
       try {
         await ctrl.player['profMsg'].clickButton({ X: 0, Y: 0 })
           .catch(err => {
-            logFunc = () => {
-              console.log('click profession button fail');
-              console.log('Error message: ' + err.message);
-              console.log(err);
-            };
-            errorLogWrapper(logFunc);
-            logger('Inner error');
-            success = false;
+            success = handleError(err, 'click profession button fail');
           });
       } catch (err) {
         console.log(err);
@@ -394,11 +377,7 @@ function professionHandler(ctrl, event, message, title, desc, content) {
       try {
         message.clickButton({ X: 0, Y: 0 })
           .catch(err => {
-            logFunc = () => {
-              console.log('Leave profession got error');
-              console.log(err);
-            };
-            errorLogWrapper(logFunc);
+            handleError(err, 'Leave profession got error')
           })
       } catch (err) {
         console.log(err);

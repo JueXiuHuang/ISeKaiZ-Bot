@@ -1,7 +1,7 @@
 const { treasureHunter = false, treasureGuild = '' } = require('./config.json');
 const { Task, TaskType, getDefaultRank } = require('./controller');
 const { messageExtractor } = require('./helper');
-const { errorLogWrapper } = require('./log');
+const { handleError } = require('./error');
 
 function checkTreasure(ctrl, message) {
   if (treasureGuild === '' || !treasureHunter) return;
@@ -14,11 +14,7 @@ function checkTreasure(ctrl, message) {
       try {
         message.clickButton({ X: 0, Y: 0 })
           .catch(err => {
-            logFunc = () => {
-              console.log('Claim chest fail');
-              console.log(err);
-            };
-            errorLogWrapper(logFunc);
+            handleError(err, 'Claim chest fail');
           })
       } catch (err) {
         console.log(err);

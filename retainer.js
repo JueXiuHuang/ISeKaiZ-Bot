@@ -1,5 +1,6 @@
 const { isVerify } = require('./helper');
-const { errorLogWrapper, logger } = require('./log');
+const { logger } = require('./log');
+const { handleError } = require('./error');
 const { Task, TaskType, getDefaultRank } = require('./controller');
 
 function retainerRoutine(ctrl) {
@@ -34,11 +35,7 @@ async function retainerHandler(ctrl, message, desc, oldDesc) {
             logger('Turn to next page success');
           })
           .catch(err => {
-            logFunc = () => {
-              console.log('Turn to next page fail');
-              console.log(err);
-            };
-            errorLogWrapper(logFunc);
+            handleError(err, 'Turn to next page fail')
           })
       } catch (err) {
         console.log(err);
@@ -62,11 +59,7 @@ async function retainerHandler(ctrl, message, desc, oldDesc) {
           logger('Harvest material success');
         })
         .catch(err => {
-          logFunc = () => {
-            console.log('Collect retainer material fail');
-            console.log(err);
-          };
-          errorLogWrapper(logFunc);
+          handleError(err, 'Collect retainer material fail')
         })
     } catch (err) {
       console.log(err);
