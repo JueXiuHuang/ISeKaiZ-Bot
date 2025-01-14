@@ -11,7 +11,7 @@ function retainerRoutine(ctrl) {
     ctrl.player['channel']?.send('$hired');
     return [{}, true];
   };
-  const expireAt = Date.now() + 20000;
+  const expireAt = Date.now() + 120000;
   const tag = TaskType.Retainer;
   let rank = getDefaultRank(tag);
   const task = new Task(taskFunc, expireAt, '$hired', tag, rank);
@@ -42,7 +42,7 @@ async function retainerHandler(ctrl, message, desc, oldDesc) {
       }
       return [{}, true];
     };
-    const expireAt = Date.now() + 20000;
+    const expireAt = Date.now() + 120000;
     const tag = TaskType.Retainer;
     let rank = getDefaultRank(tag);
     const task = new Task(taskFunc, expireAt, '$hired Next Page', tag, rank);
@@ -66,7 +66,7 @@ async function retainerHandler(ctrl, message, desc, oldDesc) {
     }
     return [{}, true];
   };
-  const expireAt = Date.now() + 20000;
+  const expireAt = Date.now() + 120000;
   const tag = TaskType.Retainer;
   let rank = getDefaultRank(tag);
   const task = new Task(taskFunc, expireAt, '$hired Collect', tag, rank);
