@@ -20,7 +20,7 @@ function foodRoutine(ctrl) {
     saveUserData(ctrl.player['userData']);
     return [{ 'userData': ctrl.player['userData'] }, true];
   };
-  const expireAt = Date.now() + 60000;
+  const expireAt = Date.now() + 180000;
   const tag = TaskType.Food;
   let rank = getDefaultRank(tag);
   const task = new Task(taskFunc, expireAt, 'Eat food', tag, rank);
