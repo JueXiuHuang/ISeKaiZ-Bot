@@ -83,7 +83,7 @@ async function threeHrFoodScript() {
   foodRoutine(ctrl);
 }
 
-setInterval(ctrl.checkQueueAndExecute.bind(ctrl), 200);
+setInterval(ctrl.checkQueueAndExecute.bind(ctrl), 10);
 setInterval(checkRoutineScript, checkDelay);
 setInterval(oneHrRoutineScript, 1 * 60 * 60 * 1000 + 30 * 1000);
 setInterval(threeHrFoodScript, 3 * 60 * 60 * 1000);
