@@ -9,14 +9,14 @@ function professionRoutine(ctrl) {
   if (profession === 'none') return;
 
   if (ctrl.player['profMsg'] === null) {
-    const taskFunc = () => {
+    const taskFunc = () => new Promise(resolve => {
       ctrl.player['channel']?.send('$' + profession);
-      return [{}, true];
-    };
+      resolve({})
+    })
     const expireAt = Date.now() + 180000;
     const tag = TaskType.NPW;
     let rank = getDefaultRank(tag);
-    const task = new Task(taskFunc, expireAt, '$profession', tag, rank);
+    const task = new Task(taskFunc, expireAt, '$profession since null msg', tag, rank);
     ctrl.addTask(task);
     return;
   }
@@ -25,10 +25,10 @@ function professionRoutine(ctrl) {
     if (ctrl.player['ps'] === States.Ban) return;
 
     logger(`Profession hash duplicate: ${ctrl.player['phash']}`);
-    const taskFunc = () => {
-      ctrl.player['channel'].send('$' + profession);
-      return [{ 'profMsg': null, 'ps': States.Idle }, true];
-    };
+    const taskFunc = () => new Promise(resolve => {
+      ctrl.player['channel']?.send('$' + profession);
+      resolve({ 'profMsg': null, 'ps': States.Idle })
+    })
     const expireAt = Date.now() + 180000;
     const tag = TaskType.NPW;
     let rank = getDefaultRank(tag);

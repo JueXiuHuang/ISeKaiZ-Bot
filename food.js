@@ -12,14 +12,14 @@ function foodRoutine(ctrl) {
     logger(`Last eat at ${dateString}, skip...`);
     return;
   }
-  const taskFunc = () => {
+  const taskFunc = () => new Promise(resolve => {
     ctrl.player['channel']?.send('$eat ' + expFood);
     ctrl.player['userData']['last_eat_at'] = now.getTime();
     nowDateString = formatTimeString(now.getTime());
     logger(`Eat at ${nowDateString}`);
     saveUserData(ctrl.player['userData']);
-    return [{ 'userData': ctrl.player['userData'] }, true];
-  };
+    resolve({ 'userData': ctrl.player['userData'] });
+  })
   const expireAt = Date.now() + 180000;
   const tag = TaskType.Food;
   let rank = getDefaultRank(tag);

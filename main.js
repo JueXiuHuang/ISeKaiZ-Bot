@@ -28,10 +28,10 @@ const ctrl = new Controller(player)
 async function ImmediatelyRoutineScript() {
   if (ctrl.player['bs'] === States.NeedVerify_Image || ctrl.player['ps'] === States.NeedVerify_Image) {
     logger('Try to solve verify image');
-    const taskFunc = () => {
+    const taskFunc = () => new Promise(resolve => {
       ctrl.player['channel']?.send('$verify');
-      return [{}, true];
-    };
+      resolve({});
+    })
     const expireAt = Date.now() + 60000;
     const tag = TaskType.Verfiy;
     let rank = getDefaultRank(tag);
@@ -41,12 +41,14 @@ async function ImmediatelyRoutineScript() {
   }
 
   if (ctrl.player['bs'] === States.Verifying_Image || ctrl.player['ps'] === States.Verifying_Image) {
-    const taskFunc = async () => {
-      const result = await captchaAI.predict(ctrl.player['verifyImg'].url);
-      logger(`Verify Image Result: ${result}`)
-      ctrl.player['channel']?.send(result);
-      return [{}, true];
-    };
+    const taskFunc = () => new Promise(resolve => {
+      captchaAI.predict(ctrl.player['verifyImg'].url)
+        .then((result) => {
+          logger(`Verify Image Result: ${result}`)
+          ctrl.player['channel']?.send(result);
+          resolve({});
+        });
+    })
     const expireAt = Date.now() + 60000;
     const tag = TaskType.Verfiy;
     let rank = getDefaultRank(tag);
@@ -83,7 +85,7 @@ async function threeHrFoodScript() {
   foodRoutine(ctrl);
 }
 
-setInterval(ctrl.checkQueueAndExecute.bind(ctrl), 10);
+setInterval(ctrl.checkQueueAndExecute.bind(ctrl), 500);
 setInterval(checkRoutineScript, checkDelay);
 setInterval(oneHrRoutineScript, 1 * 60 * 60 * 1000 + 30 * 1000);
 setInterval(threeHrFoodScript, 3 * 60 * 60 * 1000);
@@ -220,22 +222,18 @@ function mapHandler(ctrl, message, title, content) {
     ctrl.player['bs'] = States.Idle;
     ctrl.player['battleMsg'] = message;
 
-    const taskFunc = async () => {
-      const modified = {};
-      let success = true;
-      try {
-        await ctrl.player['battleMsg'].clickButton({ X: 0, Y: 0 })
-          .catch(err => {
-            success = handleError(err, 'start new battle fail');
-          });
-      } catch (err) {
-        console.log(err);
-        logger('Outer error');
-        success = false;
-      }
-
-      return [modified, success];
-    };
+    const taskFunc = () => new Promise((resolve, reject) => {
+      ctrl.player['battleMsg'].clickButton({ X: 0, Y: 0 })
+        .then(() => { resolve({}); })
+        .catch(err => {
+          const success = handleError(err, 'start new battle fail');
+          if (success) {
+            resolve({});
+          } else {
+            reject(err);
+          }
+        })
+    })
     const expireAt = Date.now() + 30000;
     const tag = TaskType.NB;
     let rank = getDefaultRank(tag);
@@ -270,17 +268,18 @@ function mapHandler(ctrl, message, title, content) {
     logger(logFn, seperator = true, customSepStart = customSep, customSepEnd = customSep);
 
     logger('try to leave battle...');
-    const taskFunc = async () => {
-      try {
-        message.clickButton({ X: 0, Y: 0 })
-          .catch(err => {
-            handleError(err, 'Leave profession got error');
-          })
-      } catch (err) {
-        console.log(err);
-      }
-      return [{}, true];
-    };
+    const taskFunc = () => new Promise((resolve, reject) => {
+      message.clickButton({ X: 0, Y: 0 })
+        .then(() => { resolve({}); })
+        .catch(err => {
+          const success = handleError(err, 'Leave profession got error');
+          if (success) {
+            resolve({});
+          } else {
+            reject(err);
+          }
+        })
+    })
     const expireAt = Date.now() + 30000;
     const tag = TaskType.NP;
     let rank = getDefaultRank(tag);
@@ -297,21 +296,18 @@ function professionHandler(ctrl, event, message, title, desc, content) {
     ctrl.player['ps'] = States.Idle;
     ctrl.player['profMsg'] = message;
 
-    const taskFunc = async () => {
-      const modified = {};
-      let success = true;
-      try {
-        await ctrl.player['profMsg'].clickButton({ X: 0, Y: 0 })
-          .catch(err => {
-            success = handleError(err, 'click profession button fail');
-          });
-      } catch (err) {
-        console.log(err);
-        logger('Outer error');
-        success = false;
-      }
-      return [modified, success];
-    };
+    const taskFunc = () => new Promise((resolve, reject) => {
+      ctrl.player['profMsg'].clickButton({ X: 0, Y: 0 })
+        .then(() => { resolve({}); })
+        .catch(err => {
+          success = handleError(err, 'click profession button fail');
+          if (success) {
+            resolve({});
+          } else {
+            reject(err);
+          }
+        })
+    })
     const expireAt = Date.now() + 30000;
     const tag = TaskType.NP;
     let rank = getDefaultRank(tag);
@@ -361,17 +357,18 @@ function professionHandler(ctrl, event, message, title, desc, content) {
     logger(logFn, seperator = true, customSepStart = customSep, customSepEnd = customSep);
     logger('try to leave profession...');
 
-    const taskFunc = async () => {
-      try {
-        message.clickButton({ X: 0, Y: 0 })
-          .catch(err => {
-            handleError(err, 'Leave profession got error')
-          })
-      } catch (err) {
-        console.log(err);
-      }
-      return [{}, true];
-    };
+    const taskFunc = () => new Promise((resolve, reject) => {
+      message.clickButton({ X: 0, Y: 0 })
+        .then(() => { resolve({}); })
+        .catch(err => {
+          success = handleError(err, 'Leave profession got error');
+          if (success) {
+            resolve({});
+          } else {
+            reject(err);
+          }
+        })
+    })
     const expireAt = Date.now() + 30000;
     const tag = TaskType.NP;
     let rank = getDefaultRank(tag);

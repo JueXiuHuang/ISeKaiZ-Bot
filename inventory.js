@@ -7,10 +7,10 @@ async function inventoryRoutine(ctrl) {
   if (isVerify(ctrl.player['bs'], ctrl.player['ps'])) return;
 
   ctrl.player['sell'] = 0;
-  const taskFunc = () => {
+  const taskFunc = () => new Promise(resolve => {
     ctrl.player['channel']?.send(`$sell equipment all ${sellEquip[ctrl.player['sell']]}`);
-    return [{}, true];
-  };
+    resolve({})
+  })
   const expireAt = Date.now() + 120000;
   const tag = TaskType.Inv;
   let rank = getDefaultRank(tag);
@@ -31,10 +31,10 @@ function inventoryHandler(ctrl, title, desc) {
   }
 
   if (ctrl.player['sell'] >= sellEquip.length) return;
-  const taskFunc = () => {
-    ctrl.player['channel'].send(`$sell equipment all ${sellEquip[ctrl.player['sell']]}`);
-    return [{}, true];
-  };
+  const taskFunc = () => new Promise(resolve => {
+    ctrl.player['channel']?.send(`$sell equipment all ${sellEquip[ctrl.player['sell']]}`);
+    resolve({})
+  })
   const expireAt = Date.now() + 120000;
   const tag = TaskType.Inv;
   let rank = getDefaultRank(tag);
