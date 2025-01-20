@@ -30,7 +30,7 @@ const TaskSettingList = {
   'Treasure': new TaskSetting(rank = 1, limit = 999),
   'Inventory': new TaskSetting(rank = 1, limit = 2),
   'Food': new TaskSetting(rank = 1, limit = 1),
-  'Retainer': new TaskSetting(rank = 1, limit = 2),
+  'Retainer': new TaskSetting(rank = 1, limit = 3),
   'NewBattle': new TaskSetting(rank = 3, limit = 1),
   'NewProfession': new TaskSetting(rank = 3, limit = 1),
   'NewBattleWindow': new TaskSetting(rank = 4, limit = 1),
@@ -128,23 +128,21 @@ class Controller {
         await delayer(delta, delta + this.bias, '(Controller)');
         logger('Controller delay ends');
       }
-      let modified;
-      let success;
-      if (task.func.constructor.name === 'AsyncFunction') {
-        [modified, success] = await task.func();
-      } else {
-        [modified, success] = task.func();
-      }
 
-      if (!success && task.retry < retryCount) {
-        logger('Task failed, add to queue for retry');
-        task.retry += 1;
-        this.addTask(task);
-      }
-      for (const [key, value] of Object.entries(modified)) {
-        logger(`${key} change to ${value}`);
-        this.player[key] = value;
-      }
+      task.func().then(modified => {
+        for (const [key, value] of Object.entries(modified)) {
+          logger(`${key} change to ${value}`);
+          this.player[key] = value;
+        }
+      })
+        .catch((err) => {
+          logger(`fail reason: ${err}`);
+          if (task.retry < retryCount) {
+            logger('Task failed, add to queue for retry');
+            task.retry += 1;
+            this.addTask(task);
+          }
+        })
       const unlockTime = new Date()
       this.lastExecuteAt = unlockTime.getTime();
       logger('Task finish, unlock');

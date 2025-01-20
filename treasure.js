@@ -10,17 +10,17 @@ function checkTreasure(ctrl, message) {
 
   if (title.includes('Chest Spawned!')) {
     console.log('Try to get treasure')
-    const taskFunc = () => {
-      try {
-        message.clickButton({ X: 0, Y: 0 })
-          .catch(err => {
-            handleError(err, 'Claim chest fail');
-          })
-      } catch (err) {
-        console.log(err);
-      }
-      return [{}, true];
-    };
+    const taskFunc = () => new Promise((resolve, reject) => {
+      message.clickButton({ X: 0, Y: 0 })
+        .then(() => { resolve({}); })
+        .catch(err => {
+          if (handleError(err, 'Claim chest fail')) {
+            resolve({});
+          } else {
+            reject(err);
+          }
+        })
+    })
     const expireAt = Date.now() + 10000;
     const tag = TaskType.Treasure;
     let rank = getDefaultRank(tag);

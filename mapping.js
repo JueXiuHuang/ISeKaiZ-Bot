@@ -8,14 +8,14 @@ function mappingRoutine(ctrl) {
   if (ctrl.player['channel'] === null) return;
 
   if (ctrl.player['battleMsg'] === null) {
-    const taskFunc = () => {
+    const taskFunc = () => new Promise(resolve => {
       ctrl.player['channel']?.send('$map');
-      return [{}, true];
-    };
+      resolve({});
+    })
     const expireAt = Date.now() + 180000;
     const tag = TaskType.NBW;
     let rank = getDefaultRank(tag);
-    const task = new Task(taskFunc, expireAt, '$map', tag, rank);
+    const task = new Task(taskFunc, expireAt, '$map since null msg', tag, rank);
     ctrl.addTask(task);
     return;
   }
@@ -25,10 +25,10 @@ function mappingRoutine(ctrl) {
     if (ctrl.player['bs'] === States.Defeat) return;
 
     logger(`Battle hash duplicate: ${ctrl.player['bhash']}`)
-    const taskFunc = () => {
+    const taskFunc = () => new Promise(resolve => {
       ctrl.player['channel']?.send('$map');
-      return [{ 'battleMsg': null }, true];
-    };
+      resolve({ 'battleMsg': null })
+    })
     const expireAt = Date.now() + 180000;
     const tag = TaskType.NBW;
     let rank = getDefaultRank(tag);

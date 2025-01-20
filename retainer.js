@@ -7,10 +7,10 @@ function retainerRoutine(ctrl) {
   if (ctrl.player['channel'] === null) return;
   if (isVerify(ctrl.player['bs'], ctrl.player['ps'])) return;
 
-  const taskFunc = () => {
+  const taskFunc = () => new Promise(resolve => {
     ctrl.player['channel']?.send('$hired');
-    return [{}, true];
-  };
+    resolve({});
+  })
   const expireAt = Date.now() + 120000;
   const tag = TaskType.Retainer;
   let rank = getDefaultRank(tag);
@@ -28,20 +28,20 @@ async function retainerHandler(ctrl, message, desc, oldDesc) {
   // await delayer(5000, 10000, '(collect retainer)');
   const elapsed = desc.match(regex)?.[1] ?? '0';
   if (elapsed === '0') {
-    const taskFunc = async () => {
-      try {
-        await message.clickButton({ X: 1, Y: 0 })
-          .then(() => {
-            logger('Turn to next page success');
-          })
-          .catch(err => {
-            handleError(err, 'Turn to next page fail')
-          })
-      } catch (err) {
-        console.log(err);
-      }
-      return [{}, true];
-    };
+    const taskFunc = () => new Promise((resolve, reject) => {
+      message.clickButton({ X: 1, Y: 0 })
+        .then(() => {
+          logger('Turn to next page success');
+          resolve({});
+        })
+        .catch(err => {
+          if (handleError(err, 'Turn to next page fail')) {
+            resolve({});
+          } else {
+            reject(err);
+          }
+        })
+    })
     const expireAt = Date.now() + 120000;
     const tag = TaskType.Retainer;
     let rank = getDefaultRank(tag);
@@ -52,20 +52,20 @@ async function retainerHandler(ctrl, message, desc, oldDesc) {
   }
 
   logger('Try to collect material');
-  const taskFunc = () => {
-    try {
-      message.clickButton({ X: 2, Y: 0 })
-        .then(() => {
-          logger('Harvest material success');
-        })
-        .catch(err => {
-          handleError(err, 'Collect retainer material fail')
-        })
-    } catch (err) {
-      console.log(err);
-    }
-    return [{}, true];
-  };
+  const taskFunc = () => new Promise((resolve, reject) => {
+    message.clickButton({ X: 2, Y: 0 })
+      .then(() => {
+        logger('Harvest material success');
+        resolve({});
+      })
+      .catch(err => {
+        if (handleError(err, 'Collect retainer material fail')) {
+          resolve({});
+        } else {
+          reject(err);
+        }
+      })
+  })
   const expireAt = Date.now() + 120000;
   const tag = TaskType.Retainer;
   let rank = getDefaultRank(tag);

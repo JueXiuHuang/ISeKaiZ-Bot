@@ -35,18 +35,20 @@ async function emojiVerifier(ctrl, message) {
     tag = TaskType.EVP;
   }
 
-  const taskFunc = async () => {
+  const taskFunc = () => new Promise((resolve, reject) => {
     let hash = makeHash();
-    try {
-      await message.clickButton({ X: answer, Y: 0 })
-        .catch((err) => {
-          handleError(err, 'Verify emoji got error')
-        })
-    } catch (err) {
-      console.log(err);
-    }
-    return [{ [key]: hash }, true];
-  };
+    message.clickButton({ X: answer, Y: 0 })
+      .then(() => {
+        resolve({ [key]: hash });
+      })
+      .catch((err) => {
+        if (handleError(err, 'Verify emoji got error')) {
+          resolve({ [key]: hash });
+        } else {
+          reject(err);
+        }
+      })
+  })
   const expireAt = Date.now() + 30000;
   let rank = getDefaultRank(tag);
   const task = new Task(taskFunc, expireAt, `emoji verify: ${emoji}`, tag, rank);
