@@ -140,7 +140,6 @@ client.on('messageCreate', async (message) => {
 
   if (desc === 'You don\'t have enough energy to battle!') {
     logger('>>>BOT stop due to no energy<<<');
-    ctrl.player['channel'] = null;
     ctrl.player['battleMsg'] = null;
     ctrl.player['profMsg'] = null;
     ctrl.player['bs'] = States.Idle;
