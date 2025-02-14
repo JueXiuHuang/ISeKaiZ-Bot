@@ -13,6 +13,7 @@ const { messageExtractor } = require('./helper');
 const { logger } = require('./log');
 const { handleError } = require('./error');
 const { emojiVerifier } = require('./verifier');
+const { parseCommands } = require('./commands');
 const args = process.argv.slice(2);
 
 const client = new Client();
@@ -115,10 +116,11 @@ client.on('ready', async () => {
 
 client.on('messageCreate', async (message) => {
   checkTreasure(ctrl, message);
+  parseCommands(ctrl, message, client.user.id);
   if (message.channelId != channelId) return;
   if (message.author.username != 'Isekaid' && message.author.username != client.user.username) return;
 
-  let [title, desc, mention, content] = messageExtractor(message);
+  let [, , title, desc, embedMention, content] = messageExtractor(message);
 
   if (content === '!start') {
     ctrl.player['channel'] = message.channel;
@@ -168,7 +170,7 @@ client.on('messageCreate', async (message) => {
     return;
   }
 
-  if (verifyHandler(message, desc, mention, client.user.username)) {
+  if (verifyHandler(message, desc, embedMention, client.user.username)) {
     ImmediatelyRoutineScript();
     return;
   }
@@ -178,9 +180,9 @@ client.on('messageCreate', async (message) => {
   inventoryHandler(ctrl, title, desc);
 })
 
-function verifyHandler(message, description, mention, user) {
+function verifyHandler(message, description, embedMention, user) {
   if (description.includes('Please complete the captcha')) {
-    if (mention != user) return;
+    if (embedMention != user) return;
     logger('>>>BOT stop due to verify<<<');
     ctrl.player['bs'] = States.NeedVerify_Image;
     ctrl.player['ps'] = States.NeedVerify_Image;
@@ -381,8 +383,8 @@ client.on('messageUpdate', async (oldMsg, newMsg) => {
   if (newMsg.channelId != channelId) return;
   if (newMsg.author.username != 'Isekaid') return;
 
-  let [title, desc, , content] = messageExtractor(newMsg);
-  let [, oldDesc, ,] = messageExtractor(oldMsg);
+  let [, , title, desc, , content] = messageExtractor(newMsg);
+  let [, , , oldDesc, ,] = messageExtractor(oldMsg);
 
   professionHandler(ctrl, 'update', newMsg, title, desc, content);
 

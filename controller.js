@@ -21,10 +21,12 @@ const TaskType = {
   NBW: 'NewBattleWindow',
   NP: 'NewProfession',
   NPW: 'NewProfessionWindow',
+  Cmd: 'Command',
 };
 
 const TaskSettingList = {
   'Verify': new TaskSetting(rank = -999, limit = 999),
+  'Command': new TaskSetting(rank = -998, limit = 999),
   'EmojiVerifyBattle': new TaskSetting(rank = 2, limit = 1),
   'EmojiVerifyProfession': new TaskSetting(rank = 2, limit = 1),
   'Treasure': new TaskSetting(rank = 1, limit = 999),

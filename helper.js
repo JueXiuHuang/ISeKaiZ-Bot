@@ -15,12 +15,14 @@ function isVerify(...args) {
 }
 
 function messageExtractor(message) {
-  let embedTitle = message.embeds[0]?.title ?? 'empty_embed_title';
-  let embedDesc = message.embeds[0]?.description ?? 'empty_description';
-  let mention = message.embeds[0]?.author?.name ?? 'empty_mention';
+  let author = message.author.id
+  let mentions = message.mentions
+  let title = message.embeds[0]?.title ?? 'empty_embed_title';
+  let desc = message.embeds[0]?.description ?? 'empty_description';
+  let embedMention = message.embeds[0]?.author?.name ?? 'empty_embed_mention_usr_name';
   let content = message.content;
 
-  return [embedTitle, embedDesc, mention, content]
+  return [author, mentions, title, desc, embedMention, content]
 }
 
 async function delayer(minDelayMs, maxDelayMs, detail) {

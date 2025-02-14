@@ -10,5 +10,6 @@
   "treasureGuild": "",
   "expFood": "sushi-roll",
   "captchaModel": "./model/captcha.onnx",
-  "sellEquip": ["F", "E", "D"]
+  "sellEquip": ["F", "E", "D"],
+  "trustUsr": []
 }
