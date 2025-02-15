@@ -22,7 +22,7 @@ function parseCommands(ctrl, message, usrID) {
       const amount = content.match(regex)?.[1] ?? '0';
       handleForceDonate(ctrl, message, amount);
       break;
-    case content.includes('force ban'):
+    case content.includes('wban'):
       handleForceBan(ctrl, message);
     default:
       return;
