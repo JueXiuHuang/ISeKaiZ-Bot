@@ -15,7 +15,7 @@ function isVerify(...args) {
 }
 
 function messageExtractor(message) {
-  let author = message.author.id
+  let author = message?.author?.id ?? 'empty_author'
   let mentions = message.mentions
   let title = message.embeds[0]?.title ?? 'empty_embed_title';
   let desc = message.embeds[0]?.description ?? 'empty_description';
