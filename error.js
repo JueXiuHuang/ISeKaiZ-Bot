@@ -2,7 +2,7 @@ const { errorLogWrapper } = require('./log');
 
 function handleError(err, info) {
   const skipList = ["INTERACTION_FAILED"];
-  if (skipList.includes(err.message)) {
+  if (skipList.includes(err.code)) {
     return true;
   }
 
