@@ -15,20 +15,26 @@ function isVerify(...args) {
 }
 
 function messageExtractor(message) {
-  let author = message?.author?.id ?? 'empty_author'
-  let mentions = message.mentions
-  let title = message.embeds[0]?.title ?? 'empty_embed_title';
-  let desc = message.embeds[0]?.description ?? 'empty_embed_desc';
-  let embedMention = message.embeds[0]?.author?.name ?? 'empty_embed_mention_usr_name';
-  let content = message.content;
+  let author = message?.author?.id ?? ''
+  let mentions = message?.mentions ?? {};
+  let embed = message?.embeds[0] ?? {};
+  let title = embed?.title ?? '';
+  let desc = embed?.description ?? '';
+  let embedMention = embed?.author?.name ?? '';
+  let content = message?.content ?? '';
+  let id = message?.id ?? ''
+  // [{"value":"You gained an additional **Intelligence** point!","name":"Racial Bonus: Elf","inline":true}]
+  let fields = embed?.fields ?? [];
 
   let data = {
+    'id': id,
     'author': author,
     'ref': mentions,
     'title': title,
     'desc': desc,
     'embRef': embedMention,
-    'content': content
+    'content': content,
+    'fields': fields,
   }
 
   return data

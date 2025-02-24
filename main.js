@@ -61,6 +61,8 @@ async function ImmediatelyRoutineScript() {
 
 async function checkRoutineScript() {
   logger(`BS: ${ctrl.player['bs']} | PS: ${ctrl.player['ps']}`);
+  logger(`BHASH: ${ctrl.player['bhash']}`)
+  logger(`prev BHASH: ${ctrl.player['prevBhash']}`)
 
   if ([States.NeedVerify_Image, States.Verifying_Image].includes(ctrl.player['bs'])) {
     logger('[Battle] Encounter verify states')
@@ -245,11 +247,13 @@ function mapHandler(ctrl, message, data) {
 
   if (data['title'].includes('You Defeated A')) {
     logger('Battle finish, update bhash');
+    ctrl.player['bhash'] = data['id'];
     return;
   }
 
   if (data['title'].includes('BATTLE STARTED')) {
     logger('Battle start, update bhash');
+    ctrl.player['bhash'] = data['id'];
     return;
   }
 
@@ -318,32 +322,35 @@ function professionHandler(ctrl, event, message, data) {
 
   if (data['title'].includes('You caught a')) {
     logger('Profession finish (Fish)');
+    ctrl.player['phash'] = data['id'];
     return;
   }
 
   if (data['title'].includes('Mining Complete!')) {
     logger('Profession finish (Mine)');
+    ctrl.player['phash'] = data['id'];
     return;
   }
 
   if (data['title'].includes('You found a')) {
     logger('Profession finish (Forage)');
+    ctrl.player['phash'] = data['id'];
     return;
   }
 
   if (data['title'] === 'You started mining!') {
     logger('Profession start (Mine)');
-    ctrl.player['ps'] = States.Doing;
+    ctrl.player['phash'] = data['id'];
     return;
   }
   if (data['title'] === 'You cast your rod!') {
     logger('Profession start (Fish)');
-    ctrl.player['ps'] = States.Doing;
+    ctrl.player['phash'] = data['id'];
     return;
   }
   if (data['title'] === 'You start foraging!') {
     logger('Profession start (Forage)');
-    ctrl.player['ps'] = States.Doing;
+    ctrl.player['phash'] = data['id'];
     return;
   }
 

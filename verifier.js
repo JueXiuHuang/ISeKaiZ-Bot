@@ -36,7 +36,7 @@ async function emojiVerifier(ctrl, message) {
   }
 
   const taskFunc = () => new Promise((resolve, reject) => {
-    let hash = makeHash();
+    let hash = message?.id ?? ''
     message.clickButton({ X: answer, Y: 0 })
       .then(() => {
         resolve({ [key]: hash });

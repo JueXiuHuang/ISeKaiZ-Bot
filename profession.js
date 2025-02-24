@@ -18,6 +18,7 @@ function professionRoutine(ctrl) {
     let rank = getDefaultRank(tag);
     const task = new Task(taskFunc, expireAt, '$profession since null msg', tag, rank);
     ctrl.addTask(task);
+    ctrl.player['bhash'] = makeHash();
     return;
   }
 
