@@ -120,36 +120,36 @@ client.on('messageCreate', async (message) => {
   if (message.channelId != channelId) return;
   if (message.author.username != 'Isekaid' && message.author.username != client.user.username) return;
 
-  let [, , title, desc, embedMention, content] = messageExtractor(message);
+  let data = messageExtractor(message);
 
-  if (content === '!start') {
+  if (data['content'] === '!start') {
     ctrl.player['channel'] = message.channel;
-    ctrl.player['bs'] = States.Idle;
-    ctrl.player['ps'] = States.Idle;
+    ctrl.player['bs'] = States.Normal;
+    ctrl.player['ps'] = States.Normal;
     logger('>>>BOT start<<<');
     return;
   }
 
-  if (content === '!stop') {
+  if (data['content'] === '!stop') {
     ctrl.player['channel'] = null;
     ctrl.player['battleMsg'] = null;
     ctrl.player['profMsg'] = null;
-    ctrl.player['bs'] = States.Idle;
-    ctrl.player['ps'] = States.Idle;
+    ctrl.player['bs'] = States.Normal;
+    ctrl.player['ps'] = States.Normal;
     logger('>>>BOT stop<<<');
     return;
   }
 
-  if (desc === 'You don\'t have enough energy to battle!') {
+  if (data['desc'] === 'You don\'t have enough energy to battle!') {
     logger('>>>BOT stop due to no energy<<<');
     ctrl.player['battleMsg'] = null;
     ctrl.player['profMsg'] = null;
-    ctrl.player['bs'] = States.Idle;
-    ctrl.player['ps'] = States.Idle;
+    ctrl.player['bs'] = States.Normal;
+    ctrl.player['ps'] = States.Normal;
     return;
   }
 
-  if (title === 'Suspended') {
+  if (data['title'] === 'Suspended') {
     logger('>>>YOU GOT BANNED<<<');
     ctrl.player['channel'] = null;
     ctrl.player['battleMsg'] = null;
@@ -159,30 +159,30 @@ client.on('messageCreate', async (message) => {
     return;
   }
 
-  if (desc.includes('Choose the correct option...')) {
+  if (data['desc'].includes('Choose the correct option...')) {
     emojiVerifier(ctrl, message);
     return;
   }
 
-  if (content.includes('Time ran out!')) {
-    ctrl.player['ps'] = States.Idle;
-    ctrl.player['bs'] = States.Idle;
+  if (data['content'].includes('Time ran out!')) {
+    ctrl.player['battleMsg'] = null;
+    ctrl.player['profMsg'] = null;
     return;
   }
 
-  if (verifyHandler(message, desc, embedMention, client.user.username)) {
+  if (verifyHandler(message, data, client.user.username)) {
     ImmediatelyRoutineScript();
     return;
   }
-  retainerHandler(ctrl, message, desc);
-  mapHandler(ctrl, message, title, content);
-  professionHandler(ctrl, 'create', message, title, desc, content);
-  inventoryHandler(ctrl, title, desc);
+  retainerHandler(ctrl, message, data);
+  mapHandler(ctrl, message, data);
+  professionHandler(ctrl, 'create', message, data);
+  inventoryHandler(ctrl, data);
 })
 
-function verifyHandler(message, description, embedMention, user) {
-  if (description.includes('Please complete the captcha')) {
-    if (embedMention != user) return;
+function verifyHandler(message, data, user) {
+  if (data['desc'].includes('Please complete the captcha')) {
+    if (data['embRef'] != user) return;
     logger('>>>BOT stop due to verify<<<');
     ctrl.player['bs'] = States.NeedVerify_Image;
     ctrl.player['ps'] = States.NeedVerify_Image;
@@ -191,7 +191,7 @@ function verifyHandler(message, description, embedMention, user) {
     return true;
   }
 
-  if (description.includes('Please Try doing $verify again.')) {
+  if (data['desc'].includes('Please Try doing $verify again.')) {
     logger('You need to solve captcha again...');
     ctrl.player['bs'] = States.NeedVerify_Image;
     ctrl.player['ps'] = States.NeedVerify_Image;
@@ -200,7 +200,7 @@ function verifyHandler(message, description, embedMention, user) {
     return true;
   }
 
-  if (description.includes('Please enter the captcha code from the image to verify.')) {
+  if (data['desc'].includes('Please enter the captcha code from the image to verify.')) {
     logger('>>>BOT stop due to verify image code<<<');
     ctrl.player['bs'] = States.Verifying_Image;
     ctrl.player['ps'] = States.Verifying_Image;
@@ -208,19 +208,19 @@ function verifyHandler(message, description, embedMention, user) {
     return true;
   }
 
-  if (description.includes('Successfully Verified.')) {
+  if (data['desc'].includes('Successfully Verified.')) {
     logger('>>>BOT start due to verify finished<<<');
-    ctrl.player['bs'] = States.Idle;
-    ctrl.player['ps'] = States.Idle;
+    ctrl.player['bs'] = States.Normal;
+    ctrl.player['ps'] = States.Normal;
     ctrl.player['channel'] = message.channel;
     return false;
   }
 }
 
-function mapHandler(ctrl, message, title, content) {
-  if (title.includes('Current Location:')) {
+function mapHandler(ctrl, message, data) {
+  if (data['title'].includes('Current Location:')) {
     logger('Open new battle window, reset battle counter');
-    ctrl.player['bs'] = States.Idle;
+    ctrl.player['bs'] = States.Normal;
     ctrl.player['battleMsg'] = message;
 
     const taskFunc = () => new Promise((resolve, reject) => {
@@ -243,24 +243,23 @@ function mapHandler(ctrl, message, title, content) {
     return;
   }
 
-  if (title.includes('You Defeated A')) {
-    logger('Battle finish, reset battle counter');
+  if (data['title'].includes('You Defeated A')) {
+    logger('Battle finish, update bhash');
     return;
   }
 
-  if (title.includes('BATTLE STARTED')) {
-    logger('Battle start, reset battle counter');
-    ctrl.player['bs'] = States.InBattle;
+  if (data['title'].includes('BATTLE STARTED')) {
+    logger('Battle start, update bhash');
     return;
   }
 
-  if (title.includes('Better Luck Next Time!')) {
+  if (data['title'].includes('Better Luck Next Time!')) {
     logger('You dead, reset battle counter');
     ctrl.player['bs'] = States.Defeat;
     return;
   }
 
-  if (content.includes('You are already in a battle')) {
+  if (data['content'].includes('You are already in a battle')) {
     const customSep = '------------IN BATTLE------------'
     logFn = () => {
       console.log('Battle State: ' + ctrl.player['bs']);
@@ -273,7 +272,7 @@ function mapHandler(ctrl, message, title, content) {
       message.clickButton({ X: 0, Y: 0 })
         .then(() => { resolve({}); })
         .catch(err => {
-          const success = handleError(err, 'Leave profession got error');
+          const success = handleError(err, 'Leave battle got error');
           if (success) {
             resolve({});
           } else {
@@ -284,17 +283,17 @@ function mapHandler(ctrl, message, title, content) {
     const expireAt = Date.now() + 30000;
     const tag = TaskType.NP;
     let rank = getDefaultRank(tag);
-    const task = new Task(taskFunc, expireAt, 'leave profession', tag, rank);
+    const task = new Task(taskFunc, expireAt, 'leave battle', tag, rank);
     ctrl.addTask(task);
     return;
   }
 }
 
-function professionHandler(ctrl, event, message, title, desc, content) {
-  if (['Mining', 'Fishing', 'Foraging'].includes(title) && event === 'create') {
+function professionHandler(ctrl, event, message, data) {
+  if (['Mining', 'Fishing', 'Foraging'].includes(data['title']) && event === 'create') {
     logger('Open new profession window');
     logger('Reset profession counter')
-    ctrl.player['ps'] = States.Idle;
+    ctrl.player['ps'] = States.Normal;
     ctrl.player['profMsg'] = message;
 
     const taskFunc = () => new Promise((resolve, reject) => {
@@ -317,39 +316,39 @@ function professionHandler(ctrl, event, message, title, desc, content) {
     return;
   }
 
-  if (title.includes('You caught a')) {
+  if (data['title'].includes('You caught a')) {
     logger('Profession finish (Fish)');
     return;
   }
 
-  if (title.includes('Mining Complete!')) {
+  if (data['title'].includes('Mining Complete!')) {
     logger('Profession finish (Mine)');
     return;
   }
 
-  if (title.includes('You found a')) {
+  if (data['title'].includes('You found a')) {
     logger('Profession finish (Forage)');
     return;
   }
 
-  if (title === 'You started mining!') {
+  if (data['title'] === 'You started mining!') {
     logger('Profession start (Mine)');
     ctrl.player['ps'] = States.Doing;
     return;
   }
-  if (title === 'You cast your rod!') {
+  if (data['title'] === 'You cast your rod!') {
     logger('Profession start (Fish)');
     ctrl.player['ps'] = States.Doing;
     return;
   }
-  if (title === 'You start foraging!') {
+  if (data['title'] === 'You start foraging!') {
     logger('Profession start (Forage)');
     ctrl.player['ps'] = States.Doing;
     return;
   }
 
   let regex = /You are already mining|foraging|fishing/
-  if (regex.test(content)) {
+  if (regex.test(data['content'])) {
     const customSep = '------------IN PROFESSION------------';
     logFn = () => {
       console.log('Profession State: ' + ctrl.player['ps']);
@@ -383,12 +382,12 @@ client.on('messageUpdate', async (oldMsg, newMsg) => {
   if (newMsg.channelId != channelId) return;
   if (newMsg.author.username != 'Isekaid') return;
 
-  let [, , title, desc, , content] = messageExtractor(newMsg);
-  let [, , , oldDesc, ,] = messageExtractor(oldMsg);
+  let newData = messageExtractor(newMsg);
+  let oldData = messageExtractor(oldMsg);
 
-  professionHandler(ctrl, 'update', newMsg, title, desc, content);
+  professionHandler(ctrl, 'update', newMsg, newData);
 
-  retainerHandler(ctrl, newMsg, desc, oldDesc);
+  retainerHandler(ctrl, newMsg, newData, oldData);
 })
 
 initCaptchaAI();

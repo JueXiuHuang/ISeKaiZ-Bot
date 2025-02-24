@@ -6,9 +6,9 @@ const { handleError } = require('./error');
 function checkTreasure(ctrl, message) {
   if (treasureGuild === '' || !treasureHunter) return;
   if (message.guildId != treasureGuild) return;
-  let [, , title, , ,] = messageExtractor(message);
+  let data = messageExtractor(message);
 
-  if (title.includes('Chest Spawned!')) {
+  if (data['title'].includes('Chest Spawned!')) {
     console.log('Try to get treasure')
     const taskFunc = () => new Promise((resolve, reject) => {
       message.clickButton({ X: 0, Y: 0 })

@@ -18,13 +18,13 @@ async function inventoryRoutine(ctrl) {
   ctrl.addTask(task);
 }
 
-function inventoryHandler(ctrl, title, desc) {
-  if (!title.includes('Equipment Sold')) {
+function inventoryHandler(ctrl, data) {
+  if (!data['title'].includes('Equipment Sold')) {
     return;
   }
 
   const re = /You gained (\d+) gold!/;
-  desc = desc.replace(',', '');
+  let desc = data['desc'].replace(',', '');
   const gold = desc.match(re)[1];
   if (gold.length < 5) {
     ctrl.player['sell'] += 1;

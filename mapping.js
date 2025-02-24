@@ -37,7 +37,7 @@ function mappingRoutine(ctrl) {
     return;
   }
 
-  ctrl.player['prevBhash'] = ctrl.player['bhash'];
+  // ctrl.player['prevBhash'] = ctrl.player['bhash'];
 }
 
 module.exports = { mappingRoutine };

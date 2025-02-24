@@ -2,21 +2,19 @@ const fs = require('fs');
 const { logger } = require('./log');
 
 const States = {
-  InBattle: "in_battle",
   Doing: "doing",
   Defeat: "defeat",
-  Idle: "idle",
+  Normal: "noraml",
   NeedVerify_Image: "need_verify_image",  // Verify: enter the image code
   Verifying_Image: "verifying_image",
   Ban: "banned"
-  // NeedVerify_Emoji: "need_verify_emoji"  // Verify: choose the correct emoji
 }
 
 class Player {
   // battle state
-  bs = States.Idle;
+  bs = States.Normal;
   // profession state
-  ps = States.Idle;
+  ps = States.Normal;
   // battle counter
   bc = 0;
   // profession counter
@@ -32,8 +30,8 @@ class Player {
 function newPlayer() {
   userData = loadUserData();
   return {
-    'bs': States.Idle,
-    'ps': States.Idle,
+    'bs': States.Normal,
+    'ps': States.Normal,
     'channel': null,
     'battleMsg': null,
     'profMsg': null,

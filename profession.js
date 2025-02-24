@@ -27,7 +27,7 @@ function professionRoutine(ctrl) {
     logger(`Profession hash duplicate: ${ctrl.player['phash']}`);
     const taskFunc = () => new Promise(resolve => {
       ctrl.player['channel']?.send('$' + profession);
-      resolve({ 'profMsg': null, 'ps': States.Idle })
+      resolve({ 'profMsg': null, 'ps': States.Normal })
     })
     const expireAt = Date.now() + 180000;
     const tag = TaskType.NPW;

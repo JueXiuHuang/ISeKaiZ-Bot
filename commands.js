@@ -5,24 +5,24 @@ const { messageExtractor } = require('./helper');
 const { logger } = require('./log');
 
 function parseCommands(ctrl, message, usrID) {
-  [author, mentions, , , , content] = messageExtractor(message)
-  if (mentions.everyone || !mentions.users.get(usrID)) {
+  let data = messageExtractor(message)
+  if (data['ref'].everyone || !data['ref'].users.get(usrID)) {
     return
   }
-  if (!trustUsr.includes(author)) {
+  if (!trustUsr.includes(data['author'])) {
     return
   }
 
   switch (true) {
-    case content.includes('force bal'):
+    case data['content'].includes('force bal'):
       handleForceBalance(ctrl, message);
       break;
-    case content.includes('force donate'):
+    case data['content'].includes('force donate'):
       regex = /force donate (\d+)/
-      const amount = content.match(regex)?.[1] ?? '0';
+      const amount = data['content'].match(regex)?.[1] ?? '0';
       handleForceDonate(ctrl, message, amount);
       break;
-    case content.includes('wban'):
+    case data['content'].includes('wban'):
       handleForceBan(ctrl, message);
     default:
       return;
