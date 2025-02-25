@@ -5,13 +5,15 @@ const { messageExtractor } = require('./helper');
 const { logger } = require('./log');
 
 function parseCommands(ctrl, message, usrID) {
-  [author, mentions, , , , content] = messageExtractor(message)
-  if (mentions.everyone || !mentions.users.get(usrID)) {
+  let data = messageExtractor(message)
+  if (data['ref'].everyone || !data['ref'].users.get(usrID)) {
     return
   }
-  if (!trustUsr.includes(author)) {
+  if (!trustUsr.includes(data['author'])) {
     return
   }
+
+  let content = data['content'].toLowerCase();
 
   switch (true) {
     case content.includes('force bal'):

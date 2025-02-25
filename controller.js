@@ -129,7 +129,7 @@ class Controller {
         logger(`Task execute too fast, wait for at least ${delta} ms`);
         await delayer(delta, delta + this.bias, '(Controller)');
       }
-      await delayer(3000, 3000, '(Controller must delay)')
+      // await delayer(3000, 3000, '(Controller must delay)')
 
       task.func().then(modified => {
         for (const [key, value] of Object.entries(modified)) {

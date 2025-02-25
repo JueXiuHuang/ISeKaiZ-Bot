@@ -18,6 +18,7 @@ function professionRoutine(ctrl) {
     let rank = getDefaultRank(tag);
     const task = new Task(taskFunc, expireAt, '$profession since null msg', tag, rank);
     ctrl.addTask(task);
+    ctrl.player['bhash'] = makeHash();
     return;
   }
 
@@ -27,7 +28,7 @@ function professionRoutine(ctrl) {
     logger(`Profession hash duplicate: ${ctrl.player['phash']}`);
     const taskFunc = () => new Promise(resolve => {
       ctrl.player['channel']?.send('$' + profession);
-      resolve({ 'profMsg': null, 'ps': States.Idle })
+      resolve({ 'profMsg': null, 'ps': States.Normal })
     })
     const expireAt = Date.now() + 180000;
     const tag = TaskType.NPW;

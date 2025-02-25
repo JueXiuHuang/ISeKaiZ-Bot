@@ -2,6 +2,7 @@ const { retryCount } = require('./config.json');
 const { States } = require('./player');
 const { Task, TaskType, getDefaultRank } = require('./controller');
 const { logger } = require('./log');
+const { makeHash } = require('./helper')
 
 // @param {Player} player
 function mappingRoutine(ctrl) {
@@ -17,6 +18,7 @@ function mappingRoutine(ctrl) {
     let rank = getDefaultRank(tag);
     const task = new Task(taskFunc, expireAt, '$map since null msg', tag, rank);
     ctrl.addTask(task);
+    ctrl.player['bhash'] = makeHash();
     return;
   }
 

@@ -18,15 +18,15 @@ function retainerRoutine(ctrl) {
   ctrl.addTask(task);
 }
 
-async function retainerHandler(ctrl, message, desc, oldDesc) {
+async function retainerHandler(ctrl, message, newData, oldData) {
   regex = /Time elapsed: (\d) hours\sMaterials produced:/
 
-  if (!regex.test(desc)) return;
+  if (!regex.test(newData['desc'])) return;
 
   // retainer should stop at last page automatically
   // this is just prevent infinite loop
   // await delayer(5000, 10000, '(collect retainer)');
-  const elapsed = desc.match(regex)?.[1] ?? '0';
+  const elapsed = newData['desc'].match(regex)?.[1] ?? '0';
   if (elapsed === '0') {
     const taskFunc = () => new Promise((resolve, reject) => {
       message.clickButton({ X: 1, Y: 0 })
