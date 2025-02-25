@@ -13,16 +13,18 @@ function parseCommands(ctrl, message, usrID) {
     return
   }
 
+  let content = data['content'].toLowerCase();
+
   switch (true) {
-    case data['content'].includes('force bal'):
+    case content.includes('force bal'):
       handleForceBalance(ctrl, message);
       break;
-    case data['content'].includes('force donate'):
+    case content.includes('force donate'):
       regex = /force donate (\d+)/
-      const amount = data['content'].match(regex)?.[1] ?? '0';
+      const amount = content.match(regex)?.[1] ?? '0';
       handleForceDonate(ctrl, message, amount);
       break;
-    case data['content'].includes('wban'):
+    case content.includes('wban'):
       handleForceBan(ctrl, message);
     default:
       return;
