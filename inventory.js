@@ -1,6 +1,7 @@
 const { sellEquip = ['F', 'E', 'D'] } = require('./config.json');
 const { Task, TaskType, getDefaultRank } = require('./controller');
 const { isVerify } = require('./helper');
+const { logger } = require('./log')
 
 async function inventoryRoutine(ctrl) {
   if (ctrl.player['channel'] === null) return;
@@ -24,8 +25,9 @@ function inventoryHandler(ctrl, data) {
   }
 
   const re = /You gained (\d+) gold!/;
-  let desc = data['desc'].replace(',', '');
+  let desc = data['desc'].replaceAll(',', '');
   const gold = desc.match(re)[1];
+  logger(`You gained ${parseInt(gold)} Gold!`)
   if (gold.length < 5) {
     ctrl.player['sell'] += 1;
   }

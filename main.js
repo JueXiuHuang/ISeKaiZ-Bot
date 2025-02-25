@@ -248,6 +248,12 @@ function mapHandler(ctrl, message, data) {
   if (data['title'].includes('You Defeated A')) {
     logger('Battle finish, update bhash');
     ctrl.player['bhash'] = data['id'];
+
+    let desc = data['desc'].replaceAll(',', '');
+    desc = desc.replaceAll('*', '')
+    let re = /You gained (\d+) Gold!/;
+    let gold = desc.match(re)[1];
+    logger(`You gained ${parseInt(gold)} Gold!`)
     return;
   }
 
