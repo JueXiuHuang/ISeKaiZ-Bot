@@ -2,6 +2,7 @@ const { profession, retryCount } = require('./config.json');
 const { logger } = require('./log');
 const { Task, TaskType, getDefaultRank } = require('./controller');
 const { States } = require('./player')
+const { makeHash } = require('./helper')
 
 // @param {Player} player
 function professionRoutine(ctrl) {
