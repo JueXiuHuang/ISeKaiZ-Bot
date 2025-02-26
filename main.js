@@ -252,7 +252,7 @@ function mapHandler(ctrl, message, data) {
     let desc = data['desc'].replaceAll(',', '');
     desc = desc.replaceAll('*', '')
     let re = /You gained (\d+) Gold!/;
-    let gold = desc.match(re)[1];
+    let gold = desc.match(re)?.[1] ?? 0;
     logger(`You gained ${parseInt(gold)} Gold!`)
     return;
   }
