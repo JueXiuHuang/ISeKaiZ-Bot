@@ -67,9 +67,22 @@ function handleForceDonate(ctrl, message, amount) {
   }
 }
 
+let banImgs = [
+  'https://cdn.frankerfacez.com/emoticon/366484/4', // bear in jail
+  'https://stickershop.line-scdn.net/stickershop/v1/sticker/424099554/android/sticker.png',
+  'https://stickershop.line-scdn.net/stickershop/v1/sticker/494995927/android/sticker.png',
+  'https://stickershop.line-scdn.net/stickershop/v1/sticker/494995929/android/sticker.png',
+  'https://stickershop.line-scdn.net/stickershop/v1/sticker/494995935/android/sticker.png',
+  'https://stickershop.line-scdn.net/stickershop/v1/sticker/494995936/android/sticker.png',
+  'https://stickershop.line-scdn.net/stickershop/v1/sticker/494995938/android/sticker.png',
+  'https://stickershop.line-scdn.net/stickershop/v1/sticker/725663646/android/sticker.png',
+  'https://stickershop.line-scdn.net/stickershop/v1/sticker/730965869/android/sticker.png',
+]
+
 function handleForceBan(ctrl, message) {
+  let index = Math.floor(Math.random() * banImgs.length)
   const embed = new WebEmbed()
-    .setImage('https://cdn.frankerfacez.com/emoticon/366484/4')
+    .setImage(banImgs[index])
   msg = `QAQ ${WebEmbed.hiddenEmbed}${embed}`
   if (ctrl) {
     const taskFunc = () => new Promise(resolve => {
