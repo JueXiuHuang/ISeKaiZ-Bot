@@ -9,7 +9,7 @@ const { retainerRoutine, retainerHandler } = require('./retainer');
 const { foodRoutine } = require('./food');
 const { inventoryRoutine, inventoryHandler } = require('./inventory')
 const { Task, Controller, TaskType, getDefaultRank } = require('./controller')
-const { messageExtractor } = require('./helper');
+const { messageExtractor, gainItemLog } = require('./helper');
 const { logger } = require('./log');
 const { handleError } = require('./error');
 const { emojiVerifier } = require('./verifier');
@@ -252,7 +252,8 @@ function mapHandler(ctrl, message, data) {
     let desc = data['desc'].replaceAll(',', '');
     desc = desc.replaceAll('*', '')
     let re = /You gained (\d+) Gold!/;
-    let gold = desc.match(re)?.[1] ?? 0;
+    let gold = desc.match(re)?.[1] ?? '0';
+    logger(gainItemLog(parseInt(gold), 'Gold'))
     logger(`You gained ${parseInt(gold)} Gold!`)
     return;
   }
