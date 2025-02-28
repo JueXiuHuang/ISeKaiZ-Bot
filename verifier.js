@@ -1,6 +1,7 @@
 const { handleError } = require('./error');
 const { Task, TaskType, getDefaultRank } = require('./controller');
 const { makeHash } = require('./helper');
+const { States } = require('./player')
 
 
 async function emojiVerifier(ctrl, message) {
@@ -25,13 +26,16 @@ async function emojiVerifier(ctrl, message) {
     }
   }
 
-  let key = '';
+  let hashKey = '';
+  let state = ''
   let tag = 'Unknown';
   if (emoji === 'Battle') {
-    key = 'bhash';
+    hashKey = 'bhash';
+    state = 'bs'
     tag = TaskType.EVB;
   } else {
-    key = 'phash';
+    hashKey = 'phash';
+    state = 'ps'
     tag = TaskType.EVP;
   }
 
@@ -39,11 +43,11 @@ async function emojiVerifier(ctrl, message) {
     let hash = message?.id ?? ''
     message.clickButton({ X: answer, Y: 0 })
       .then(() => {
-        resolve({ [key]: hash });
+        resolve({ [hashKey]: hash });
       })
       .catch((err) => {
         if (handleError(err, 'Verify emoji got error')) {
-          resolve({ [key]: hash });
+          resolve({ [hashKey]: hash, [state]: States.Normal });
         } else {
           reject(err);
         }

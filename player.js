@@ -5,6 +5,7 @@ const States = {
   Doing: "doing",
   Defeat: "defeat",
   Normal: "noraml",
+  Sus: "suspicious",
   NeedVerify_Image: "need_verify_image",  // Verify: enter the image code
   Verifying_Image: "verifying_image",
   Ban: "banned"

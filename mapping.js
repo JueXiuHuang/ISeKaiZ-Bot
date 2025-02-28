@@ -8,7 +8,7 @@ const { makeHash } = require('./helper')
 function mappingRoutine(ctrl) {
   if (ctrl.player['channel'] === null) return;
 
-  if (ctrl.player['battleMsg'] === null) {
+  if (ctrl.player['battleMsg'] === null || ctrl.player['bs'] === States.Sus) {
     const taskFunc = () => new Promise(resolve => {
       ctrl.player['channel']?.send('$map');
       resolve({});

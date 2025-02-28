@@ -167,8 +167,8 @@ client.on('messageCreate', async (message) => {
   }
 
   if (data['content'].includes('Time ran out!')) {
-    ctrl.player['battleMsg'] = null;
-    ctrl.player['profMsg'] = null;
+    ctrl.player['bs'] = States.Sus;
+    ctrl.player['ps'] = States.Sus;
     return;
   }
 

@@ -9,7 +9,7 @@ function professionRoutine(ctrl) {
   if (ctrl.player['channel'] === null) return;
   if (profession === 'none') return;
 
-  if (ctrl.player['profMsg'] === null) {
+  if (ctrl.player['profMsg'] === null || ctrl.player['bs'] === States.Sus) {
     const taskFunc = () => new Promise(resolve => {
       ctrl.player['channel']?.send('$' + profession);
       resolve({})
