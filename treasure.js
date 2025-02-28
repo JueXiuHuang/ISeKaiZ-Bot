@@ -5,7 +5,7 @@ const { handleError } = require('./error');
 
 function checkTreasure(ctrl, message) {
   if (treasureGuild === '' || !treasureHunter) return;
-  if (message.guildId != treasureGuild) return;
+  if (message.guildId !== treasureGuild) return;
   let data = messageExtractor(message);
 
   if (data['title'].includes('Chest Spawned!')) {

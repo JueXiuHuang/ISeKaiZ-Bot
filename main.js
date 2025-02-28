@@ -119,8 +119,8 @@ client.on('ready', async () => {
 client.on('messageCreate', async (message) => {
   checkTreasure(ctrl, message);
   parseCommands(ctrl, message, client.user.id);
-  if (message.channelId != channelId) return;
-  if (message.author.username != 'Isekaid' && message.author.username != client.user.username) return;
+  if (message.channelId !== channelId) return;
+  if (message.author.username !== 'Isekaid' && message.author.username !== client.user.username) return;
 
   let data = messageExtractor(message);
 
@@ -184,7 +184,7 @@ client.on('messageCreate', async (message) => {
 
 function verifyHandler(message, data, user) {
   if (data['desc'].includes('Please complete the captcha')) {
-    if (data['embRef'] != user) return;
+    if (data['embRef'] !== user) return;
     logger('>>>BOT stop due to verify<<<');
     ctrl.player['bs'] = States.NeedVerify_Image;
     ctrl.player['ps'] = States.NeedVerify_Image;
@@ -330,18 +330,45 @@ function professionHandler(ctrl, event, message, data) {
   if (data['title'].includes('You caught a')) {
     logger('Profession finish (Fish)');
     ctrl.player['phash'] = data['id'];
+    for (let i = 0; i < data['fields'].length; i++) {
+      let field = data['fields'][i]
+      let value = field['value'] ?? ''
+      const re = /You now have \*\*\d+\*\* ([a-zA-Z]+)!/
+      let objName = value.match(re)?.[1] ?? 'Unknown'
+      logger(gainItemLog('1', objName));
+    }
     return;
   }
 
   if (data['title'].includes('Mining Complete!')) {
     logger('Profession finish (Mine)');
     ctrl.player['phash'] = data['id'];
+    for (let i = 0; i < data['fields'].length; i++) {
+      let field = data['fields'][i]
+      let name = field['name'] ?? ''
+      let value = field['value'] ?? ''
+      if (name !== 'Ores found') continue
+      const re = / (\d+)x ([a-zA-Z]+) /g
+      let results = [...value.matchAll(re)]
+      for (j = 0; j < results.length; j++) {
+        let quantity = results[j]?.[1] ?? '0'
+        let name = results[j]?.[2] ?? 'Unknown'
+        logger(gainItemLog(quantity, name));
+      }
+    }
     return;
   }
 
   if (data['title'].includes('You found a')) {
     logger('Profession finish (Forage)');
     ctrl.player['phash'] = data['id'];
+    for (let i = 0; i < data['fields'].length; i++) {
+      let field = data['fields'][i]
+      let value = field['value'] ?? ''
+      const re = /You now have \*\*\d+\*\* ([a-zA-Z]+)!/
+      let objName = value.match(re)?.[1] ?? 'Unknown'
+      logger(gainItemLog('1', objName));
+    }
     return;
   }
 
@@ -393,8 +420,8 @@ function professionHandler(ctrl, event, message, data) {
 }
 
 client.on('messageUpdate', async (oldMsg, newMsg) => {
-  if (newMsg.channelId != channelId) return;
-  if (newMsg.author.username != 'Isekaid') return;
+  if (newMsg.channelId !== channelId) return;
+  if (newMsg.author.username !== 'Isekaid') return;
 
   let newData = messageExtractor(newMsg);
   let oldData = messageExtractor(oldMsg);
