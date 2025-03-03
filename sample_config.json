@@ -11,5 +11,6 @@
   "expFood": "sushi-roll",
   "captchaModel": "./model/captcha.onnx",
   "sellEquip": ["F", "E", "D"],
-  "trustUsr": ["user-id-number"]
+  "trustUsr": ["user-id-number"],
+  "craftChannelId": ""
 }
