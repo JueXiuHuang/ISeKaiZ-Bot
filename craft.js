@@ -4,7 +4,7 @@ const { token, craftChannelId, sellEquip = ['F', 'E', 'D'] } = require('./config
 const { logger } = require('./log');
 const { messageExtractor } = require('./helper');
 
-const craftMaterial = 'Palladium';
+const craftMaterial = 'Platinum';
 const craftQuantity = 30;
 const craftInterval = 6000;
 const sellInterval = 4000;
@@ -70,6 +70,12 @@ client.on('messageCreate', async (message) => {
     BotState = StateStop;
     logger('>>>Stop Craft (Verify)!!<<<');
     return;
+  }
+
+  const re = /You need \d+ pieces of [a-z]+ to craft \d+ items!/;
+  if (re.test(data['desc'])) {
+    BotState = StateStop;
+    logger('>>>Stop Craft (Not Enough)!!<<<');
   }
 
   sellHandler(data);
