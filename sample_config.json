@@ -12,5 +12,6 @@
   "captchaModel": "./model/captcha.onnx",
   "sellEquip": ["F", "E", "D"],
   "trustUsr": ["user-id-number"],
-  "craftChannelId": ""
+  "craftChannelId": "",
+  "craftMaterial": "Platinum"
 }
