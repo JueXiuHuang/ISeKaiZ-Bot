@@ -36,4 +36,49 @@ function formatTimeString(date) {
   return formattedTime
 }
 
-module.exports = { errorLogWrapper, logger, getTimeString, formatTimeString };
+function gainItemLog(amount, name) {
+  return `You gained ${amount} {${name}}!!`
+}
+
+const btMeatRegex = /You got (\d+) meat :cut_of_meat:/
+const btGoldRegex = /You gained (\d+) Gold!/
+const btIntRegex = /You gained an additional \*\*Intelligence\*\* point!/
+const pfFishForageRegex = /You now have \*\*\d+\*\* ([a-zA-Z]+)!/
+const pfMineRegex = / (\d+)x ([a-zA-Z]+) /g
+
+function gainItemHandler(data) {
+  for (const field of data['fields']) {
+    let value = field['value'] ?? ''
+    let name = field['name'];
+    switch (true) {
+      case btMeatRegex.test(value):
+        let amount = value.match(btMeatRegex)?.[1] ?? '0';
+        logger(gainItemLog(amount, "Meat"))
+        break;
+      case btIntRegex.test(value):
+        logger(gainItemLog(1, "Int"));
+        break;
+      case pfFishForageRegex.test(value):
+        let objName = value.match(pfFishForageRegex)?.[1] ?? 'Unknown'
+        logger(gainItemLog(1, objName))
+        break;
+      case pfMineRegex.test(value) && name === 'Ores found':
+        let results = [...value.matchAll(pfMineRegex)]
+        for (j = 0; j < results.length; j++) {
+          let amount = results[j]?.[1] ?? '0'
+          let objName = results[j]?.[2] ?? 'Unknown'
+          logger(gainItemLog(amount, objName))
+        }
+        break;
+    }
+  }
+
+  let desc = data['desc'].replaceAll(',', '');
+  desc = desc.replaceAll('*', '')
+  if (btGoldRegex.test(desc)) {
+    let amount = desc.match(btGoldRegex)?.[1] ?? '0';
+    logger(gainItemLog(amount, "Gold"))
+  }
+}
+
+module.exports = { errorLogWrapper, logger, getTimeString, formatTimeString, gainItemHandler };

@@ -62,8 +62,4 @@ function makeHash() {
   return result;
 }
 
-function gainItemLog(quantity, name) {
-  return `You gained ${quantity} {${name}}!!`
-}
-
-module.exports = { isVerify, messageExtractor, delayer, makeHash, gainItemLog };
+module.exports = { isVerify, messageExtractor, delayer, makeHash };

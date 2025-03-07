@@ -9,8 +9,8 @@ const { retainerRoutine, retainerHandler } = require('./retainer');
 const { foodRoutine } = require('./food');
 const { inventoryRoutine, inventoryHandler } = require('./inventory')
 const { Task, Controller, TaskType, getDefaultRank } = require('./controller')
-const { messageExtractor, gainItemLog } = require('./helper');
-const { logger } = require('./log');
+const { messageExtractor } = require('./helper');
+const { logger, gainItemHandler } = require('./log');
 const { handleError } = require('./error');
 const { emojiVerifier } = require('./verifier');
 const { parseCommands } = require('./commands');
@@ -249,12 +249,7 @@ function mapHandler(ctrl, message, data) {
     logger('Battle finish, update bhash');
     ctrl.player['bhash'] = data['id'];
 
-    let desc = data['desc'].replaceAll(',', '');
-    desc = desc.replaceAll('*', '')
-    let re = /You gained (\d+) Gold!/;
-    let gold = desc.match(re)?.[1] ?? '0';
-    logger(gainItemLog(parseInt(gold), 'Gold'))
-    logger(`You gained ${parseInt(gold)} Gold!`)
+    gainItemHandler(data);
     return;
   }
 
@@ -330,45 +325,21 @@ function professionHandler(ctrl, event, message, data) {
   if (data['title'].includes('You caught a')) {
     logger('Profession finish (Fish)');
     ctrl.player['phash'] = data['id'];
-    for (let i = 0; i < data['fields'].length; i++) {
-      let field = data['fields'][i]
-      let value = field['value'] ?? ''
-      const re = /You now have \*\*\d+\*\* ([a-zA-Z]+)!/
-      let objName = value.match(re)?.[1] ?? 'Unknown'
-      logger(gainItemLog('1', objName));
-    }
+    gainItemHandler(data);
     return;
   }
 
   if (data['title'].includes('Mining Complete!')) {
     logger('Profession finish (Mine)');
     ctrl.player['phash'] = data['id'];
-    for (let i = 0; i < data['fields'].length; i++) {
-      let field = data['fields'][i]
-      let name = field['name'] ?? ''
-      let value = field['value'] ?? ''
-      if (name !== 'Ores found') continue
-      const re = / (\d+)x ([a-zA-Z]+) /g
-      let results = [...value.matchAll(re)]
-      for (j = 0; j < results.length; j++) {
-        let quantity = results[j]?.[1] ?? '0'
-        let name = results[j]?.[2] ?? 'Unknown'
-        logger(gainItemLog(quantity, name));
-      }
-    }
+    gainItemHandler(data);
     return;
   }
 
   if (data['title'].includes('You found a')) {
     logger('Profession finish (Forage)');
     ctrl.player['phash'] = data['id'];
-    for (let i = 0; i < data['fields'].length; i++) {
-      let field = data['fields'][i]
-      let value = field['value'] ?? ''
-      const re = /You now have \*\*\d+\*\* ([a-zA-Z]+)!/
-      let objName = value.match(re)?.[1] ?? 'Unknown'
-      logger(gainItemLog('1', objName));
-    }
+    gainItemHandler(data);
     return;
   }
 
