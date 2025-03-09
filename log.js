@@ -42,6 +42,7 @@ function gainItemLog(amount, name) {
 
 const btMeatRegex = /You got (\d+) meat :cut_of_meat:/
 const btGoldRegex = /You gained (\d+) Gold!/
+const invGoldRegex = /You gained (\d+) gold!/
 const btIntRegex = /You gained an additional \*\*Intelligence\*\* point!/
 const pfFishForageRegex = /You now have \*\*\d+\*\* ([a-zA-Z]+)!/
 const pfMineRegex = / (\d+)x ([a-zA-Z]+) /g
@@ -49,24 +50,26 @@ const pfMineRegex = / (\d+)x ([a-zA-Z]+) /g
 function gainItemHandler(data) {
   for (const field of data['fields']) {
     let value = field['value'] ?? ''
-    let name = field['name'];
+    let name = field['name'] ?? '';
+    let amount = '0'
+    let objName = 'Unknown'
     switch (true) {
       case btMeatRegex.test(value):
-        let amount = value.match(btMeatRegex)?.[1] ?? '0';
+        amount = value.match(btMeatRegex)?.[1] ?? '0';
         logger(gainItemLog(amount, "Meat"))
         break;
       case btIntRegex.test(value):
         logger(gainItemLog(1, "Int"));
         break;
       case pfFishForageRegex.test(value):
-        let objName = value.match(pfFishForageRegex)?.[1] ?? 'Unknown'
+        objName = value.match(pfFishForageRegex)?.[1] ?? 'Unknown'
         logger(gainItemLog(1, objName))
         break;
       case pfMineRegex.test(value) && name === 'Ores found':
         let results = [...value.matchAll(pfMineRegex)]
         for (j = 0; j < results.length; j++) {
-          let amount = results[j]?.[1] ?? '0'
-          let objName = results[j]?.[2] ?? 'Unknown'
+          amount = results[j]?.[1] ?? '0'
+          objName = results[j]?.[2] ?? 'Unknown'
           logger(gainItemLog(amount, objName))
         }
         break;
@@ -75,9 +78,16 @@ function gainItemHandler(data) {
 
   let desc = data['desc'].replaceAll(',', '');
   desc = desc.replaceAll('*', '')
-  if (btGoldRegex.test(desc)) {
-    let amount = desc.match(btGoldRegex)?.[1] ?? '0';
-    logger(gainItemLog(amount, "Gold"))
+  let amount = '0'
+  switch (true) {
+    case btGoldRegex.test(desc):
+      amount = desc.match(btGoldRegex)?.[1] ?? '0';
+      logger(gainItemLog(amount, "Gold"))
+      break
+    case invGoldRegex.test(desc):
+      amount = desc.match(invGoldRegex)?.[1] ?? '0';
+      logger(gainItemLog(amount, "Gold"))
+      break
   }
 }
 
