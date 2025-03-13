@@ -41,8 +41,7 @@ function gainItemLog(amount, name) {
 }
 
 const btMeatRegex = /You got (\d+) meat :cut_of_meat:/
-const btGoldRegex = /You gained (\d+) Gold!/
-const invGoldRegex = /You gained (\d+) gold!/
+const goldRegex = /You gained (\d+) [Gg]old!/
 const btIntRegex = /You gained an additional \*\*Intelligence\*\* point!/
 const pfFishForageRegex = /You now have \*\*\d+\*\* ([a-zA-Z]+)!/
 const pfMineRegex = / (\d+)x ([a-zA-Z]+) /g
@@ -80,12 +79,8 @@ function gainItemHandler(data) {
   desc = desc.replaceAll('*', '')
   let amount = '0'
   switch (true) {
-    case btGoldRegex.test(desc):
-      amount = desc.match(btGoldRegex)?.[1] ?? '0';
-      logger(gainItemLog(amount, "Gold"))
-      break
-    case invGoldRegex.test(desc):
-      amount = desc.match(invGoldRegex)?.[1] ?? '0';
+    case goldRegex.test(desc):
+      amount = desc.match(goldRegex)?.[1] ?? '0';
       logger(gainItemLog(amount, "Gold"))
       break
   }
