@@ -2,24 +2,16 @@ const fs = require('fs');
 const { logger } = require('./log');
 
 const States = {
-  Doing: "doing",
-  Defeat: "defeat",
-  Normal: "noraml",
-  Sus: "suspicious",
-  NeedVerify_Image: "need_verify_image",  // Verify: enter the image code
-  Verifying_Image: "verifying_image",
-  Ban: "banned"
+  Init: "init",
+  Running: "running",
+  Defeated: "defeated",
+  Blocked: "blocked",
+  Ban: "banned",
+  Stopped: "stopped"
 }
 
 class Player {
-  // battle state
-  bs = States.Normal;
-  // profession state
-  ps = States.Normal;
-  // battle counter
-  bc = 0;
-  // profession counter
-  pc = 0;
+  state = States.Init;
   channel = null;
   battleMsg = null;
   profMsg = null;
@@ -29,20 +21,16 @@ class Player {
 }
 
 function newPlayer() {
-  userData = loadUserData();
+  let userData = loadUserData();
   return {
-    'bs': States.Normal,
-    'ps': States.Normal,
+    'state': States.Init,
     'channel': null,
     'battleMsg': null,
     'profMsg': null,
     'verifyImg': null,
+    'verifyEmojiMsg': null,
     'sell': 0,
     'userData': userData,
-    'bhash': '',
-    'phash': '',
-    'prevBhash': '',
-    'prevPhash': '',
   };
 }
 

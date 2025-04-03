@@ -1,5 +1,5 @@
 const { WebEmbed } = require('discord.js-selfbot-v13');
-const { Task, TaskType, getDefaultRank } = require('./controller');
+const { Task, TaskType, getDefaultRank } = require('./task manager');
 const { trustUsr = ['405340108846530571'] } = require('./config.json');
 const { messageExtractor } = require('./helper');
 const { logger } = require('./log');

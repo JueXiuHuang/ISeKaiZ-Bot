@@ -1,7 +1,5 @@
 const { handleError } = require('./error');
-const { Task, TaskType, getDefaultRank } = require('./controller');
-const { makeHash } = require('./helper');
-const { States } = require('./player')
+const { Task, TaskType, getDefaultRank } = require('./task manager');
 
 
 async function emojiVerifier(ctrl, message) {
@@ -26,28 +24,24 @@ async function emojiVerifier(ctrl, message) {
     }
   }
 
-  let hashKey = '';
-  let state = ''
   let tag = 'Unknown';
+  let timerKey = 'Unknown';
   if (emoji === 'Battle') {
-    hashKey = 'bhash';
-    state = 'bs'
     tag = TaskType.EVB;
+    timerKey = 'map';
   } else {
-    hashKey = 'phash';
-    state = 'ps'
     tag = TaskType.EVP;
+    timerKey = 'prof';
   }
 
   const taskFunc = () => new Promise((resolve, reject) => {
-    let hash = message?.id ?? ''
     message.clickButton({ X: answer, Y: 0 })
       .then(() => {
-        resolve({ [hashKey]: hash });
+        resolve({});
       })
       .catch((err) => {
         if (handleError(err, 'Verify emoji got error')) {
-          resolve({ [hashKey]: hash, [state]: States.Normal });
+          resolve({});
         } else {
           reject(err);
         }
@@ -56,7 +50,7 @@ async function emojiVerifier(ctrl, message) {
   const expireAt = Date.now() + 30000;
   let rank = getDefaultRank(tag);
   const task = new Task(taskFunc, expireAt, `emoji verify: ${emoji}`, tag, rank);
-  ctrl.addTask(task);
+  ctrl.addTask(task, timerKey);
 }
 
 module.exports = { emojiVerifier };

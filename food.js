@@ -1,5 +1,5 @@
 const { expFood = 'sushi-roll' } = require('./config.json');
-const { Task, TaskType, getDefaultRank } = require('./controller');
+const { Task, TaskType, getDefaultRank } = require('./task manager');
 const { saveUserData } = require('./player');
 const { logger, formatTimeString } = require('./log');
 

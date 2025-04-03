@@ -1,11 +1,11 @@
 const { sellEquip = ['F', 'E', 'D'] } = require('./config.json');
-const { Task, TaskType, getDefaultRank } = require('./controller');
+const { Task, TaskType, getDefaultRank } = require('./task manager');
 const { isVerify } = require('./helper');
 const { gainItemHandler } = require('./log')
 
 async function inventoryRoutine(ctrl) {
   if (ctrl.player['channel'] === null) return;
-  if (isVerify(ctrl.player['bs'], ctrl.player['ps'])) return;
+  if (isVerify(ctrl.player['state'])) return;
 
   ctrl.player['sell'] = 0;
   const taskFunc = () => new Promise(resolve => {
