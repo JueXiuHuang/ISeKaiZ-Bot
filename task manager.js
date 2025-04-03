@@ -124,8 +124,6 @@ class TaskManager {
         logger(`Task execute too fast, wait for ${delta} ms`);
         await delayer(delta, delta, '(Task Gap)');
       }
-
-      logger(`Delay for bias`);
       await delayer(0, this.bias, '(Task Bias)');
 
       task.func().then(modified => {

@@ -72,22 +72,24 @@ client.on('messageCreate', async (message) => {
   let data = messageExtractor(message);
 
   if (data['content'] === '!start') {
-    logger('>>>BOT start<<<');
+    logger('>>>BOT START<<<');
     ctrl.player['channel'] = message.channel;
     ctrl.updateState(States.Init);
     return;
   }
 
   if (data['content'] === '!stop') {
-    logger('>>>BOT stop<<<');
+    logger('>>>BOT STOP<<<');
     ctrl.updateState(States.Stopped);
     return;
   }
 
-  // TODO: use timeout to recheck energy?
+  if ([States.Ban, States.Defeated, States.Stopped].includes(ctrl.player.state)) return;
+
   if (data['desc'] === 'You don\'t have enough energy to battle!') {
-    logger('>>>BOT stop due to no energy<<<');
-    ctrl.updateState(States.Init);
+    logger('>>>NO ENERGY<<<');
+    ctrl.refreshTimerId('map');
+    ctrl.refreshTimerId('prof');
     return;
   }
 
@@ -115,7 +117,7 @@ function verifyHandler(message, data, user) {
   ctrl.player['profMsg'] = null;
 
   if (data['desc'].includes('Please complete the captcha')) {
-    logger('>>>BOT blocked due to verify<<<');
+    logger('>>>BOT BLOCKED - VERIFY<<<');
     logger('Try to solve verify image');
 
     ctrl.updateState(States.Blocked);
@@ -130,7 +132,7 @@ function verifyHandler(message, data, user) {
   }
 
   if (data['desc'].includes('Please enter the captcha code from the image to verify.')) {
-    logger('>>>BOT blocked due to verify image code<<<');
+    logger('>>>BOT BLOCKED - IMAGE CODE<<<');
 
     ctrl.player['verifyImg'] = message.embeds[0].image;
     ctrl.updateState(States.Blocked);
@@ -152,7 +154,7 @@ function verifyHandler(message, data, user) {
   }
 
   if (data['desc'].includes('Successfully Verified.')) {
-    logger('>>>BOT start due to verify finished<<<');
+    logger('>>>BOT START - VERIFY FINISH<<<');
     ctrl.player['channel'] = message.channel;
     ctrl.updateState(States.Init)
     return;

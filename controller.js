@@ -1,6 +1,7 @@
 const { Task, TaskManager, TaskType, getDefaultRank } = require('./task manager');
 const { BotEventManager } = require('./event manager');
 const { States } = require('./player')
+const { logger } = require('./log');
 const { profession } = require('./config.json');
 
 class Controller {
@@ -14,6 +15,7 @@ class Controller {
       this.onBlocked.bind(this),
       this.onBan.bind(this),
       this.onRunning.bind(this),
+      this.onStopped.bind(this),
     );
     this.currentState = '';
     this.timerIds = new Map();
@@ -58,7 +60,9 @@ class Controller {
   }
 
   updateState(newState) {
+    logger(`Current player state: ${this.player.state}`)
     if (this.currentState !== newState) {
+      logger(`Change state to ${newState}`);
       this.player.state = newState;
       this.currentState = newState;
       this.botEventManager.emit(newState);
@@ -103,6 +107,7 @@ class Controller {
   }
 
   profRecursion() {
+    if (profession === 'none') return;
     this.cancelTimerId('prof');
     this.addTask(this._createRepeatingTask('$' + profession, TaskType.NPW));
     this.timerIds.set('prof', setTimeout(() => this.profRecursion(), 60000));
@@ -118,7 +123,6 @@ class Controller {
     this.updateState(States.Running);
 
     this.mapRecursion();
-    if (profession === 'none') return;
     this.profRecursion();
   }
 
@@ -126,6 +130,8 @@ class Controller {
     this.player['channel'] = null;
     this.player['battleMsg'] = null;
     this.player['profMsg'] = null;
+    this.timerIds.forEach(timer => clearTimeout(timer));
+    this.timerIds.clear();
   }
 
   onBlocked() {
@@ -138,6 +144,16 @@ class Controller {
     this.player['channel'] = null;
     this.player['battleMsg'] = null;
     this.player['profMsg'] = null;
+    this.timerIds.forEach(timer => clearTimeout(timer));
+    this.timerIds.clear();
+  }
+
+  onStopped() {
+    this.player['channel'] = null;
+    this.player['battleMsg'] = null;
+    this.player['profMsg'] = null;
+    this.timerIds.forEach(timer => clearTimeout(timer));
+    this.timerIds.clear();
   }
 }
 
