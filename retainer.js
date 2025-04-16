@@ -1,11 +1,11 @@
 const { isVerify } = require('./helper');
 const { logger } = require('./log');
 const { handleError } = require('./error');
-const { Task, TaskType, getDefaultRank } = require('./controller');
+const { Task, TaskType, getDefaultRank } = require('./task manager');
 
 function retainerRoutine(ctrl) {
   if (ctrl.player['channel'] === null) return;
-  if (isVerify(ctrl.player['bs'], ctrl.player['ps'])) return;
+  if (isVerify(ctrl.player['state'])) return;
 
   const taskFunc = () => new Promise(resolve => {
     ctrl.player['channel']?.send('$hired');
@@ -25,7 +25,6 @@ async function retainerHandler(ctrl, message, newData, oldData) {
 
   // retainer should stop at last page automatically
   // this is just prevent infinite loop
-  // await delayer(5000, 10000, '(collect retainer)');
   const elapsed = newData['desc'].match(regex)?.[1] ?? '0';
   if (elapsed === '0') {
     const taskFunc = () => new Promise((resolve, reject) => {

@@ -1,6 +1,6 @@
 const { profession, retryCount } = require('./config.json');
 const { logger } = require('./log');
-const { Task, TaskType, getDefaultRank } = require('./controller');
+const { Task, TaskType, getDefaultRank } = require('./task manager');
 const { States } = require('./player')
 const { makeHash } = require('./helper')
 

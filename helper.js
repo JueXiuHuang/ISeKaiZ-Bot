@@ -3,11 +3,7 @@ const { logger } = require('./log');
 
 function isVerify(...args) {
   for (var i = 0; i < args.length; i++) {
-    if (args[i] === States.NeedVerify) {
-      return true;
-    }
-
-    if (args[i] === States.Verifying) {
+    if (args[i] === States.Blocked) {
       return true;
     }
   }
