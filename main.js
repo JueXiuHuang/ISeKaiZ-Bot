@@ -162,7 +162,7 @@ function verifyHandler(message, data, user) {
 }
 
 function mapHandler(ctrl, message, data) {
-  if (data['title'].includes('Current Location:')) {
+  if (data['title'].includes('Current Floor:')) {
     logger('Open new battle window');
     ctrl.player['battleMsg'] = message;
 
