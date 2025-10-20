@@ -1,15 +1,15 @@
-const { delayer } = require('./helper');
-const { retryCount, taskGap = 2000, taskBias = 3000 } = require('./config.json');
-const { logger } = require('./log');
+import { delayer } from './helper.js';
+import { retryCount, taskGap, taskBias } from './config.js';
+import { logger } from './log.js';
 
-class TaskSetting {
+export class TaskSetting {
   constructor(rank, limit) {
     this.rank = rank;
     this.limit = limit;
   }
 }
 
-const TaskType = {
+export const TaskType = {
   Verify: 'Verify',
   EVB: 'EmojiVerifyBattle',
   EVP: 'EmojiVerifyProfession',
@@ -24,7 +24,7 @@ const TaskType = {
   Cmd: 'Command',
 };
 
-const TaskSettingList = {
+export const TaskSettingList = {
   'Verify': new TaskSetting(rank = -999, limit = 999),
   'Command': new TaskSetting(rank = -998, limit = 999),
   'EmojiVerifyBattle': new TaskSetting(rank = 2, limit = 1),
@@ -39,15 +39,15 @@ const TaskSettingList = {
   'NewProfessionWindow': new TaskSetting(rank = 4, limit = 1),
 };
 
-function getDefaultRank(tag) {
+export function getDefaultRank(tag) {
   return TaskSettingList[tag]?.rank ?? 5;
 }
 
-function getTaskLimit(tag) {
+export function getTaskLimit(tag) {
   return TaskSettingList[tag]?.limit ?? 1;
 }
 
-class Task {
+export class Task {
   constructor(func, expireAt, info, tag, rank) {
     this.func = func;
     this.expireAt = expireAt;
@@ -60,7 +60,7 @@ class Task {
   isExpire(timeNow) { return this.expireAt < timeNow; }
 }
 
-class TaskManager {
+export class TaskManager {
   constructor(onTaskComplete) {
     this.queue = [];
     this.taskTypeCounter = {};
@@ -144,5 +144,3 @@ class TaskManager {
     this.lock = false;
   }
 }
-
-module.exports = { Task, TaskManager, TaskType, getDefaultRank };

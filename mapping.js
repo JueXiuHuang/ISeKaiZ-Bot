@@ -1,11 +1,10 @@
-const { retryCount } = require('./config.json');
-const { States } = require('./player');
-const { Task, TaskType, getDefaultRank } = require('./task manager');
-const { logger } = require('./log');
-const { makeHash } = require('./helper')
+import { States } from './player.js';
+import { Task, TaskType, getDefaultRank } from './task manager.js';
+import { logger } from './log.js';
+import { makeHash } from './helper.js';
 
 // @param {Player} player
-function mappingRoutine(ctrl) {
+export function mappingRoutine(ctrl) {
   if (ctrl.player['channel'] === null) return;
 
   if (ctrl.player['battleMsg'] === null || ctrl.player['bs'] === States.Sus) {
@@ -41,5 +40,3 @@ function mappingRoutine(ctrl) {
 
   ctrl.player['prevBhash'] = ctrl.player['bhash'];
 }
-
-module.exports = { mappingRoutine };

@@ -1,11 +1,11 @@
-const { profession, retryCount } = require('./config.json');
-const { logger } = require('./log');
-const { Task, TaskType, getDefaultRank } = require('./task manager');
-const { States } = require('./player')
-const { makeHash } = require('./helper')
+import { profession } from './config.js';
+import { logger } from './log.js';
+import { Task, TaskType, getDefaultRank } from './task manager.js';
+import { States } from './player.js';
+import { makeHash } from './helper.js';
 
 // @param {Player} player
-function professionRoutine(ctrl) {
+export function professionRoutine(ctrl) {
   if (ctrl.player['channel'] === null) return;
   if (profession === 'none') return;
 
@@ -41,5 +41,3 @@ function professionRoutine(ctrl) {
 
   ctrl.player['prevPhash'] = ctrl.player['phash'];
 }
-
-module.exports = { professionRoutine };

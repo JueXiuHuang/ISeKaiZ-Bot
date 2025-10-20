@@ -1,7 +1,7 @@
-const fs = require('fs');
-const { logger } = require('./log');
+import fs from 'fs';
+import { logger } from './log.js';
 
-const States = {
+export const States = {
   Init: "init",
   Running: "running",
   Defeated: "defeated",
@@ -10,7 +10,7 @@ const States = {
   Stopped: "stopped"
 }
 
-class Player {
+export class Player {
   state = States.Init;
   channel = null;
   battleMsg = null;
@@ -20,7 +20,7 @@ class Player {
   sell = 0;
 }
 
-function newPlayer() {
+export function newPlayer() {
   let userData = loadUserData();
   return {
     'state': States.Init,
@@ -34,11 +34,11 @@ function newPlayer() {
   };
 }
 
-function saveUserData(data) {
+export function saveUserData(data) {
   fs.writeFileSync('./user_data.json', JSON.stringify(data, null, 2));
 }
 
-function loadUserData() {
+export function loadUserData() {
   try {
     return JSON.parse(fs.readFileSync('./user_data.json', 'utf8'));
   } catch (err) {
@@ -48,5 +48,3 @@ function loadUserData() {
     };
   }
 }
-
-module.exports = { Player, States, newPlayer, loadUserData, saveUserData };

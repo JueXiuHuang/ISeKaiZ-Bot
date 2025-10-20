@@ -1,9 +1,9 @@
-const { treasureHunter = false, treasureGuild = '' } = require('./config.json');
-const { Task, TaskType, getDefaultRank } = require('./task manager');
-const { messageExtractor } = require('./helper');
-const { handleError } = require('./error');
+import { treasureHunter, treasureGuild } from './config.js';
+import { Task, TaskType, getDefaultRank } from './task manager.js';
+import { messageExtractor } from './helper.js';
+import { handleError } from './error.js';
 
-function checkTreasure(ctrl, message) {
+export function checkTreasure(ctrl, message) {
   if (treasureGuild === '' || !treasureHunter) return;
   if (message.guildId !== treasureGuild) return;
   let data = messageExtractor(message);
@@ -28,5 +28,3 @@ function checkTreasure(ctrl, message) {
     ctrl.addTask(task);
   }
 }
-
-module.exports = { checkTreasure };

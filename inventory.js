@@ -1,9 +1,9 @@
-const { sellEquip = ['F', 'E', 'D'] } = require('./config.json');
-const { Task, TaskType, getDefaultRank } = require('./task manager');
-const { isVerify } = require('./helper');
-const { gainItemHandler } = require('./log')
+import { sellEquip } from './config.js';
+import { Task, TaskType, getDefaultRank } from './task manager.js';
+import { isVerify } from './helper.js';
+import { gainItemHandler } from './log.js';
 
-async function inventoryRoutine(ctrl) {
+export async function inventoryRoutine(ctrl) {
   if (ctrl.player['channel'] === null) return;
   if (isVerify(ctrl.player['state'])) return;
 
@@ -19,7 +19,7 @@ async function inventoryRoutine(ctrl) {
   ctrl.addTask(task);
 }
 
-function inventoryHandler(ctrl, data) {
+export function inventoryHandler(ctrl, data) {
   if (!data['title'].includes('Equipment Sold')) {
     return;
   }
@@ -43,5 +43,3 @@ function inventoryHandler(ctrl, data) {
   const task = new Task(taskFunc, expireAt, 'Sell equipment', tag, rank);
   ctrl.addTask(task);
 }
-
-module.exports = { inventoryRoutine, inventoryHandler };

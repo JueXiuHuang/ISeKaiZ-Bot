@@ -1,5 +1,5 @@
-const ort = require('onnxruntime-node');
-const jimp = require('jimp')
+import ort from 'onnxruntime-node';
+import jimp from 'jimp';
 
 class CaptchaAI {
     #model;
@@ -202,8 +202,4 @@ class CaptchaAI {
 
         return [confidence, label, box];
     }
-}
-
-module.exports = {
-    CaptchaAI
 }

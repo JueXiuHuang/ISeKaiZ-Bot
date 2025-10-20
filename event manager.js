@@ -1,7 +1,7 @@
-const EventEmitter = require('events');
-const { States } = require('./player');
+import EventEmitter from 'events';
+import { States } from './player.js';
 
-class BotEventManager {
+export class BotEventManager {
   constructor(addTask, onInit, onDefeated, onBlocked, onBan, onRunning, onStopped) {
     this.emitter = new EventEmitter();
     this.callback = addTask;
@@ -18,5 +18,3 @@ class BotEventManager {
     this.emitter.emit(eventName);
   }
 }
-
-module.exports = { BotEventManager };

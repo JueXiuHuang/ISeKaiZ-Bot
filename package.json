@@ -2,6 +2,7 @@
   "name": "isekaid-bot",
   "version": "1.0.0",
   "main": "main.js",
+  "type": "module",
   "scripts": {
     "build": "pkg -t node18-win-x64 -o dist/isekaiz main.js"
   },

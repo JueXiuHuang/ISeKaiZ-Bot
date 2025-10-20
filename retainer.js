@@ -1,9 +1,9 @@
-const { isVerify } = require('./helper');
-const { logger } = require('./log');
-const { handleError } = require('./error');
-const { Task, TaskType, getDefaultRank } = require('./task manager');
+import { isVerify } from './helper.js';
+import { logger } from './log.js';
+import { handleError } from './error.js';
+import { Task, TaskType, getDefaultRank } from './task manager.js';
 
-function retainerRoutine(ctrl) {
+export function retainerRoutine(ctrl) {
   if (ctrl.player['channel'] === null) return;
   if (isVerify(ctrl.player['state'])) return;
 
@@ -18,8 +18,8 @@ function retainerRoutine(ctrl) {
   ctrl.addTask(task);
 }
 
-async function retainerHandler(ctrl, message, newData, oldData) {
-  regex = /Time elapsed: (\d) hours\sMaterials produced:/
+export async function retainerHandler(ctrl, message, newData, oldData) {
+  const regex = /Time elapsed: (\d) hours\sMaterials produced:/
 
   if (!regex.test(newData['desc'])) return;
 
@@ -71,5 +71,3 @@ async function retainerHandler(ctrl, message, newData, oldData) {
   const task = new Task(taskFunc, expireAt, '$hired Collect', tag, rank);
   ctrl.addTask(task);
 }
-
-module.exports = { retainerRoutine, retainerHandler };

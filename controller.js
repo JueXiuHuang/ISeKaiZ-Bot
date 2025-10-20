@@ -1,10 +1,10 @@
-const { Task, TaskManager, TaskType, getDefaultRank } = require('./task manager');
-const { BotEventManager } = require('./event manager');
-const { States } = require('./player')
-const { logger } = require('./log');
-const { profession } = require('./config.json');
+import { Task, TaskManager, TaskType, getDefaultRank } from './task manager.js';
+import { BotEventManager } from './event manager.js';
+import { States } from './player.js';
+import { logger } from './log.js';
+import { profession } from './config.js';
 
-class Controller {
+export class Controller {
   constructor(player) {
     this.player = player;
     this.taskManager = new TaskManager(this.taskCompleteCallback.bind(this));
@@ -156,5 +156,3 @@ class Controller {
     this.timerIds.clear();
   }
 }
-
-module.exports = { Controller };

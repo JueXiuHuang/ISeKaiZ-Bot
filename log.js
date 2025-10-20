@@ -1,7 +1,7 @@
-const { format } = require('date-fns');
-const { zhTW } = require('date-fns/locale/zh-TW');
+import { format } from 'date-fns';
+import { zhTW } from 'date-fns/locale/zh-TW';
 
-function errorLogWrapper(logFunc) {
+export function errorLogWrapper(logFunc) {
   console.log('WWWWWWWW Error Block WWWWWWWW');
   const formattedDate = format(new Date(), 'yyyy/dd/MM HH:mm:ss', { locale: zhTW });
   console.log(formattedDate)
@@ -9,7 +9,7 @@ function errorLogWrapper(logFunc) {
   console.log('MMMMMMMM Error Block MMMMMMMM');
 }
 
-function logger(log, seperator = false, customSepStart = null, customSepEnd = null) {
+export function logger(log, seperator = false, customSepStart = null, customSepEnd = null) {
   const sepStart = customSepStart ?? '---------------'
   const sepEdn = customSepEnd ?? '---------------'
   const formattedDate = format(new Date(), 'yyyy/dd/MM HH:mm:ss', { locale: zhTW });
@@ -26,12 +26,12 @@ function logger(log, seperator = false, customSepStart = null, customSepEnd = nu
   if (seperator) { console.log(sepEdn) }
 }
 
-function getTimeString() {
+export function getTimeString() {
   const formattedTime = format(new Date(), 'yyyy/dd/MM HH:mm:ss', { locale: zhTW });
   return formattedTime
 }
 
-function formatTimeString(date) {
+export function formatTimeString(date) {
   const formattedTime = format(date, 'yyyy/dd/MM HH:mm:ss', { locale: zhTW });
   return formattedTime
 }
@@ -46,7 +46,7 @@ const btIntRegex = /You gained an additional \*\*Intelligence\*\* point!/
 const pfFishForageRegex = /You now have \*\*\d+\*\* ([a-zA-Z]+)!/
 const pfMineRegex = / (\d+)x ([a-zA-Z]+) /g
 
-function gainItemHandler(data) {
+export function gainItemHandler(data) {
   for (const field of data['fields']) {
     let value = field['value'] ?? ''
     let name = field['name'] ?? '';
@@ -66,7 +66,7 @@ function gainItemHandler(data) {
         break;
       case pfMineRegex.test(value) && name === 'Ores found':
         let results = [...value.matchAll(pfMineRegex)]
-        for (j = 0; j < results.length; j++) {
+        for (let j = 0; j < results.length; j++) {
           amount = results[j]?.[1] ?? '0'
           objName = results[j]?.[2] ?? 'Unknown'
           logger(gainItemLog(amount, objName))
@@ -85,5 +85,3 @@ function gainItemHandler(data) {
       break
   }
 }
-
-module.exports = { errorLogWrapper, logger, getTimeString, formatTimeString, gainItemHandler };

@@ -1,20 +1,20 @@
-const { Client } = require('discord.js-selfbot-v13');
-const { token, channelId, captchaModel } = require('./config.json');
-const CaptchaAI = require('./captcha').CaptchaAI;
-const { States, newPlayer } = require('./player');
-const { checkTreasure } = require('./treasure');
-const { retainerRoutine, retainerHandler } = require('./retainer');
-const { foodRoutine } = require('./food');
-const { inventoryRoutine, inventoryHandler } = require('./inventory')
-const { Task, TaskType, getDefaultRank } = require('./task manager')
-const { Controller } = require('./controller')
-const { messageExtractor } = require('./helper');
-const { logger, gainItemHandler } = require('./log');
-const { handleError } = require('./error');
-const { emojiVerifier } = require('./verifier');
-const { parseCommands } = require('./commands');
-const args = process.argv.slice(2);
+import { Client } from 'discord.js-selfbot-v13';
+import { token, channelId, captchaModel } from './config.js';
+import { CaptchaAI } from './captcha.js';
+import { States, newPlayer } from './player.js';
+import { checkTreasure } from './treasure.js';
+import { retainerRoutine, retainerHandler } from './retainer.js';
+import { foodRoutine } from './food.js';
+import { inventoryRoutine, inventoryHandler } from './inventory.js';
+import { Task, TaskType, getDefaultRank } from './task manager.js';
+import { Controller } from './controller.js';
+import { messageExtractor } from './helper.js';
+import { logger, gainItemHandler } from './log.js';
+import { handleError } from './error.js';
+import { emojiVerifier } from './verifier.js';
+import { parseCommands } from './commands.js';
 
+const args = process.argv.slice(2);
 const client = new Client();
 
 let captchaAI;
