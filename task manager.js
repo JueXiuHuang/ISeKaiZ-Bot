@@ -4,8 +4,8 @@ import { logger } from './log.js';
 
 export class TaskSetting {
   constructor(rank, limit) {
-    this.rank = rank;
-    this.limit = limit;
+    this.rank;
+    this.limit;
   }
 }
 
@@ -25,18 +25,18 @@ export const TaskType = {
 };
 
 export const TaskSettingList = {
-  'Verify': new TaskSetting(rank = -999, limit = 999),
-  'Command': new TaskSetting(rank = -998, limit = 999),
-  'EmojiVerifyBattle': new TaskSetting(rank = 2, limit = 1),
-  'EmojiVerifyProfession': new TaskSetting(rank = 2, limit = 1),
-  'Treasure': new TaskSetting(rank = 1, limit = 999),
-  'Inventory': new TaskSetting(rank = 1, limit = 2),
-  'Food': new TaskSetting(rank = 1, limit = 1),
-  'Retainer': new TaskSetting(rank = 1, limit = 3),
-  'NewBattle': new TaskSetting(rank = 3, limit = 1),
-  'NewProfession': new TaskSetting(rank = 3, limit = 1),
-  'NewBattleWindow': new TaskSetting(rank = 4, limit = 1),
-  'NewProfessionWindow': new TaskSetting(rank = 4, limit = 1),
+  'Verify': new TaskSetting(-999, 999),
+  'Command': new TaskSetting(-998, 999),
+  'EmojiVerifyBattle': new TaskSetting(2, 1),
+  'EmojiVerifyProfession': new TaskSetting(2, 1),
+  'Treasure': new TaskSetting(1, 999),
+  'Inventory': new TaskSetting(1, 2),
+  'Food': new TaskSetting(1, 1),
+  'Retainer': new TaskSetting(1, 3),
+  'NewBattle': new TaskSetting(3, 1),
+  'NewProfession': new TaskSetting(3, 1),
+  'NewBattleWindow': new TaskSetting(4, 1),
+  'NewProfessionWindow': new TaskSetting(4, 1),
 };
 
 export function getDefaultRank(tag) {

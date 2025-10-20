@@ -5,7 +5,7 @@ import { newPlayer } from './player.js';
 import { Controller } from './controller.js';
 import { logger } from './log.js';
 import { startRoutines } from './routines/schedule.js';
-import { processMessageCreation, processMessageUpdate } from './handlers/messageHandler.js';
+import { processMessageCreation, processMessageUpdate } from './handlers/message.js';
 
 const args = process.argv.slice(2);
 const client = new Client({ checkUpdate: false });

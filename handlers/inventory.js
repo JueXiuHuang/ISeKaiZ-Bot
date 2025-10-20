@@ -2,7 +2,7 @@ import { sellEquip } from '../config.js';
 import { Task, TaskType, getDefaultRank } from '../task manager.js';
 import { gainItemHandler } from '../log.js';
 
-export function handleInventory(ctrl, data) {
+export function handleInventory(ctrl, _, data, _2) {
   if (!data.title.includes('Equipment Sold')) {
     return false;
   }

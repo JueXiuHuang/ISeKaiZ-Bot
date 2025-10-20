@@ -22,5 +22,6 @@ export function startRoutines(ctrl) {
   // Set intervals
   setInterval(() => oneHrRoutineScript(ctrl), 60 * 60 * 1000 + 20 * 1000);
   setInterval(() => threeHrFoodScript(ctrl), 3 * 60 * 60 * 1000 + 20 * 1000);
+  ctrl.start();
   logger('All routines started.');
 }

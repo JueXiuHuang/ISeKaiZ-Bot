@@ -4,7 +4,7 @@ import { logger, gainItemHandler } from '../log.js';
 
 export function handleProfessionMessage(ctrl, message, data, eventType) {
   const isProfessionWindow = ['Mining', 'Fishing', 'Foraging'].includes(data.title);
-  if (isProfessionWindow && eventType === 'create') {
+  if (isProfessionWindow && eventType !== 'update') {
     logger('Open new profession window');
     ctrl.player.profMsg = message;
 

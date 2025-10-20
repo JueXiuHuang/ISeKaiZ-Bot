@@ -31,8 +31,6 @@ export async function processMessageCreation(client, ctrl, message, captchaAI) {
     return;
   }
 
-  if (ctrl.player.isStopped()) return;
-
   for (const handler of messageCreateHandlers) {
     if (handler(ctrl, message, data, captchaAI)) {
       break; // Stop processing if a handler has dealt with the message

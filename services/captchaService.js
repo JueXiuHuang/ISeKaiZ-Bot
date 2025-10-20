@@ -1,7 +1,7 @@
 import ort from 'onnxruntime-node';
 import jimp from 'jimp';
 
-class CaptchaAI {
+export class CaptchaAI {
   #model;
   #img_sz = 160;
   #maximum_label_sz = 4;
