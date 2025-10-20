@@ -15,5 +15,13 @@ export function handleCommand(ctrl, message, data) {
     return true;
   }
 
+  if (data.content === '!autolevel') {
+    ctrl.player.autoLevel = !ctrl.player.autoLevel;
+    const status = ctrl.player.autoLevel ? 'ON' : 'OFF';
+    logger(`Auto level is now ${status}`);
+    message.reply(`Auto level is now ${status}`);
+    return true;
+  }
+
   return false;
 }

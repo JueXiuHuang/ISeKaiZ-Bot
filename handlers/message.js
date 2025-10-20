@@ -6,6 +6,7 @@ import { handleProfessionMessage } from './profession.js';
 import { handleInventory } from './inventory.js';
 import { handleRetainerUpdate } from './retainer.js';
 import { handleTreasure } from './treasure.js';
+import { handleAutoLevel } from './autolevel.js';
 import { parseCommands } from '../commands.js';
 import { messageExtractor } from '../helper.js';
 
@@ -14,6 +15,7 @@ const messageCreateHandlers = [
   handleCommand,
   handleSystemMessage,
   handleVerification, // Verification should be high priority
+  handleAutoLevel,
   handleBattleMessage,
   handleProfessionMessage,
   handleInventory,

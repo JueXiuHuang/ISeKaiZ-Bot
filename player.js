@@ -21,6 +21,7 @@ export function newPlayer() {
     profMsg: null,
     verifyImg: null,
     sell: 0,
+    autoLevel: false,
     userData: userData,
     isStopped: function () {
       return [States.Ban, States.Defeated, States.Stopped].includes(this.state);
@@ -45,6 +46,6 @@ export function loadUserData() {
     throw new Error('File not found');
   } catch (err) {
     logger(`User data not found or invalid, creating default data. Reason: ${err.message}`);
-    return { 'last_eat_at': 0 };
+    return { 'last_eat_at': 0, 'zone_index': 0 };
   }
 }
