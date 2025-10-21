@@ -10,7 +10,7 @@ export async function handleRetainerUpdate(ctrl, message, newData) {
 
   const elapsedHours = newData.desc.match(elapsedRegex)?.[1] ?? '0';
 
-  // If elapsed is 0, it means we can collect. Otherwise, it's a different page.
+  // If elapsed is not 0, it means we can collect. Otherwise, it's a different page.
   // The original logic seems reversed, this is a correction.
   if (elapsedHours !== '0') {
     logger('Retainer has items to collect. Attempting to harvest.');
