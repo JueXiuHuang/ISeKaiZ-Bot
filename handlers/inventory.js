@@ -10,7 +10,7 @@ export function handleInventory(ctrl, _, data, _2) {
   gainItemHandler(data);
   const goldGained = data.desc.match(/You gained (\d+)/)?.[1] ?? '0';
 
-  if (parseInt(goldGained.replace(/,/g, '')) < 100000) {
+  if (parseInt(goldGained.replace(/,/g, '')) < 10000) {
     ctrl.player.sell += 1;
   }
 
