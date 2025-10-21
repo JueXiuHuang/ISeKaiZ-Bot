@@ -35,7 +35,7 @@ export function handleAutoLevel(ctrl, _, data, _2) {
       ctrl.updateState(States.Stopped);
       return true;
     }
-    saveUserData(ctrl.player.userData)
+    saveUserData(ctrl.player.userData);
 
     const nextZone = battleZones[ctrl.player.userData.zone_index];
     const taskFunc = () => new Promise((resolve, reject) => {
