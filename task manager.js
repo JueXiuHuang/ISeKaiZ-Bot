@@ -4,8 +4,8 @@ import { logger } from './log.js';
 
 export class TaskSetting {
   constructor(rank, limit) {
-    this.rank;
-    this.limit;
+    this.rank = rank;
+    this.limit = limit;
   }
 }
 
