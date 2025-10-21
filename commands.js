@@ -1,10 +1,10 @@
-const { WebEmbed } = require('discord.js-selfbot-v13');
-const { Task, TaskType, getDefaultRank } = require('./task manager');
-const { trustUsr = ['405340108846530571'] } = require('./config.json');
-const { messageExtractor } = require('./helper');
-const { logger } = require('./log');
+import { WebEmbed } from 'discord.js-selfbot-v13';
+import { Task, TaskType, getDefaultRank } from './task manager.js';
+import { trustUsr } from './config.js';
+import { messageExtractor } from './helper.js';
+import { logger } from './log.js';
 
-function parseCommands(ctrl, message, usrID) {
+export function parseCommands(ctrl, message, usrID) {
   let data = messageExtractor(message)
   if (data['ref'].everyone || !data['ref'].users.get(usrID)) {
     return
@@ -14,6 +14,7 @@ function parseCommands(ctrl, message, usrID) {
   }
 
   let content = data['content'].toLowerCase();
+  let regex;
 
   switch (true) {
     case content.includes('force bal'):
@@ -32,7 +33,7 @@ function parseCommands(ctrl, message, usrID) {
 }
 
 function handleForceBalance(ctrl, message) {
-  msg = '$bal'
+  const msg = '$bal'
   if (ctrl) {
     const taskFunc = () => new Promise(resolve => {
       message.reply(msg)
@@ -50,7 +51,7 @@ function handleForceBalance(ctrl, message) {
 }
 
 function handleForceDonate(ctrl, message, amount) {
-  msg = `$guild donate ${amount}`
+  const msg = `$guild donate ${amount}`
   if (ctrl) {
     const taskFunc = () => new Promise(resolve => {
       message.reply(msg)
@@ -83,10 +84,10 @@ function handleForceBan(ctrl, message) {
   let index = Math.floor(Math.random() * banImgs.length)
   const embed = new WebEmbed()
     .setImage(banImgs[index])
-  msg = `QAQ ${WebEmbed.hiddenEmbed}${embed}`
+  const msg = `QAQ ${WebEmbed.hiddenEmbed}${embed}`
   if (ctrl) {
     const taskFunc = () => new Promise(resolve => {
-      message.reply({content:msg})
+      message.reply({ content: msg })
       resolve({});
     })
     const expireAt = Date.now() + 180000;
@@ -96,8 +97,6 @@ function handleForceBan(ctrl, message) {
     ctrl.addTask(task);
   } else {
     logger('No controller, directly reply message');
-    message.reply({content:msg})
+    message.reply({ content: msg })
   }
 }
-
-module.exports = { parseCommands };

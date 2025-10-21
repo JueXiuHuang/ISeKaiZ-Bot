@@ -1,8 +1,8 @@
-const { handleError } = require('./error');
-const { Task, TaskType, getDefaultRank } = require('./task manager');
+import { handleError } from './error.js';
+import { Task, TaskType, getDefaultRank } from './task manager.js';
 
 
-async function emojiVerifier(ctrl, message) {
+export async function emojiVerifier(ctrl, message) {
   const X_emoji_id = '1284730320133951592';
   const emojiMap = {
     '1285099666912055359': 'Mine',
@@ -52,5 +52,3 @@ async function emojiVerifier(ctrl, message) {
   const task = new Task(taskFunc, expireAt, `emoji verify: ${emoji}`, tag, rank);
   ctrl.addTask(task, timerKey);
 }
-
-module.exports = { emojiVerifier };

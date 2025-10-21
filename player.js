@@ -1,52 +1,51 @@
-const fs = require('fs');
-const { logger } = require('./log');
+import fs from 'fs';
+import { logger } from './log.js';
 
-const States = {
+export const States = {
   Init: "init",
   Running: "running",
   Defeated: "defeated",
   Blocked: "blocked",
   Ban: "banned",
   Stopped: "stopped"
-}
+};
 
-class Player {
-  state = States.Init;
-  channel = null;
-  battleMsg = null;
-  profMsg = null;
-  verifyImg = null;
-  verifyEmojiMsg = null;
-  sell = 0;
-}
-
-function newPlayer() {
-  let userData = loadUserData();
+export function newPlayer() {
+  const userData = loadUserData();
   return {
-    'state': States.Init,
-    'channel': null,
-    'battleMsg': null,
-    'profMsg': null,
-    'verifyImg': null,
-    'verifyEmojiMsg': null,
-    'sell': 0,
-    'userData': userData,
+    state: States.Stopped,
+    channel: null,
+    channelId: '', // Added for consistency
+    username: '', // Added for checks
+    battleMsg: null,
+    profMsg: null,
+    verifyImg: null,
+    sell: 0,
+    autoLevel: false,
+    userData: userData,
+    isStopped: function () {
+      return [States.Ban, States.Defeated, States.Stopped].includes(this.state);
+    }
   };
 }
 
-function saveUserData(data) {
-  fs.writeFileSync('./user_data.json', JSON.stringify(data, null, 2));
-}
-
-function loadUserData() {
+export function saveUserData(data) {
   try {
-    return JSON.parse(fs.readFileSync('./user_data.json', 'utf8'));
+    fs.writeFileSync('./user_data.json', JSON.stringify(data, null, 2));
   } catch (err) {
-    logger('User data not found, use default data');
-    return {
-      'last_eat_at': 0,
-    };
+    logger(`Error saving user data: ${err.message}`);
   }
 }
 
-module.exports = { Player, States, newPlayer, loadUserData, saveUserData };
+export function loadUserData() {
+  try {
+    if (fs.existsSync('./user_data.json')) {
+      const data = fs.readFileSync('./user_data.json', 'utf8');
+      return JSON.parse(data);
+    }
+    throw new Error('File not found');
+  } catch (err) {
+    logger(`User data not found or invalid, creating default data. Reason: ${err.message}`);
+    return { 'last_eat_at': 0, 'zone_index': 0 };
+  }
+}

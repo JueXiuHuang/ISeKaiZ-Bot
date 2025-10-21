@@ -1,12 +1,12 @@
-const { errorLogWrapper } = require('./log');
+import { errorLogWrapper } from './log.js';
 
-function handleError(err, info) {
+export function handleError(err, info) {
   const skipList = ["INTERACTION_FAILED"];
   if (skipList.includes(err.code)) {
     return true;
   }
 
-  logFunc = () => {
+  const logFunc = () => {
     console.log(info);
     console.log('Error message: ' + err.message);
     console.log(err);
@@ -15,5 +15,3 @@ function handleError(err, info) {
   errorLogWrapper(logFunc);
   return false;
 }
-
-module.exports = { handleError }

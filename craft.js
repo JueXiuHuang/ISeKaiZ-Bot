@@ -1,8 +1,7 @@
-// An easy script helps you craft equipment automatically
-const { Client } = require('discord.js-selfbot-v13');
-const { token, craftChannelId, craftMaterial, sellEquip = ['F', 'E', 'D'] } = require('./config.json');
-const { logger } = require('./log');
-const { messageExtractor } = require('./helper');
+import { Client } from 'discord.js-selfbot-v13';
+import { token, craftChannelId, craftMaterial, sellEquip } from './config.js';
+import { logger } from './log.js';
+import { messageExtractor } from './helper.js';
 
 const craftQuantity = 30;
 const craftInterval = 6000;

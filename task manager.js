@@ -1,15 +1,15 @@
-const { delayer } = require('./helper');
-const { retryCount, taskGap = 2000, taskBias = 3000 } = require('./config.json');
-const { logger } = require('./log');
+import { delayer } from './helper.js';
+import { retryCount, taskGap, taskBias } from './config.js';
+import { logger } from './log.js';
 
-class TaskSetting {
+export class TaskSetting {
   constructor(rank, limit) {
     this.rank = rank;
     this.limit = limit;
   }
 }
 
-const TaskType = {
+export const TaskType = {
   Verify: 'Verify',
   EVB: 'EmojiVerifyBattle',
   EVP: 'EmojiVerifyProfession',
@@ -24,30 +24,30 @@ const TaskType = {
   Cmd: 'Command',
 };
 
-const TaskSettingList = {
-  'Verify': new TaskSetting(rank = -999, limit = 999),
-  'Command': new TaskSetting(rank = -998, limit = 999),
-  'EmojiVerifyBattle': new TaskSetting(rank = 2, limit = 1),
-  'EmojiVerifyProfession': new TaskSetting(rank = 2, limit = 1),
-  'Treasure': new TaskSetting(rank = 1, limit = 999),
-  'Inventory': new TaskSetting(rank = 1, limit = 2),
-  'Food': new TaskSetting(rank = 1, limit = 1),
-  'Retainer': new TaskSetting(rank = 1, limit = 3),
-  'NewBattle': new TaskSetting(rank = 3, limit = 1),
-  'NewProfession': new TaskSetting(rank = 3, limit = 1),
-  'NewBattleWindow': new TaskSetting(rank = 4, limit = 1),
-  'NewProfessionWindow': new TaskSetting(rank = 4, limit = 1),
+export const TaskSettingList = {
+  'Verify': new TaskSetting(-999, 999),
+  'Command': new TaskSetting(-998, 999),
+  'EmojiVerifyBattle': new TaskSetting(2, 1),
+  'EmojiVerifyProfession': new TaskSetting(2, 1),
+  'Treasure': new TaskSetting(1, 999),
+  'Inventory': new TaskSetting(1, 2),
+  'Food': new TaskSetting(1, 1),
+  'Retainer': new TaskSetting(1, 3),
+  'NewBattle': new TaskSetting(3, 1),
+  'NewProfession': new TaskSetting(3, 1),
+  'NewBattleWindow': new TaskSetting(4, 1),
+  'NewProfessionWindow': new TaskSetting(4, 1),
 };
 
-function getDefaultRank(tag) {
+export function getDefaultRank(tag) {
   return TaskSettingList[tag]?.rank ?? 5;
 }
 
-function getTaskLimit(tag) {
+export function getTaskLimit(tag) {
   return TaskSettingList[tag]?.limit ?? 1;
 }
 
-class Task {
+export class Task {
   constructor(func, expireAt, info, tag, rank) {
     this.func = func;
     this.expireAt = expireAt;
@@ -60,7 +60,7 @@ class Task {
   isExpire(timeNow) { return this.expireAt < timeNow; }
 }
 
-class TaskManager {
+export class TaskManager {
   constructor(onTaskComplete) {
     this.queue = [];
     this.taskTypeCounter = {};
@@ -144,5 +144,3 @@ class TaskManager {
     this.lock = false;
   }
 }
-
-module.exports = { Task, TaskManager, TaskType, getDefaultRank };

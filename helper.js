@@ -1,7 +1,7 @@
-const { States } = require('./player');
-const { logger } = require('./log');
+import { States } from './player.js';
+import { logger } from './log.js';
 
-function isVerify(...args) {
+export function isVerify(...args) {
   for (var i = 0; i < args.length; i++) {
     if (args[i] === States.Blocked) {
       return true;
@@ -10,7 +10,7 @@ function isVerify(...args) {
   return false;
 }
 
-function messageExtractor(message) {
+export function messageExtractor(message) {
   let author = message?.author?.id ?? ''
   let mentions = message?.mentions ?? {};
   let embed = message?.embeds[0] ?? {};
@@ -36,7 +36,7 @@ function messageExtractor(message) {
   return data
 }
 
-async function delayer(minDelayMs, maxDelayMs, detail) {
+export async function delayer(minDelayMs, maxDelayMs, detail) {
   const waitMs = ms => new Promise(resolve => setTimeout(resolve, ms));
 
   detail = detail ?? ''
@@ -45,7 +45,7 @@ async function delayer(minDelayMs, maxDelayMs, detail) {
   await waitMs(randomDelayMs);
 }
 
-function makeHash() {
+export function makeHash() {
   let length = 5;
   let result = '';
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -57,5 +57,3 @@ function makeHash() {
   }
   return result;
 }
-
-module.exports = { isVerify, messageExtractor, delayer, makeHash };
