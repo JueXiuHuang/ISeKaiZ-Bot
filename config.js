@@ -30,4 +30,5 @@ export const battleZones = [
   'Sunstone Summit', // 800-1000
   'Ancient Planet', // 1000-1200
   'Unholy Battlefield', // 1200-1400
+  'The Purgatory' // 1400-1700
 ];
